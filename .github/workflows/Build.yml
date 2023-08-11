@@ -1,0 +1,99 @@
+# Copyright (c) Microsoft Corporation
+# SPDX-License-Identifier: MIT
+
+name: Build
+
+on:
+  workflow_call:
+    inputs:
+      platform:
+        required: true
+        type: string
+      configuration:
+        required: true
+        type: string
+      enable_sanitizers:
+        required: false
+        type: boolean
+      enable_coverage:
+        required: false
+        type: boolean
+      publish_docker:
+        required: false
+        type: boolean
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+
+    runs-on: ${{inputs.platform}}
+    env:
+      BUILD_TYPE: ${{inputs.configuration}}
+
+    steps:
+    - uses: actions/checkout@v3
+      with:
+        submodules: 'recursive'
+
+    - name: Install prerequisites - Ubuntu-22.04
+      if: inputs.platform == 'ubuntu-22.04'
+      run: |
+        sudo apt-get install -y \
+         libbpf-dev \
+         lcov
+
+    - name: Cache nuget packages
+      if: inputs.platform == 'windows-2019' || inputs.platform == 'windows-2022'
+      uses: actions/cache@88522ab9f39a2ea568f7027eddc7d8d8bc9d59c8
+      env:
+        cache-name: cache-nuget-modules
+      with:
+        path: build\packages
+        key: ${{ runner.os }}-${{ hashFiles('**/CMakeLists.txt') }}-${{inputs.platform}}
+
+    - name: Configure CMake
+      if: inputs.platform == 'windows-2019' || inputs.platform == 'windows-2022'
+      run: |
+        cmake -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}}
+
+    - name: Configure CMake
+      if: inputs.platform == 'ubuntu-22.04'
+      run: |
+        if [ "${{inputs.enable_sanitizers}}" = "true" ]; then
+          export SANITIZER_FLAGS="-fsanitize=address -fsanitize=undefined -fno-sanitize-recover=all"
+        fi
+        if [ "${{inputs.enable_coverage}}" = "true" ]; then
+          export COVERAGE_FLAGS="-DCMAKE_CXX_FLAGS=\"--coverage\" -DCMAKE_C_FLAGS=\"--coverage\""
+        fi
+        cmake \
+          -B ${{github.workspace}}/build \
+          -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} \
+          -DCMAKE_CXX_FLAGS="${SANITIZER_FLAGS}" \
+          -DCMAKE_C_FLAGS="${SANITIZER_FLAGS}" \
+          ${COVERAGE_FLAGS}
+
+    - name: Build
+      # Build your program with the given configuration
+      run: cmake --build ${{github.workspace}}/build --config ${{env.BUILD_TYPE}}
+
+    - name: Tests
+      if: inputs.platform == 'ubuntu-22.04'
+      working-directory: ${{github.workspace}}/build/bin
+      run: |
+        sudo ./bpf_performance_runner tests.yml
+
+    - name: Generate code coverage report
+      if: inputs.enable_coverage == true
+      run: |
+        mkdir -p coverage
+        lcov --capture --directory build --include '${{github.workspace}}/*' --output-file coverage/lcov.info --exclude '${{github.workspace}}/external/*'
+
+    - name: Coveralls Parallel
+      if: inputs.enable_coverage == true
+      uses: coverallsapp/github-action@v2.2.1
+      with:
+        github-token: ${{ secrets.github_token }}
+        flag-name: run-${{inputs.build_type}}-${{inputs.platform}}-${{inputs.arch}}
+        parallel: true

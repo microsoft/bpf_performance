@@ -1,0 +1,119 @@
+# Copyright (c) Microsoft Corporation
+# SPDX-License-Identifier: MIT
+
+# Main YML file for the CICD pipeline
+
+name: CI/CD
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+  # Run on a daily schedule to perform the full set of tests.
+  schedule:
+    - cron: '00 21 * * *'
+
+permissions:
+  contents: read
+  packages: write
+
+concurrency:
+  # Cancel any CI/CD workflow currently in progress for the same PR.
+  # Allow running concurrently with any other commits.
+  group: cicd-${{ github.event.pull_request.number || github.sha }}
+  cancel-in-progress: true
+
+jobs:
+  windows_release:
+    uses: ./.github/workflows/Build.yml
+    with:
+      platform: windows-2019
+      configuration: RelWithDebInfo
+      enable_sanitizers: false
+      enable_coverage: false
+
+  windows_debug:
+    uses: ./.github/workflows/Build.yml
+    with:
+      platform: windows-2019
+      configuration: Debug
+      enable_sanitizers: false
+      enable_coverage: false
+
+  windows_release_2022:
+    uses: ./.github/workflows/Build.yml
+    with:
+      platform: windows-2022
+      configuration: RelWithDebInfo
+      enable_sanitizers: false
+      enable_coverage: false
+
+  windows_debug_2022:
+    uses: ./.github/workflows/Build.yml
+    with:
+      platform: windows-2022
+      configuration: Debug
+      enable_sanitizers: false
+      enable_coverage: false
+
+  ubuntu_release:
+    uses: ./.github/workflows/Build.yml
+    with:
+      platform: ubuntu-22.04
+      configuration: Release
+      enable_sanitizers: false
+      enable_coverage: false
+      publish_docker: true
+
+  ubuntu_debug:
+    uses: ./.github/workflows/Build.yml
+    with:
+      platform: ubuntu-22.04
+      configuration: Debug
+      enable_sanitizers: false
+      enable_coverage: false
+
+  ubuntu_release_sanitizers:
+    uses: ./.github/workflows/Build.yml
+    with:
+      platform: ubuntu-22.04
+      configuration: Release
+      enable_sanitizers: true
+      enable_coverage: false
+
+  ubuntu_debug_sanitizers:
+    uses: ./.github/workflows/Build.yml
+    with:
+      platform: ubuntu-22.04
+      configuration: Debug
+      enable_sanitizers: true
+      enable_coverage: false
+
+  ubuntu_release_coverage:
+    uses: ./.github/workflows/Build.yml
+    with:
+      platform: ubuntu-22.04
+      configuration: Release
+      enable_sanitizers: false
+      enable_coverage: true
+
+  ubuntu_debug_coverage:
+    uses: ./.github/workflows/Build.yml
+    with:
+      platform: ubuntu-22.04
+      configuration: Debug
+      enable_sanitizers: false
+      enable_coverage: true
+
+  finish:
+    needs:
+      - ubuntu_release_coverage
+      - ubuntu_debug_coverage
+    runs-on: ubuntu-22.04
+    steps:
+    - name: Coveralls Finished
+      uses: coverallsapp/github-action@v2.2.1
+      with:
+        github-token: ${{ secrets.github_token }}
+        parallel-finished: true
