@@ -13,8 +13,6 @@ FetchContent_Declare(
 
 FetchContent_MakeAvailable(yaml-cpp)
 
-find_library(LIBBPF libbpf)
-
 include(CheckSymbolExists)
 
 check_symbol_exists(bpf_prog_load "bpf/bpf.h" HAS_BPF_PROG_LOAD)
@@ -28,7 +26,9 @@ add_executable(
   runner.cc
 )
 
-target_link_libraries(bpf_performance_runner PRIVATE "bpf" "yaml-cpp")
+target_include_directories(bpf_performance_runner PRIVATE ${EBPF_INC_PATH})
+target_link_directories(bpf_performance_runner PRIVATE ${EBPF_LIB_PATH})
+target_link_libraries(bpf_performance_runner PRIVATE ${EBPF_LIB} "yaml-cpp")
 
 
 

@@ -1,0 +1,39 @@
+# Copyright (c) 2023 Microsoft Corporation.
+# SPDX-License-Identifier: MIT
+
+BasedOnStyle: LLVM
+IndentWidth: 4
+ColumnLimit: 120
+AlignEscapedNewlines: Left
+AlignAfterOpenBracket: AlwaysBreak
+#
+# Bind * to the type rather than the name.
+PointerAlignment: Left
+#
+# Put function name on separate line from return type.
+AlwaysBreakAfterReturnType: All
+#
+# Put arguments either all on same line or on separate lines.
+BinPackArguments: false
+#
+# Put function parameters on separate lines.
+BinPackParameters: false
+#
+# Open brace goes on new line only when starting a new struct, enum, or func.
+BreakBeforeBraces: Mozilla
+#
+# Special include file sort ordering rules.
+# Priority indicates the "group" (where groups are separated by a blank line).
+# SortPriority indicates the overall order when we need to override alphabetical
+# order due to header dependencies.
+SortIncludes: 'true'
+IncludeBlocks: Regroup
+IncludeIsMainRegex: "UNUSED$"
+IncludeCategories:
+  # linux/types.h must be before bpf/bpf_helpers.h
+  - Regex: '<linux/types.h>'
+    Priority: 1
+    SortPriority: 1
+  - Regex: '<bpf/bpf_helpers.h>'
+    Priority: 1
+    SortPriority: 2
