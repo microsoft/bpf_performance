@@ -1,0 +1,63 @@
+# Copyright (c) Microsoft Corporation
+# SPDX-License-Identifier: MIT
+
+tests:
+  - name: Baseline
+    description: The Baseline test with an empty eBPF program.
+    elf_file: baseline.o
+    iteration_count: 10000000
+    program_cpu_assignment:
+      baseline_program: all
+
+  - name: Hash-table Map Read
+    description: Tests reading from a generic eBPF map.
+    elf_file: generic_map.o
+    map_state_preparation:
+      program: prepare_HASH_state_generic_read
+      iteration_count: 1024
+    iteration_count: 10000000
+    program_cpu_assignment:
+      read_HASH: all
+
+  - name: Hash-table Map Update
+    description: Tests reading from a generic eBPF map.
+    elf_file: generic_map.o
+    map_state_preparation:
+      program: prepare_HASH_state_generic_read
+      iteration_count: 1024
+    iteration_count: 10000000
+    program_cpu_assignment:
+      update_HASH: all
+
+  - name: Hash-table Map Update / Read
+    description: Tests reading from a generic eBPF map.
+    elf_file: generic_map.o
+    map_state_preparation:
+      program: prepare_HASH_state_generic_read
+      iteration_count: 1024
+    iteration_count: 10000000
+    program_cpu_assignment:
+      update_HASH: [0]
+      read_HASH: [1,2,3,4,5,6,7,8,9,10,11]
+
+  - name: Array Map Read
+    description: Tests reading from a generic eBPF map.
+    elf_file: generic_map.o
+    map_state_preparation:
+      program: prepare_ARRAY_state_generic_read
+      iteration_count: 1024
+    iteration_count: 10000000
+    program_cpu_assignment:
+      read_ARRAY: all
+
+  - name: Array Map Update
+    description: Tests reading from a generic eBPF map.
+    elf_file: generic_map.o
+    map_state_preparation:
+      program: prepare_HASH_state_generic_read
+      iteration_count: 1024
+    iteration_count: 10000000
+    program_cpu_assignment:
+      update_ARRAY: all
+
+  # Add more test cases as needed
