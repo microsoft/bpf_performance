@@ -1,7 +1,7 @@
 # bpf_performance
 
 [![CI/CD](https://github.com/Alan-Jowett/bpf_performance/actions/workflows/CICD.yml/badge.svg)](https://github.com/Alan-Jowett/bpf_performance/actions/workflows/CICD.yml)
-[![Coverage Status](https://coveralls.io/repos/github/Alan-Jowett/bpf_performance/badge.svg)](https://coveralls.io/github/Alan-Jowett/bpf_performance)
+[![Coverage Status](https://coveralls.io/repos/github/Alan-Jowett/bpf_performance/badge.svg?branch=main)](https://coveralls.io/github/Alan-Jowett/bpf_performance?branch=main)
 
 A set of platform-agnostic tools to measure the performance of various BPF helper functions.
 
