@@ -101,7 +101,7 @@ tests:
     program_cpu_assignment:
       read_PERCPU_ARRAY: all
 
-  - name: Array Map Update
+  - name: Per-CPU Array Map Update
     description: Tests reading from a generic eBPF map.
     elf_file: generic_map.o
     map_state_preparation:
@@ -111,5 +111,25 @@ tests:
     program_cpu_assignment:
       update_PERCPU_ARRAY: all
 
+
+  - name: LRU Hash-table Map Read
+    description: Tests reading from a generic eBPF map.
+    elf_file: generic_map.o
+    map_state_preparation:
+      program: prepare_LRU_HASH_state_generic_read
+      iteration_count: 1024
+    iteration_count: 10000000
+    program_cpu_assignment:
+      read_LRU_HASH: all
+
+  - name: LRU Hash-table Map Update
+    description: Tests reading from a generic eBPF map.
+    elf_file: generic_map.o
+    map_state_preparation:
+      program: prepare_LRU_HASH_state_generic_read
+      iteration_count: 1024
+    iteration_count: 10000000
+    program_cpu_assignment:
+      update_LRU_HASH: all
 
   # Add more test cases as needed
