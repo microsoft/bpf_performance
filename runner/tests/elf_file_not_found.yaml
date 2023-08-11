@@ -1,0 +1,10 @@
+# Copyright (c) Microsoft Corporation
+# SPDX-License-Identifier: MIT
+
+tests:
+  - name: Baseline
+    description: The Baseline test with an empty eBPF program.
+    elf_file: not_a_file.o
+    iteration_count: 10000000
+    program_cpu_assignment:
+      baseline_program: all

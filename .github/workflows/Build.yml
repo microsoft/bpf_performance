@@ -85,11 +85,17 @@ jobs:
       run: |
         sudo ./bpf_performance_runner tests.yml
 
+    - name: Self-Tests
+      if: inputs.platform == 'ubuntu-22.04'
+      working-directory: ${{github.workspace}}/build/bin
+      run: |
+        cmake --build ${{github.workspace}}/build --target test --
+
     - name: Generate code coverage report
       if: inputs.enable_coverage == true
       run: |
         mkdir -p coverage
-        lcov --capture --directory build --include '${{github.workspace}}/*' --output-file coverage/lcov.info --exclude '${{github.workspace}}/external/*'
+        lcov --capture --directory build --include '${{github.workspace}}/*' --output-file coverage/lcov.info --exclude '${{github.workspace}}/external/*' --exclude '${{github.workspace}}/build/*'
 
     - name: Coveralls Parallel
       if: inputs.enable_coverage == true

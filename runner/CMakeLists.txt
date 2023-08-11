@@ -29,6 +29,3 @@ add_executable(
 target_include_directories(bpf_performance_runner PRIVATE ${EBPF_INC_PATH})
 target_link_directories(bpf_performance_runner PRIVATE ${EBPF_LIB_PATH})
 target_link_libraries(bpf_performance_runner PRIVATE ${EBPF_LIB} "yaml-cpp")
-
-
-

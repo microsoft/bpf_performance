@@ -2,7 +2,6 @@
 # SPDX-License-Identifier: MIT
 
 option(BPF_PERF_INSTALL_GIT_HOOKS "Set to true to install git hooks" ON)
-option(BPF_PERF_ALTERNATE_LLVM_PATH "Set to the path of an alternate LLVM installation")
 
 # Note that the compile_commands.json file is only exporter when
 # using the Ninja or Makefile generator

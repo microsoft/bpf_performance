@@ -1,0 +1,13 @@
+# Copyright (c) Microsoft Corporation
+# SPDX-License-Identifier: MIT
+
+tests:
+  - name: Hash-table Map Read
+    description: Tests reading from a BPF_MAP_TYPE_HASH map.
+    elf_file: bin/generic_map.o
+    map_state_preparation:
+      program: prepare_HASH_state_generic_read
+      iteration_count: 1024
+    iteration_count: 10000000
+    program_cpu_assignment:
+      not_a_function: all
