@@ -40,6 +40,37 @@ tests:
       update_HASH: [0]
       read_HASH: unassigned
 
+  - name: Per-CPU Hash-table Map Read
+    description: Tests reading from a generic eBPF map.
+    elf_file: generic_map.o
+    map_state_preparation:
+      program: prepare_PERCPU_HASH_state_generic_read
+      iteration_count: 1024
+    iteration_count: 10000000
+    program_cpu_assignment:
+      read_PERCPU_HASH: all
+
+  - name: Per-CPU Hash-table Map Update
+    description: Tests reading from a generic eBPF map.
+    elf_file: generic_map.o
+    map_state_preparation:
+      program: prepare_PERCPU_HASH_state_generic_read
+      iteration_count: 1024
+    iteration_count: 10000000
+    program_cpu_assignment:
+      update_PERCPU_HASH: all
+
+  - name: Per-CPU Hash-table Map Update / Read
+    description: Tests reading from a generic eBPF map.
+    elf_file: generic_map.o
+    map_state_preparation:
+      program: prepare_PERCPU_HASH_state_generic_read
+      iteration_count: 1024
+    iteration_count: 10000000
+    program_cpu_assignment:
+      update_PERCPU_HASH: [0]
+      read_PERCPU_HASH: unassigned
+
   - name: Array Map Read
     description: Tests reading from a generic eBPF map.
     elf_file: generic_map.o
@@ -54,10 +85,31 @@ tests:
     description: Tests reading from a generic eBPF map.
     elf_file: generic_map.o
     map_state_preparation:
-      program: prepare_HASH_state_generic_read
+      program: prepare_ARRAY_state_generic_read
       iteration_count: 1024
     iteration_count: 10000000
     program_cpu_assignment:
       update_ARRAY: all
+
+  - name: Per-CPU Array Map Read
+    description: Tests reading from a generic eBPF map.
+    elf_file: generic_map.o
+    map_state_preparation:
+      program: prepare_PERCPU_ARRAY_state_generic_read
+      iteration_count: 1024
+    iteration_count: 10000000
+    program_cpu_assignment:
+      read_PERCPU_ARRAY: all
+
+  - name: Array Map Update
+    description: Tests reading from a generic eBPF map.
+    elf_file: generic_map.o
+    map_state_preparation:
+      program: prepare_PERCPU_ARRAY_state_generic_read
+      iteration_count: 1024
+    iteration_count: 10000000
+    program_cpu_assignment:
+      update_PERCPU_ARRAY: all
+
 
   # Add more test cases as needed
