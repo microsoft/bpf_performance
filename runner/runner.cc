@@ -5,6 +5,7 @@
 #include <thread>
 #include <vector>
 #include <optional>
+#include <regex>
 #include <yaml-cpp/yaml.h>
 #include <bpf/bpf.h>
 #include <bpf/libbpf.h>
@@ -27,10 +28,17 @@ int main(int argc, char **argv)
 {
     try
     {
-        if (argc != 2)
+        if (argc < 2)
         {
-            std::cerr << "Usage: " << argv[0] << " <config.yaml>" << std::endl;
+            std::cerr << "Usage: " << argv[0] << " <config.yaml> [test]" << std::endl;
             return 1;
+        }
+
+        // Get the optional test name.
+        std::optional<std::string> test_name;
+        if (argc > 2)
+        {
+            test_name = argv[2];
         }
 
         YAML::Node config = YAML::LoadFile(argv[1]);
@@ -42,6 +50,12 @@ int main(int argc, char **argv)
         // Run each test.
         for (auto test : tests)
         {
+            // Skip if test name is specified and doesn't match, with test name being a regex.
+            if (test_name && !std::regex_match(test["name"].as<std::string>(), std::regex(*test_name)))
+            {
+                continue;
+            }
+
             // Check for required fields.
             if (test["name"].IsNull())
             {
