@@ -65,7 +65,7 @@ jobs:
 
     - name: Install prerequisites
       run: |
-        sudo apt-get install -y libboost-dev libboost-filesystem-dev libboost-program-options-dev libbpf-dev
+        sudo apt-get install -y gcc-multilib libbpf-dev
 
     # Autobuild attempts to build any compiled languages  (C/C++, C#, or Java).
     # If this step fails, then you should remove it and run the build manually (see below)

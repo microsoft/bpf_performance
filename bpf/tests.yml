@@ -38,7 +38,7 @@ tests:
     iteration_count: 10000000
     program_cpu_assignment:
       update_HASH: [0]
-      read_HASH: [1,2,3,4,5,6,7,8,9,10,11]
+      read_HASH: unassigned
 
   - name: Array Map Read
     description: Tests reading from a generic eBPF map.
