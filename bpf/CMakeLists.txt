@@ -35,5 +35,6 @@ configure_file(
 build_bpf(baseline)
 build_bpf(generic_map)
 build_bpf(rolling_lru)
+build_bpf(helpers)
 
 file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/tests.yml DESTINATION ${CMAKE_RUNTIME_OUTPUT_DIRECTORY})

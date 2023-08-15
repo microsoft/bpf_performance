@@ -142,4 +142,11 @@ tests:
     program_cpu_assignment:
       read_or_update_rolling_lru: all
 
+  - name: bpf_get_prandom_u32
+    description: Tests the bpf_get_prandom_u32 helper.
+    elf_file: helpers.o
+    iteration_count: 10000000
+    program_cpu_assignment:
+      test_bpf_get_prandom_u32: all
+
   # Add more test cases as needed
