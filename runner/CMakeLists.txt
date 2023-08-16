@@ -14,11 +14,19 @@ FetchContent_Declare(
 FetchContent_MakeAvailable(yaml-cpp)
 
 include(CheckSymbolExists)
+include(CheckStructHasMember)
+
+set(CMAKE_REQUIRED_INCLUDES ${EBPF_INC_PATH})
 
 check_symbol_exists(bpf_prog_load "bpf/bpf.h" HAS_BPF_PROG_LOAD)
 
 if(NOT HAS_BPF_PROG_LOAD)
   add_compile_definitions(USE_DEPRECATED_LOAD_PROGRAM)
+endif()
+
+Check_struct_has_member("bpf_test_run_opts" "batch_size" ${EBPF_INC_PATH}/bpf/bpf.h HAS_BPF_TEST_RUN_OPTS_BATCH_SIZE LANGUAGE CXX)
+if (HAS_BPF_TEST_RUN_OPTS_BATCH_SIZE)
+  add_compile_definitions(HAS_BPF_TEST_RUN_OPTS_BATCH_SIZE)
 endif()
 
 add_executable(
