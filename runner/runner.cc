@@ -24,6 +24,14 @@ struct bpf_object_deleter
 
 typedef std::unique_ptr<struct bpf_object, bpf_object_deleter> bpf_object_ptr;
 
+// Set string runner_platform to "linux" to indicate that this is a Linux runner.
+#if defined(__linux__)
+const std::string runner_platform = "Linux";
+#else
+const std::string runner_platform = "Windows";
+#endif
+
+
 // This program runs a set of BPF programs and reports the average execution time for each program.
 // It reads a YAML file that contains the following fields:
 // - tests: a list of tests to run
@@ -65,7 +73,7 @@ main(int argc, char** argv)
             throw std::runtime_error("Invalid config file - tests must be a sequence");
         }
 
-        // First load all the BPF programs.
+        // Run each test.
         for (auto test : tests) {
             // Check for required fields.
             if (!test["name"].IsDefined()) {
@@ -90,34 +98,35 @@ main(int argc, char** argv)
 
             std::string name = test["name"].as<std::string>();
             std::string elf_file = test["elf_file"].as<std::string>();
+            int iteration_count = test["iteration_count"].as<int>();
+
+            // Check if value "platform" is defined and matches the current platform.
+            if (test["platform"].IsDefined()) {
+                std::string platform = test["platform"].as<std::string>();
+                if (runner_platform != platform) {
+                    // Don't run this test if the platform doesn't match.
+                    continue;
+                }
+            }
+
             // Skip if test name is specified and doesn't match, with test name being a regex.
             if (test_name && !std::regex_match(name, std::regex(*test_name))) {
                 continue;
             }
 
-            if (bpf_objects.find(elf_file) != bpf_objects.end()) {
-                // Already loaded.
-                continue;
-            }
+            if (bpf_objects.find(elf_file) == bpf_objects.end()) {
+                bpf_object_ptr obj;
+                obj.reset(bpf_object__open(elf_file.c_str()));
+                if (!obj) {
+                    throw std::runtime_error("Failed to open BPF object " + elf_file + ": " + strerror(errno));
+                }
+                if (bpf_object__load(obj.get()) < 0) {
+                    throw std::runtime_error("Failed to load BPF object " + elf_file + ": " + strerror(errno));
+                }
 
-            bpf_object_ptr obj;
-            obj.reset(bpf_object__open(elf_file.c_str()));
-            if (!obj) {
-                throw std::runtime_error("Failed to open BPF object " + elf_file + ": " + strerror(errno));
+                // Insert into bpf_objects
+                bpf_objects.insert({elf_file, std::move(obj)});
             }
-            if (bpf_object__load(obj.get()) < 0) {
-                throw std::runtime_error("Failed to load BPF object " + elf_file + ": " + strerror(errno));
-            }
-
-            // Insert into bpf_objects
-            bpf_objects.insert({elf_file, std::move(obj)});
-        }
-
-        // Run each test.
-        for (auto test : tests) {
-            std::string name = test["name"].as<std::string>();
-            std::string elf_file = test["elf_file"].as<std::string>();
-            int iteration_count = test["iteration_count"].as<int>();
 
             // Vector of CPU -> program fd.
             std::vector<std::optional<int>> cpu_program_assignments(cpu_count);
