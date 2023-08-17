@@ -45,7 +45,17 @@ jobs:
          lcov \
          pkg-config \
          libelf-dev \
-         libbpf-dev
+
+    - name: Clone and build libbpf - Ubuntu-22.04
+      if: inputs.platform == 'ubuntu-22.04'
+      run: |
+        git clone https://github.com/libbpf/libbpf.git
+        cd libbpf
+        git checkout v0.7.0
+        cd src
+        make
+        sudo LIBDIR=/lib/x86_64-linux-gnu make install
+        sudo ldconfig
 
     - name: Download daily nuget package and MSI
       env:
