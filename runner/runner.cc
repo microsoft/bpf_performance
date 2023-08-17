@@ -120,6 +120,13 @@ main(int argc, char** argv)
                 if (!obj) {
                     throw std::runtime_error("Failed to open BPF object " + elf_file + ": " + strerror(errno));
                 }
+
+                bpf_program* program;
+                bpf_object__for_each_program(program, obj.get())
+                {
+                    (void)bpf_program__set_type(program, BPF_PROG_TYPE_XDP);
+                }
+
                 if (bpf_object__load(obj.get()) < 0) {
                     throw std::runtime_error("Failed to load BPF object " + elf_file + ": " + strerror(errno));
                 }

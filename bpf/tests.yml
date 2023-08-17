@@ -172,4 +172,12 @@ tests:
     program_cpu_assignment:
       write_map_in_map: all
 
+  - name: bpf_tail_call
+    description: Tests the bpf_tail_call helper.
+    platform: Windows
+    elf_file: tail_call.o
+    iteration_count: 10000000
+    program_cpu_assignment:
+      test_bpf_tail: all
+
   # Add more test cases as needed

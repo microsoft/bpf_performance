@@ -3,9 +3,7 @@
 
 #include "bpf.h"
 
-// Simplest possible program, just pass everything, used to measure the
-// overhead of the BPF infrastructure.
-
+// Test to measure the overhead of bpf_get_prandom_u32
 __attribute__((section("xdp/test_bpf_get_prandom_u32"))) int
 test_bpf_get_prandom_u32(void* ctx)
 {
