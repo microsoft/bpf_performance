@@ -45,19 +45,21 @@ jobs:
          libbpf-dev \
          lcov
 
-    - name: Cache nuget packages
-      if: inputs.platform == 'windows-2019' || inputs.platform == 'windows-2022'
-      uses: actions/cache@88522ab9f39a2ea568f7027eddc7d8d8bc9d59c8
+    - name: Download daily nuget package and MSI
       env:
-        cache-name: cache-nuget-modules
-      with:
-        path: build\packages
-        key: ${{ runner.os }}-${{ hashFiles('**/CMakeLists.txt') }}-${{inputs.platform}}
+        GH_TOKEN: ${{ github.token }}
+      if: inputs.platform == 'windows-2019' || inputs.platform == 'windows-2022'
+      run: |
+        mkdir ${{github.workspace}}/local_packages
+        cd ${{github.workspace}}/local_packages
+        $run = ((Invoke-WebRequest -Uri  "https://api.github.com/repos/microsoft/ebpf-for-windows/actions/runs?per_page=1&exclude_pull_requests=true&branch=main&status=completed&event=schedule").Content | ConvertFrom-Json)
+        gh run download -R microsoft/ebpf-for-windows $run.workflow_runs.id -n "ebpf-for-windows - NuGet package (Build-x64_Release)"
+        gh run download -R microsoft/ebpf-for-windows $run.workflow_runs.id -n "ebpf-for-windows - MSI installer (Build-x64_Release)"
 
     - name: Configure CMake
       if: inputs.platform == 'windows-2019' || inputs.platform == 'windows-2022'
       run: |
-        cmake -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}}
+        cmake -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -DBPF_PERF_LOCAL_NUGET_PATH=${{github.workspace}}/local_packages -DBPF_PERF_LOCAL_MSI_PATH=${{github.workspace}}/local_packages
 
     - name: Configure CMake
       if: inputs.platform == 'ubuntu-22.04'
@@ -93,8 +95,8 @@ jobs:
 
     - name: Install prerequisites - Windows-2019 or Windows-2022
       if: inputs.platform == 'windows-2019' || inputs.platform == 'windows-2022'
+      working-directory: ${{github.workspace}}/local_packages
       run: |
-        Invoke-WebRequest -Uri https://github.com/microsoft/ebpf-for-windows/releases/download/v0.10.0/ebpf-for-windows.0.10.0.msi -OutFile ebpf-for-windows.msi
         Start-Process msiexec.exe -Wait -ArgumentList '/i ebpf-for-windows.msi /quiet /qn /norestart /log install.log ADDLOCAL=ALL'
         echo "C:\Program Files\ebpf-for-windows" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
 
@@ -103,7 +105,6 @@ jobs:
       working-directory: ${{github.workspace}}/build/bin
       shell: cmd
       run: |
-        where ebpfapi.dll
         ${{env.BUILD_TYPE}}\bpf_performance_runner.exe tests_native.yml
 
     - name: Self-Tests
