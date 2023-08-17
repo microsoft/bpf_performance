@@ -149,4 +149,27 @@ tests:
     program_cpu_assignment:
       test_bpf_get_prandom_u32: all
 
+  # Ubuntu 22.04 has an old version of libbpf that doesn't support BTF initialized maps.
+  - name: BPF_MAP_TYPE_ARRAY_OF_MAPS read
+    description: Test BPF_MAP_TYPE_ARRAY_OF_MAPS
+    platform: Windows
+    elf_file: map_in_map.o
+    map_state_preparation:
+      program: prepare_map_in_map
+      iteration_count: 8192
+    iteration_count: 10000000
+    program_cpu_assignment:
+      read_map_in_map: all
+
+  - name: BPF_MAP_TYPE_ARRAY_OF_MAPS update
+    description: Test BPF_MAP_TYPE_ARRAY_OF_MAPS
+    platform: Windows
+    elf_file: map_in_map.o
+    map_state_preparation:
+      program: prepare_map_in_map
+      iteration_count: 8192
+    iteration_count: 10000000
+    program_cpu_assignment:
+      write_map_in_map: all
+
   # Add more test cases as needed
