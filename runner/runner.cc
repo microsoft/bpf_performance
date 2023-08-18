@@ -10,6 +10,8 @@
 #include <vector>
 #include <yaml-cpp/yaml.h>
 
+#include "options.h"
+
 // Define unique_ptr to call bpf_object__close on destruction
 struct bpf_object_deleter
 {
@@ -50,18 +52,48 @@ int
 main(int argc, char** argv)
 {
     try {
-        if (argc < 2) {
-            std::cerr << "Usage: " << argv[0] << " <config.yaml> [test]" << std::endl;
-            return 1;
-        }
-
+        options cmd_options;
+        // Test input file.
+        std::string test_file;
         // Get the optional test name.
         std::optional<std::string> test_name;
-        if (argc > 2) {
-            test_name = argv[2];
+        std::optional<int> batch_size_override;
+        std::optional<std::string> ebpf_file_extension_override;
+        std::optional<int> iteration_count_override;
+
+        // Add option "-i" for test input file.
+        cmd_options.add(
+            "-i", 2, [&test_file](auto iter) { test_file = *iter; },
+            "Test input file");
+
+        // Add option "-t" to specify a test name regex.
+        cmd_options.add(
+            "-t", 2, [&test_name](auto iter) { test_name = *iter; },
+            "Test name regex");
+
+        // Add option "-b" to specify batch size override.
+        cmd_options.add(
+            "-b", 2, [&batch_size_override](auto iter) { batch_size_override = std::stoi(*iter); },
+            "Batch size override");
+
+        // Add option "-e" to specify the path to the eBPF file extension.
+        cmd_options.add(
+            "-e", 2, [&ebpf_file_extension_override](auto iter) { ebpf_file_extension_override = *iter; },
+            "eBPF file extension override");
+
+        // Add option "-c" to specify iteration count override.
+        cmd_options.add(
+            "-c", 2, [&iteration_count_override](auto iter) { iteration_count_override = std::stoi(*iter); },
+            "Iteration count override");
+
+        // Parse command line options.
+        cmd_options.parse(argc, argv);
+
+        if (test_file.empty()) {
+            throw std::runtime_error("Test input file is required");
         }
 
-        YAML::Node config = YAML::LoadFile(argv[1]);
+        YAML::Node config = YAML::LoadFile(test_file);
         auto tests = config["tests"];
         std::map<std::string, bpf_object_ptr> bpf_objects;
 
@@ -96,9 +128,12 @@ main(int argc, char** argv)
                 throw std::runtime_error("Field program_cpu_assignment must be a map");
             }
 
+            // Per test fields.
             std::string name = test["name"].as<std::string>();
             std::string elf_file = test["elf_file"].as<std::string>();
             int iteration_count = test["iteration_count"].as<int>();
+            std::optional<std::string> program_type;
+            int batch_size;
 
             // Check if value "platform" is defined and matches the current platform.
             if (test["platform"].IsDefined()) {
@@ -109,13 +144,39 @@ main(int argc, char** argv)
                 }
             }
 
+            // Check if value "program_type" is defined and use it.
+            if (test["program_type"].IsDefined()) {
+                program_type = test["program_type"].as<std::string>();
+            }
+
+            // Check if value "batch_size" is defined and use it.
+            if (test["batch_size"].IsDefined()) {
+                batch_size = test["batch_size"].as<int>();
+            }
+            else {
+                batch_size = 64;
+            }
+
+            // Override batch size if specified on command line.
+            if (batch_size_override.has_value()) {
+                batch_size = batch_size_override.value();
+            }
+
             // Skip if test name is specified and doesn't match, with test name being a regex.
             if (test_name && !std::regex_match(name, std::regex(*test_name))) {
                 continue;
             }
 
+            // If eBPF file extension override is specified, use it.
+            // Windows uses .sys instead of .o for eBPF files that are compiled into a driver.
+            if (ebpf_file_extension_override.has_value()) {
+                elf_file = elf_file.substr(0, elf_file.find_last_of('.')) + ebpf_file_extension_override.value();
+            }
+
             if (bpf_objects.find(elf_file) == bpf_objects.end()) {
                 bpf_object_ptr obj;
+
+
                 obj.reset(bpf_object__open(elf_file.c_str()));
                 if (!obj) {
                     throw std::runtime_error("Failed to open BPF object " + elf_file + ": " + strerror(errno));
@@ -124,7 +185,20 @@ main(int argc, char** argv)
                 bpf_program* program;
                 bpf_object__for_each_program(program, obj.get())
                 {
-                    (void)bpf_program__set_type(program, BPF_PROG_TYPE_XDP);
+                    bpf_prog_type prog_type;
+                    bpf_attach_type attach_type;
+                    if (program_type.has_value()) {
+                        // If program_type is specified, use it.
+                        if (libbpf_prog_type_by_name(program_type->c_str(), &prog_type, &attach_type) < 0) {
+                            throw std::runtime_error("Failed to get program type " + *program_type);
+                        }
+                    }
+                    else {
+                        // If program_type is not specified, use BPF_PROG_TYPE_XDP.
+                        prog_type = BPF_PROG_TYPE_XDP;
+                        attach_type = BPF_XDP;
+                    }
+                    (void)bpf_program__set_type(program, prog_type);
                 }
 
                 if (bpf_object__load(obj.get()) < 0) {
@@ -248,14 +322,14 @@ main(int argc, char** argv)
                     std::vector<uint8_t> data_out(1024);
 
                     opt.sz = sizeof(opt);
-                    opt.repeat = iteration_count;
-                    opt.cpu = i;
+                    opt.repeat = iteration_count_override.value_or(iteration_count);
+                    opt.cpu = static_cast<uint32_t>(i);
                     opt.data_in = data_in.data();
                     opt.data_out = data_out.data();
                     opt.data_size_in = static_cast<uint32_t>(data_in.size());
                     opt.data_size_out = static_cast<uint32_t>(data_out.size());
                     #if defined(HAS_BPF_TEST_RUN_OPTS_BATCH_SIZE)
-                    opt.batch_size = 64;
+                    opt.batch_size = batch_size;
                     #endif
 
                     int result = bpf_prog_test_run_opts(program, &opt);

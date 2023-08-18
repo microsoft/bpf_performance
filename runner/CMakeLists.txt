@@ -32,6 +32,8 @@ endif()
 add_executable(
   bpf_performance_runner
   runner.cc
+  options.h
+  options.cc
 )
 
 target_include_directories(bpf_performance_runner PRIVATE ${EBPF_INC_PATH})

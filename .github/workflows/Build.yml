@@ -103,7 +103,7 @@ jobs:
       if: inputs.platform == 'ubuntu-22.04'
       working-directory: ${{github.workspace}}/build/bin
       run: |
-        sudo ./bpf_performance_runner tests.yml
+        sudo ./bpf_performance_runner -i tests.yml
 
     - name: Install prerequisites - Windows-2019 or Windows-2022
       if: inputs.platform == 'windows-2019' || inputs.platform == 'windows-2022'
@@ -117,7 +117,7 @@ jobs:
       working-directory: ${{github.workspace}}/build/bin
       shell: cmd
       run: |
-        ${{env.BUILD_TYPE}}\bpf_performance_runner.exe tests_native.yml
+        ${{env.BUILD_TYPE}}\bpf_performance_runner.exe -i tests.yml -e .sys
 
     - name: Self-Tests
       if: inputs.platform == 'ubuntu-22.04'
