@@ -4,8 +4,7 @@
 #include "bpf.h"
 
 // Test to measure the overhead of bpf_get_prandom_u32
-__attribute__((section("xdp/test_bpf_get_prandom_u32"))) int
-test_bpf_get_prandom_u32(void* ctx)
+SEC("xdp/test_bpf_get_prandom_u32") int test_bpf_get_prandom_u32(void* ctx)
 {
     int i = bpf_get_prandom_u32();
     return 0;

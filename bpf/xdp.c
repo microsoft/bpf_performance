@@ -5,8 +5,7 @@
 
 // Test cases for bpf_xdp_adjust_head
 
-__attribute__((section("xdp/test_bpf_xdp_adjust_head_0"))) int
-test_bpf_xdp_adjust_head_0(struct xdp_md* ctx)
+SEC("xdp/test_bpf_xdp_adjust_head_0") int test_bpf_xdp_adjust_head_0(struct xdp_md* ctx)
 {
     if (bpf_xdp_adjust_head(ctx, 0) < 0) {
         return -1;
@@ -14,8 +13,7 @@ test_bpf_xdp_adjust_head_0(struct xdp_md* ctx)
     return 0;
 }
 
-__attribute__((section("xdp/test_bpf_xdp_adjust_head_plus_100"))) int
-test_bpf_xdp_adjust_head_plus_100(struct xdp_md* ctx)
+SEC("xdp/test_bpf_xdp_adjust_head_plus_100") int test_bpf_xdp_adjust_head_plus_100(struct xdp_md* ctx)
 {
     if (bpf_xdp_adjust_head(ctx, 100) < 0) {
         return -1;
@@ -27,8 +25,7 @@ test_bpf_xdp_adjust_head_plus_100(struct xdp_md* ctx)
     return 0;
 }
 
-__attribute__((section("xdp/test_bpf_xdp_adjust_head_minus_100"))) int
-test_bpf_xdp_adjust_head_minus_100(struct xdp_md* ctx)
+SEC("xdp/test_bpf_xdp_adjust_head_minus_100") int test_bpf_xdp_adjust_head_minus_100(struct xdp_md* ctx)
 {
     if (bpf_xdp_adjust_head(ctx, -100) < 0) {
         return -1;

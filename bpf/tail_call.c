@@ -5,20 +5,15 @@
 
 // Test to measure the overhead of a tail call.
 
-__attribute__((section("xdp/tail_callee0"))) int
-test_bpf_tail_callee0(struct xdp_md* ctx);
+SEC("xdp/tail_callee0") int test_bpf_tail_callee0(struct xdp_md* ctx);
 
-__attribute__((section("xdp/tail_callee1"))) int
-test_bpf_tail_callee1(struct xdp_md* ctx);
+SEC("xdp/tail_callee1") int test_bpf_tail_callee1(struct xdp_md* ctx);
 
-__attribute__((section("xdp/tail_callee2"))) int
-test_bpf_tail_callee2(struct xdp_md* ctx);
+SEC("xdp/tail_callee2") int test_bpf_tail_callee2(struct xdp_md* ctx);
 
-__attribute__((section("xdp/tail_callee3"))) int
-test_bpf_tail_callee3(struct xdp_md* ctx);
+SEC("xdp/tail_callee3") int test_bpf_tail_callee3(struct xdp_md* ctx);
 
-__attribute__((section("xdp/tail_callee4"))) int
-test_bpf_tail_callee4(struct xdp_md* ctx);
+SEC("xdp/tail_callee4") int test_bpf_tail_callee4(struct xdp_md* ctx);
 
 // Prog array map with 5 entry
 struct
@@ -38,42 +33,33 @@ struct
         },
 };
 
-__attribute__((section("xdp/tail_callee0"))) int
-test_bpf_tail_callee0(struct xdp_md* ctx)
+SEC("xdp/tail_callee0") int test_bpf_tail_callee0(struct xdp_md* ctx)
 {
     bpf_tail_call(ctx, &prog_array, 1);
     return -1;
 }
 
-__attribute__((section("xdp/tail_callee1"))) int
-test_bpf_tail_callee1(struct xdp_md* ctx)
+SEC("xdp/tail_callee1") int test_bpf_tail_callee1(struct xdp_md* ctx)
 {
     bpf_tail_call(ctx, &prog_array, 2);
     return -1;
 }
 
-__attribute__((section("xdp/tail_callee2"))) int
-test_bpf_tail_callee2(struct xdp_md* ctx)
+SEC("xdp/tail_callee2") int test_bpf_tail_callee2(struct xdp_md* ctx)
 {
     bpf_tail_call(ctx, &prog_array, 3);
     return -1;
 }
 
-__attribute__((section("xdp/tail_callee3"))) int
-test_bpf_tail_callee3(struct xdp_md* ctx)
+SEC("xdp/tail_callee3") int test_bpf_tail_callee3(struct xdp_md* ctx)
 {
     bpf_tail_call(ctx, &prog_array, 4);
     return -1;
 }
 
-__attribute__((section("xdp/tail_callee4"))) int
-test_bpf_tail_callee4(struct xdp_md* ctx)
-{
-    return 0;
-}
+SEC("xdp/tail_callee4") int test_bpf_tail_callee4(struct xdp_md* ctx) { return 0; }
 
-__attribute__((section("xdp/tail_call"))) int
-test_bpf_tail(struct xdp_md* ctx)
+SEC("xdp/tail_call") int test_bpf_tail(struct xdp_md* ctx)
 {
     bpf_tail_call(ctx, &prog_array, 0);
     return -1;
