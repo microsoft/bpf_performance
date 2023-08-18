@@ -112,12 +112,20 @@ jobs:
         Start-Process msiexec.exe -Wait -ArgumentList '/i ebpf-for-windows.msi /quiet /qn /norestart /log install.log ADDLOCAL=ALL'
         echo "C:\Program Files\ebpf-for-windows" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
 
-    - name: Tests - Windows 2019 or Windows 2022
+    - name: Tests - Windows 2019 or Windows 2022 - Native
       if: inputs.platform == 'windows-2019' || inputs.platform == 'windows-2022'
       working-directory: ${{github.workspace}}/build/bin
       shell: cmd
       run: |
         ${{env.BUILD_TYPE}}\bpf_performance_runner.exe -i tests.yml -e .sys
+
+    - name: Tests - Windows 2019 or Windows 2022 - JIT
+      if: inputs.platform == 'windows-2019' || inputs.platform == 'windows-2022'
+      working-directory: ${{github.workspace}}/build/bin
+      shell: cmd
+      # Run with option to ignore failing return code
+      run: |
+        ${{env.BUILD_TYPE}}\bpf_performance_runner.exe -i tests.yml -r
 
     - name: Self-Tests
       if: inputs.platform == 'ubuntu-22.04'

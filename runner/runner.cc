@@ -1,6 +1,7 @@
 // Copyright (c) Microsoft Corporation
 // SPDX-License-Identifier: MIT
 
+#include "options.h"
 #include <bpf/bpf.h>
 #include <bpf/libbpf.h>
 #include <iostream>
@@ -9,8 +10,6 @@
 #include <thread>
 #include <vector>
 #include <yaml-cpp/yaml.h>
-
-#include "options.h"
 
 // Define unique_ptr to call bpf_object__close on destruction
 struct bpf_object_deleter
@@ -32,7 +31,6 @@ const std::string runner_platform = "Linux";
 #else
 const std::string runner_platform = "Windows";
 #endif
-
 
 // This program runs a set of BPF programs and reports the average execution time for each program.
 // It reads a YAML file that contains the following fields:
@@ -61,36 +59,47 @@ main(int argc, char** argv)
         std::optional<std::string> ebpf_file_extension_override;
         std::optional<int> iteration_count_override;
         std::optional<int> cpu_count_override;
+        std::optional<bool> ignore_return_code;
 
         // Add option "-i" for test input file.
         cmd_options.add(
-            "-i", 2, [&test_file](auto iter) { test_file = *iter; },
-            "Test input file");
+            "-i", 2, [&test_file](auto iter) { test_file = *iter; }, "Test input file");
 
         // Add option "-t" to specify a test name regex.
         cmd_options.add(
-            "-t", 2, [&test_name](auto iter) { test_name = *iter; },
-            "Test name regex");
+            "-t", 2, [&test_name](auto iter) { test_name = *iter; }, "Test name regex");
 
         // Add option "-b" to specify batch size override.
         cmd_options.add(
-            "-b", 2, [&batch_size_override](auto iter) { batch_size_override = std::stoi(*iter); },
+            "-b",
+            2,
+            [&batch_size_override](auto iter) { batch_size_override = std::stoi(*iter); },
             "Batch size override");
 
         // Add option "-e" to specify the path to the eBPF file extension.
         cmd_options.add(
-            "-e", 2, [&ebpf_file_extension_override](auto iter) { ebpf_file_extension_override = *iter; },
+            "-e",
+            2,
+            [&ebpf_file_extension_override](auto iter) { ebpf_file_extension_override = *iter; },
             "eBPF file extension override");
 
         // Add option "-c" to specify iteration count override.
         cmd_options.add(
-            "-c", 2, [&iteration_count_override](auto iter) { iteration_count_override = std::stoi(*iter); },
+            "-c",
+            2,
+            [&iteration_count_override](auto iter) { iteration_count_override = std::stoi(*iter); },
             "Iteration count override");
 
         // Add option "-p" to specify cpu count override.
         cmd_options.add(
-            "-p", 2, [&cpu_count_override](auto iter) { cpu_count_override = std::stoi(*iter); },
-            "CPU count override");
+            "-p", 2, [&cpu_count_override](auto iter) { cpu_count_override = std::stoi(*iter); }, "CPU count override");
+
+        // Add option to ignore return code from BPF programs.
+        cmd_options.add(
+            "-r",
+            1,
+            [&ignore_return_code](auto iter) { ignore_return_code = {true}; },
+            "Ignore return code from BPF programs");
 
         // Parse command line options.
         cmd_options.parse(argc, argv);
@@ -158,8 +167,7 @@ main(int argc, char** argv)
             // Check if value "batch_size" is defined and use it.
             if (test["batch_size"].IsDefined()) {
                 batch_size = test["batch_size"].as<int>();
-            }
-            else {
+            } else {
                 batch_size = 64;
             }
 
@@ -182,7 +190,6 @@ main(int argc, char** argv)
             if (bpf_objects.find(elf_file) == bpf_objects.end()) {
                 bpf_object_ptr obj;
 
-
                 obj.reset(bpf_object__open(elf_file.c_str()));
                 if (!obj) {
                     throw std::runtime_error("Failed to open BPF object " + elf_file + ": " + strerror(errno));
@@ -198,8 +205,7 @@ main(int argc, char** argv)
                         if (libbpf_prog_type_by_name(program_type->c_str(), &prog_type, &attach_type) < 0) {
                             throw std::runtime_error("Failed to get program type " + *program_type);
                         }
-                    }
-                    else {
+                    } else {
                         // If program_type is not specified, use BPF_PROG_TYPE_XDP.
                         prog_type = BPF_PROG_TYPE_XDP;
                         attach_type = BPF_XDP;
@@ -259,8 +265,13 @@ main(int argc, char** argv)
                 }
 
                 if (opts.retval != 0) {
-                    throw std::runtime_error(
-                        "map_state_preparation program " + prep_program_name + " returned non-zero");
+                    std::string message = "map_state_preparation program " + prep_program_name + " returned non-zero " +
+                                          std::to_string(opts.retval);
+                    if (ignore_return_code.value_or(false)) {
+                        std::cout << message << std::endl;
+                    } else {
+                        throw std::runtime_error(message);
+                    }
                 }
             }
 
@@ -334,9 +345,9 @@ main(int argc, char** argv)
                     opt.data_out = data_out.data();
                     opt.data_size_in = static_cast<uint32_t>(data_in.size());
                     opt.data_size_out = static_cast<uint32_t>(data_out.size());
-                    #if defined(HAS_BPF_TEST_RUN_OPTS_BATCH_SIZE)
+#if defined(HAS_BPF_TEST_RUN_OPTS_BATCH_SIZE)
                     opt.batch_size = batch_size;
-                    #endif
+#endif
 
                     int result = bpf_prog_test_run_opts(program, &opt);
                     if (result < 0) {
@@ -351,7 +362,13 @@ main(int argc, char** argv)
             // Check if any program returned non-zero.
             for (auto& opt : opts) {
                 if (opt.retval != 0) {
-                    throw std::runtime_error("Program returned non-zero "+ std::to_string(opt.retval) +" in test " + name);
+                    std::string message =
+                        "Program returned non-zero " + std::to_string(opt.retval) + " in test " + name;
+                    if (ignore_return_code.value_or(false)) {
+                        std::cout << message << std::endl;
+                    } else {
+                        throw std::runtime_error(message);
+                    }
                 }
             }
 
