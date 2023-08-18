@@ -60,6 +60,7 @@ main(int argc, char** argv)
         std::optional<int> batch_size_override;
         std::optional<std::string> ebpf_file_extension_override;
         std::optional<int> iteration_count_override;
+        std::optional<int> cpu_count_override;
 
         // Add option "-i" for test input file.
         cmd_options.add(
@@ -86,6 +87,11 @@ main(int argc, char** argv)
             "-c", 2, [&iteration_count_override](auto iter) { iteration_count_override = std::stoi(*iter); },
             "Iteration count override");
 
+        // Add option "-p" to specify cpu count override.
+        cmd_options.add(
+            "-p", 2, [&cpu_count_override](auto iter) { cpu_count_override = std::stoi(*iter); },
+            "CPU count override");
+
         // Parse command line options.
         cmd_options.parse(argc, argv);
 
@@ -97,8 +103,8 @@ main(int argc, char** argv)
         auto tests = config["tests"];
         std::map<std::string, bpf_object_ptr> bpf_objects;
 
-        // Query libbpf for cpu count.
-        int cpu_count = libbpf_num_possible_cpus();
+        // Query libbpf for cpu count if not specified on command line.
+        int cpu_count = cpu_count_override.value_or(libbpf_num_possible_cpus());
 
         // Fail if tests is empty or not a sequence.
         if (!tests || !tests.IsSequence()) {

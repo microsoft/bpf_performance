@@ -89,9 +89,4 @@ if (PLATFORM_WINDOWS)
         string(REPLACE ".c" "" file_name ${bpf_file})
         convert_to_native(${file_name})
     endforeach()
-
-    # Read tests.yml into a string and replace files with the .o extension with .sys
-    file(READ ${CMAKE_CURRENT_SOURCE_DIR}/tests.yml tests_yml)
-    string(REGEX REPLACE "\\.o" ".sys" tests_yml "${tests_yml}")
-    file(WRITE ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/tests_native.yml "${tests_yml}")
 endif()

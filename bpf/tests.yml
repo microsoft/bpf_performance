@@ -9,6 +9,14 @@ tests:
     program_cpu_assignment:
       baseline_program: all
 
+  - name: Baseline - no_batching
+    description: The Baseline test with an empty eBPF program.
+    elf_file: baseline.o
+    batch_size: 1
+    iteration_count: 10000000
+    program_cpu_assignment:
+      baseline_program: all
+
   - name: Hash-table Map Read
     description: Tests reading from a BPF_MAP_TYPE_HASH map.
     elf_file: generic_map.o
@@ -175,5 +183,29 @@ tests:
     iteration_count: 10000000
     program_cpu_assignment:
       test_bpf_tail: all
+
+  - name: bpf_xdp_adjust_head_0
+    description: Tests the bpf_xdp_adjust_head helper with a zero offset.
+    program_type: xdp
+    elf_file: xdp.o
+    iteration_count: 10000000
+    program_cpu_assignment:
+      test_bpf_xdp_adjust_head_0: all
+
+  - name: bpf_xdp_adjust_head_plus_100
+    description: Tests the bpf_xdp_adjust_head helper with a positive offset.
+    program_type: xdp
+    elf_file: xdp.o
+    iteration_count: 10000000
+    program_cpu_assignment:
+      test_bpf_xdp_adjust_head_plus_100: all
+
+  - name: bpf_xdp_adjust_head_minus_100
+    description: Tests the bpf_xdp_adjust_head helper with a negative offset.
+    program_type: xdp
+    elf_file: xdp.o
+    iteration_count: 10000000
+    program_cpu_assignment:
+      test_bpf_xdp_adjust_head_minus_100: all
 
   # Add more test cases as needed
