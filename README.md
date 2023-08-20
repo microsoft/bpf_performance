@@ -39,7 +39,7 @@ tests:
     iteration_count: 10000000
     program_cpu_assignment:
       update_HASH: [0]
-      read_HASH: unassigned
+      read_HASH: remaining
 ```
 
 Test programs can be pinned to specific CPUs to permit mixed behavior tests, such as concurrent reads and updates to a map.

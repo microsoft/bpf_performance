@@ -45,7 +45,7 @@ const std::string runner_platform = "Windows";
 //     - <program name>: the name of the program
 //       - <cpu number>: the CPU number to run the program on
 //       - all: run the program on all CPUs
-//       - unassigned: run the program on all unassigned CPUs
+//       - remaining: run the program on all remaining CPUs
 int
 main(int argc, char** argv)
 {
@@ -295,8 +295,8 @@ main(int argc, char** argv)
                         for (size_t i = 0; i < cpu_program_assignments.size(); i++) {
                             cpu_program_assignments[i] = {program_fd};
                         }
-                    } else if (assignment.second.as<std::string>() == "unassigned") {
-                        // Assign program to all unassigned CPUs.
+                    } else if (assignment.second.as<std::string>() == "remaining") {
+                        // Assign program to all remaining CPUs.
                         for (size_t i = 0; i < cpu_program_assignments.size(); i++) {
                             if (!cpu_program_assignments[i].has_value()) {
                                 cpu_program_assignments[i] = {program_fd};

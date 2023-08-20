@@ -46,7 +46,7 @@ tests:
     iteration_count: 10000000
     program_cpu_assignment:
       update_HASH: [0]
-      read_HASH: unassigned
+      read_HASH: remaining
 
   - name: Per-CPU Hash-table Map Read
     description: Tests reading from a BPF_MAP_TYPE_PERCPU_HASH map.
@@ -77,7 +77,7 @@ tests:
     iteration_count: 10000000
     program_cpu_assignment:
       update_PERCPU_HASH: [0]
-      read_PERCPU_HASH: unassigned
+      read_PERCPU_HASH: remaining
 
   - name: Array Map Read
     description: Tests reading from a BPF_MAP_TYPE_ARRAY map.
