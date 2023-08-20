@@ -372,6 +372,22 @@ main(int argc, char** argv)
                 }
             }
 
+            // Print a CSV header if this is the first test.
+            if (test == tests[0]) {
+                std::cout << "Test,";
+                for (size_t i = 0; i < opts.size(); i++) {
+                    if (!cpu_program_assignments[i].has_value()) {
+                        continue;
+                    }
+                    auto& opt = opts[i];
+                    std::cout << "CPU " << i;
+                    if (i < opts.size() - 1) {
+                        std::cout << ",";
+                    }
+                }
+                std::cout << std::endl;
+            }
+
             // Print the average execution time for each program on each CPU.
             std::cout << name << ",";
 

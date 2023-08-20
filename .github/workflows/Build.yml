@@ -97,11 +97,14 @@ jobs:
         name: build-${{env.BUILD_TYPE}}-${{inputs.platform}}
         path: ${{github.workspace}}/build
 
+    - name: Create results directory
+      run: mkdir -p ${{github.workspace}}/results
+
     - name: Tests - Ubuntu-22.04
       if: inputs.platform == 'ubuntu-22.04'
       working-directory: ${{github.workspace}}/build/bin
       run: |
-        sudo ./bpf_performance_runner -i tests.yml
+        sudo ./bpf_performance_runner -i tests.yml | tee ${{github.workspace}}/results/jit-${{inputs.platform}}-${{env.BUILD_TYPE}}.csv
 
     - name: Install prerequisites - Windows-2019 or Windows-2022
       if: inputs.platform == 'windows-2019' || inputs.platform == 'windows-2022'
@@ -113,17 +116,21 @@ jobs:
     - name: Tests - Windows 2019 or Windows 2022 - Native
       if: inputs.platform == 'windows-2019' || inputs.platform == 'windows-2022'
       working-directory: ${{github.workspace}}/build/bin
-      shell: cmd
       run: |
-        ${{env.BUILD_TYPE}}\bpf_performance_runner.exe -i tests.yml -e .sys
+        ${{env.BUILD_TYPE}}\bpf_performance_runner.exe -i tests.yml -e .sys | Tee-Object -FilePath ${{github.workspace}}/results/native-${inputs.platform}-${{env.BUILD_TYPE}}.csv
 
     - name: Tests - Windows 2019 or Windows 2022 - JIT
       if: inputs.platform == 'windows-2019' || inputs.platform == 'windows-2022'
       working-directory: ${{github.workspace}}/build/bin
-      shell: cmd
       # Run with option to ignore failing return code
       run: |
-        ${{env.BUILD_TYPE}}\bpf_performance_runner.exe -i tests.yml -r
+        ${{env.BUILD_TYPE}}\bpf_performance_runner.exe -i tests.yml -r | Tee-Object -FilePath ${{github.workspace}}/results/jit-${inputs.platform}-${{env.BUILD_TYPE}}.csv
+
+    - name: Upload results
+      uses: actions/upload-artifact@v2
+      with:
+        name: results-${{env.BUILD_TYPE}}-${{inputs.platform}}
+        path: ${{github.workspace}}/results
 
     - name: Self-Tests
       if: inputs.platform == 'ubuntu-22.04'
