@@ -59,13 +59,16 @@ SEC("xdp/read_or_update_rolling_lru") int read_or_update_rolling_lru(void* ctx)
 {
     int key = bpf_get_prandom_u32() % KEY_RANGE;
     int zero = 0;
-    int* key_base = bpf_map_lookup_elem(&lru_key_base, &zero);
+    unsigned int* key_base = bpf_map_lookup_elem(&lru_key_base, &zero);
     if (!key_base) {
         return 1;
     }
 
-    *key_base += 1;
-    key += (*key_base) >> 4;
+    if ((bpf_get_smp_processor_id() == 0) && (*key_base % 10 == 0)) {
+        *key_base += 1;
+    }
+
+    key += *key_base;
 
     // Update the key in the map if it exists.
     int* value = bpf_map_lookup_elem(&rolling_lru_map, &key);
