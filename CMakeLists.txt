@@ -48,6 +48,15 @@ elseif(PLATFORM_LINUX)
 
 endif()
 
+if(PLATFORM_WINDOWS)
+message("Setting CONTROL FLOW GUARD")
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} /guard:cf")
+SET(CMAKE_EXE_LINKER_FLAGS  "/guard:cf /DYNAMICBASE")
+
+message("Setting QSPECTRE")
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} /Qspectre")
+endif()
+
 add_subdirectory(runner)
 add_subdirectory(bpf)
 
