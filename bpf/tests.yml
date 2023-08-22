@@ -208,4 +208,14 @@ tests:
     program_cpu_assignment:
       test_bpf_xdp_adjust_head_minus_100: all
 
+  - name: BPF_MAP_TYPE_LPM_TRIE
+    description: Tests the BPF_MAP_TYPE_LPM_TRIE map type.
+    elf_file: lpm.o
+    map_state_preparation:
+      program: prepare_lpm_state
+      iteration_count: 8192
+    iteration_count: 10000000
+    program_cpu_assignment:
+      read_lpm: all
+
   # Add more test cases as needed
