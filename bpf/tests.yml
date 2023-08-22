@@ -208,14 +208,44 @@ tests:
     program_cpu_assignment:
       test_bpf_xdp_adjust_head_minus_100: all
 
-  - name: BPF_MAP_TYPE_LPM_TRIE
+  - name: BPF_MAP_TYPE_LPM_TRIE_1024
     description: Tests the BPF_MAP_TYPE_LPM_TRIE map type.
     elf_file: lpm.o
     map_state_preparation:
-      program: prepare_lpm_state
-      iteration_count: 8192
+      program: prepare_lpm_state_1024
+      iteration_count: 1024
     iteration_count: 10000000
     program_cpu_assignment:
-      read_lpm: all
+      read_lpm_1024: all
+
+  - name: BPF_MAP_TYPE_LPM_TRIE_16384
+    description: Tests the BPF_MAP_TYPE_LPM_TRIE map type.
+    elf_file: lpm.o
+    map_state_preparation:
+      program: prepare_lpm_state_16384
+      iteration_count: 16384
+    iteration_count: 10000000
+    program_cpu_assignment:
+      read_lpm_16384: all
+
+  - name: BPF_MAP_TYPE_LPM_TRIE_262144
+    description: Tests the BPF_MAP_TYPE_LPM_TRIE map type.
+    elf_file: lpm.o
+    map_state_preparation:
+      program: prepare_lpm_state_262144
+      iteration_count: 262144
+    iteration_count: 10000000
+    program_cpu_assignment:
+      read_lpm_262144: all
+
+  - name: BPF_MAP_TYPE_LPM_TRIE_1048576
+    description: Tests the BPF_MAP_TYPE_LPM_TRIE map type.
+    elf_file: lpm.o
+    map_state_preparation:
+      program: prepare_lpm_state_1048576
+      iteration_count: 1048576
+    iteration_count: 10000000
+    program_cpu_assignment:
+      read_lpm_1048576: all
 
   # Add more test cases as needed

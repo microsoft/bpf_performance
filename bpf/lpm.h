@@ -139,3 +139,15 @@ select_prefix_length(unsigned long index, unsigned long scale)
     }
     return 32;
 }
+
+static inline unsigned int
+prefix_length_to_network_mask(unsigned int prefix_length)
+{
+    return (0xFFFFFFFF << (32 - prefix_length));
+}
+
+static inline unsigned int
+prefix_length_to_host_mask(unsigned int prefix_length)
+{
+    return (0xFFFFFFFF >> prefix_length);
+}
