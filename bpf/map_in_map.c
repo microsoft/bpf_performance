@@ -3,7 +3,9 @@
 
 #include "bpf.h"
 
+#if !defined(MAX_ENTRIES)
 #define MAX_ENTRIES 8192
+#endif
 
 struct
 {
@@ -32,7 +34,7 @@ struct
     __uint(max_entries, 1);
 } outer_map_init SEC(".maps");
 
-SEC("xdp/prep_map_in_map") int prepare_map_in_map(void* ctx)
+SEC("xdp/prepare") int prepare(void* ctx)
 {
     int key = 0;
     int* value = bpf_map_lookup_elem(&outer_map_init, &key);
@@ -44,7 +46,7 @@ SEC("xdp/prep_map_in_map") int prepare_map_in_map(void* ctx)
     return 0;
 }
 
-SEC("xdp/read_map_in_map") int read_map_in_map(void* ctx)
+SEC("xdp/read") int read(void* ctx)
 {
     int outer_key = 0;
     int key = bpf_get_prandom_u32() % MAX_ENTRIES;
@@ -60,7 +62,7 @@ SEC("xdp/read_map_in_map") int read_map_in_map(void* ctx)
     return 1;
 }
 
-SEC("xdp/write_map_in_map") int write_map_in_map(void* ctx)
+SEC("xdp/update") int update(void* ctx)
 {
     int outer_key = 0;
     int key = bpf_get_prandom_u32() % MAX_ENTRIES;

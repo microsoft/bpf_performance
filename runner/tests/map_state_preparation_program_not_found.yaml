@@ -4,9 +4,9 @@
 tests:
   - name: Hash-table Map Read
     description: Tests reading from a BPF_MAP_TYPE_HASH map.
-    elf_file: bin/generic_map.o
+    elf_file: bin/hash.o
     map_state_preparation:
       iteration_count: 1024
     iteration_count: 10000000
     program_cpu_assignment:
-      read_HASH: all
+      read: all

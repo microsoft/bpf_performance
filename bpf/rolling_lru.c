@@ -3,7 +3,9 @@
 
 #include "bpf.h"
 
+#if !defined(MAX_ENTRIES)
 #define MAX_ENTRIES 8192
+#endif
 #define KEY_RANGE (MAX_ENTRIES / 10) // 10% of MAX_ENTRIES
 
 // This test measures the performance of the LRU hash with a rolling key set.
@@ -39,7 +41,7 @@ struct
 } lru_key_base SEC(".maps");
 
 // Populate the LRU map with keys in the range [lru_key_base, lru_key_base + lru_key_range).
-SEC("xdp/prepare_rolling_lru_state") int prepare_rolling_lru_state(void* ctx)
+SEC("xdp/prepare") int prepare(void* ctx)
 {
     int key = 0;
     int* value = bpf_map_lookup_elem(&rolling_lru_map_init, &key);
@@ -55,7 +57,7 @@ SEC("xdp/prepare_rolling_lru_state") int prepare_rolling_lru_state(void* ctx)
 // If found in the map, update the value to 0.
 // If not found in the map, add the key to the map with value 0.
 // Increment lru_key_base by 1 on every 10th iteration on CPU 0.
-SEC("xdp/read_or_update_rolling_lru") int read_or_update_rolling_lru(void* ctx)
+SEC("xdp/read_or_update") int read_or_update(void* ctx)
 {
     int key = bpf_get_prandom_u32() % KEY_RANGE;
     int zero = 0;

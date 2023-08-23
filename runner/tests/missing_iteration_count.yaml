@@ -4,6 +4,6 @@
 tests:
   - name: Baseline
     description: The Baseline test with an empty eBPF program.
-    elf_file: baseline.o
+    elf_file: bin/baseline.o
     program_cpu_assignment:
-      baseline_program: all
+      baseline: all

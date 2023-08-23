@@ -6,4 +6,4 @@ tests:
     description: The Baseline test with an empty eBPF program.
     iteration_count: 10000000
     program_cpu_assignment:
-      baseline_program: all
+      baseline: all

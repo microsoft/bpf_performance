@@ -3,320 +3,399 @@
 
 tests:
   - name: Baseline
-    description: The Baseline test with an empty eBPF program.
+    description: Measure the overhead of the test harness.
     elf_file: baseline.o
     iteration_count: 10000000
     program_cpu_assignment:
-      baseline_program: all
-
-  - name: Baseline - no_batching
-    description: The Baseline test with an empty eBPF program.
-    elf_file: baseline.o
-    batch_size: 1
-    iteration_count: 10000000
-    program_cpu_assignment:
-      baseline_program: all
-
-  - name: Hash-table Map Read
-    description: Tests reading from a BPF_MAP_TYPE_HASH map.
-    elf_file: generic_map.o
-    map_state_preparation:
-      program: prepare_HASH_state_generic_read
-      iteration_count: 1024
-    iteration_count: 10000000
-    program_cpu_assignment:
-      read_HASH: all
-
-  - name: Hash-table Map Update
-    description: Tests writing to a BPF_MAP_TYPE_HASH map.
-    elf_file: generic_map.o
-    map_state_preparation:
-      program: prepare_HASH_state_generic_read
-      iteration_count: 1024
-    iteration_count: 10000000
-    program_cpu_assignment:
-      update_HASH: all
-
-  - name: Hash-table Map Update / Read
-    description: Tests reading and writing to a BPF_MAP_TYPE_HASH map.
-    elf_file: generic_map.o
-    map_state_preparation:
-      program: prepare_HASH_state_generic_read
-      iteration_count: 1024
-    iteration_count: 10000000
-    program_cpu_assignment:
-      update_HASH: [0]
-      read_HASH: remaining
-
-  - name: Hash-table Map Replace
-    description: Tests replacing an entry in BPF_MAP_TYPE_HASH map.
-    elf_file: generic_map.o
-    map_state_preparation:
-      program: prepare_HASH_state_generic_read
-      iteration_count: 1024
-    iteration_count: 10000000
-    program_cpu_assignment:
-      replace_HASH: all
-
-  - name: Per-CPU Hash-table Map Read
-    description: Tests reading from a BPF_MAP_TYPE_PERCPU_HASH map.
-    elf_file: generic_map.o
-    map_state_preparation:
-      program: prepare_PERCPU_HASH_state_generic_read
-      iteration_count: 1024
-    iteration_count: 10000000
-    program_cpu_assignment:
-      read_PERCPU_HASH: all
-
-  - name: Per-CPU Hash-table Map Update
-    description: Tests writing to a BPF_MAP_TYPE_PERCPU_HASH map.
-    elf_file: generic_map.o
-    map_state_preparation:
-      program: prepare_PERCPU_HASH_state_generic_read
-      iteration_count: 1024
-    iteration_count: 10000000
-    program_cpu_assignment:
-      update_PERCPU_HASH: all
-
-  - name: Per-CPU Hash-table Map Update / Read
-    description: Tests reading and writing to a BPF_MAP_TYPE_PERCPU_HASH map.
-    elf_file: generic_map.o
-    map_state_preparation:
-      program: prepare_PERCPU_HASH_state_generic_read
-      iteration_count: 1024
-    iteration_count: 10000000
-    program_cpu_assignment:
-      update_PERCPU_HASH: [0]
-      read_PERCPU_HASH: remaining
-
-  - name: Per-CPU Hash-table Map Replace
-    description: Tests replacing an entry in BPF_MAP_TYPE_PERCPU_HASH map.
-    elf_file: generic_map.o
-    map_state_preparation:
-      program: prepare_HASH_state_generic_read
-      iteration_count: 1024
-    iteration_count: 10000000
-    program_cpu_assignment:
-      replace_PERCPU_HASH: all
-
-  - name: Array Map Read
-    description: Tests reading from a BPF_MAP_TYPE_ARRAY map.
-    elf_file: generic_map.o
-    map_state_preparation:
-      program: prepare_ARRAY_state_generic_read
-      iteration_count: 1024
-    iteration_count: 10000000
-    program_cpu_assignment:
-      read_ARRAY: all
-
-  - name: Array Map Update
-    description: Tests writing to a BPF_MAP_TYPE_ARRAY map.
-    elf_file: generic_map.o
-    map_state_preparation:
-      program: prepare_ARRAY_state_generic_read
-      iteration_count: 1024
-    iteration_count: 10000000
-    program_cpu_assignment:
-      update_ARRAY: all
-
-  - name: Per-CPU Array Map Read
-    description: Tests reading from a BPF_MAP_TYPE_PERCPU_ARRAY map.
-    elf_file: generic_map.o
-    map_state_preparation:
-      program: prepare_PERCPU_ARRAY_state_generic_read
-      iteration_count: 1024
-    iteration_count: 10000000
-    program_cpu_assignment:
-      read_PERCPU_ARRAY: all
-
-  - name: Per-CPU Array Map Update
-    description: Tests writing to a BPF_MAP_TYPE_PERCPU_ARRAY map.
-    elf_file: generic_map.o
-    map_state_preparation:
-      program: prepare_PERCPU_ARRAY_state_generic_read
-      iteration_count: 1024
-    iteration_count: 10000000
-    program_cpu_assignment:
-      update_PERCPU_ARRAY: all
-
-
-  - name: LRU Hash-table Map Read
-    description: Tests reading from a BPF_MAP_TYPE_LRU_HASH map.
-    elf_file: generic_map.o
-    map_state_preparation:
-      program: prepare_LRU_HASH_state_generic_read
-      iteration_count: 1024
-    iteration_count: 10000000
-    program_cpu_assignment:
-      read_LRU_HASH: all
-
-  - name: LRU Hash-table Map Update
-    description: Tests writing to a BPF_MAP_TYPE_LRU_HASH map.
-    elf_file: generic_map.o
-    map_state_preparation:
-      program: prepare_LRU_HASH_state_generic_read
-      iteration_count: 1024
-    iteration_count: 10000000
-    program_cpu_assignment:
-      update_LRU_HASH: all
-
-  - name: LRU Hash-table Map Replace
-    description: Tests writing to a BPF_MAP_TYPE_LRU_HASH map.
-    elf_file: generic_map.o
-    map_state_preparation:
-      program: prepare_LRU_HASH_state_generic_read
-      iteration_count: 1024
-    iteration_count: 10000000
-    program_cpu_assignment:
-      replace_LRU_HASH: all
-
-  - name: LRU Hash-table rolling update
-    description: Tests reading and writing to a BPF_MAP_TYPE_LRU_HASH map with a rolling key.
-    elf_file: rolling_lru.o
-    map_state_preparation:
-      program: prepare_rolling_lru_state
-      iteration_count: 8192
-    iteration_count: 10000000
-    program_cpu_assignment:
-      read_or_update_rolling_lru: all
+      baseline: all
 
   - name: bpf_get_prandom_u32
-    description: Tests the bpf_get_prandom_u32 helper.
+    description: Measure the overhead of the bpf_get_prandom_u32 helper.
     elf_file: helpers.o
     iteration_count: 10000000
     program_cpu_assignment:
       test_bpf_get_prandom_u32: all
 
-  - name: BPF_MAP_TYPE_ARRAY_OF_MAPS read
-    description: Test BPF_MAP_TYPE_ARRAY_OF_MAPS
-    elf_file: map_in_map.o
+  - name: BPF_MAP_TYPE_ARRAY read
+    description: Tests the BPF_MAP_TYPE_ARRAY map type.
+    elf_file: array.o
     map_state_preparation:
-      program: prepare_map_in_map
-      iteration_count: 8192
+      program: prepare
+      iteration_count: 1024
     iteration_count: 10000000
     program_cpu_assignment:
-      read_map_in_map: all
+      read: all
 
-  - name: BPF_MAP_TYPE_ARRAY_OF_MAPS update
-    description: Test BPF_MAP_TYPE_ARRAY_OF_MAPS
-    elf_file: map_in_map.o
+  - name: BPF_MAP_TYPE_ARRAY update
+    description: Tests the BPF_MAP_TYPE_ARRAY map type.
+    elf_file: array.o
     map_state_preparation:
-      program: prepare_map_in_map
+      program: prepare
+      iteration_count: 1024
+    iteration_count: 10000000
+    program_cpu_assignment:
+      update: all
+
+  - name: BPF_MAP_TYPE_ARRAY replace
+    description: Tests the BPF_MAP_TYPE_ARRAY map type.
+    elf_file: array.o
+    map_state_preparation:
+      program: prepare
+      iteration_count: 1024
+    iteration_count: 10000000
+    program_cpu_assignment:
+      replace: all
+
+  - name: BPF_MAP_TYPE_PERCPU_ARRAY read
+    description: Tests the BPF_MAP_TYPE_PERCPU_ARRAY map type.
+    elf_file: percpu_array.o
+    map_state_preparation:
+      program: prepare
+      iteration_count: 1024
+    iteration_count: 10000000
+    program_cpu_assignment:
+      read: all
+
+  - name: BPF_MAP_TYPE_PERCPU_ARRAY update
+    description: Tests the BPF_MAP_TYPE_PERCPU_ARRAY map type.
+    elf_file: percpu_array.o
+    map_state_preparation:
+      program: prepare
+      iteration_count: 1024
+    iteration_count: 10000000
+    program_cpu_assignment:
+      update: all
+
+  - name: BPF_MAP_TYPE_PERCPU_ARRAY replace
+    description: Tests the BPF_MAP_TYPE_PERCPU_ARRAY map type.
+    elf_file: percpu_array.o
+    map_state_preparation:
+      program: prepare
+      iteration_count: 1024
+    iteration_count: 10000000
+    program_cpu_assignment:
+      replace: all
+
+  - name: BPF_MAP_TYPE_HASH read
+    description: Tests the BPF_MAP_TYPE_HASH map type.
+    elf_file: hash.o
+    map_state_preparation:
+      program: prepare
+      iteration_count: 1024
+    iteration_count: 10000000
+    program_cpu_assignment:
+      read: all
+
+  - name: BPF_MAP_TYPE_HASH update
+    description: Tests the BPF_MAP_TYPE_HASH map type.
+    elf_file: hash.o
+    map_state_preparation:
+      program: prepare
+      iteration_count: 1024
+    iteration_count: 10000000
+    program_cpu_assignment:
+      update: all
+
+  - name: BPF_MAP_TYPE_HASH update/read
+    description: Tests the BPF_MAP_TYPE_HASH map type.
+    elf_file: hash.o
+    map_state_preparation:
+      program: prepare
+      iteration_count: 1024
+    iteration_count: 10000000
+    program_cpu_assignment:
+      update: [0]
+      read: remaining
+
+  - name: BPF_MAP_TYPE_HASH replace
+    description: Tests the BPF_MAP_TYPE_HASH map type.
+    elf_file: hash.o
+    map_state_preparation:
+      program: prepare
+      iteration_count: 1024
+    iteration_count: 10000000
+    program_cpu_assignment:
+      replace: all
+
+  - name: BPF_MAP_TYPE_PERCPU_HASH read
+    description: Tests the BPF_MAP_TYPE_PERCPU_HASH map type.
+    elf_file: percpu_hash.o
+    map_state_preparation:
+      program: prepare
+      iteration_count: 1024
+    iteration_count: 10000000
+    program_cpu_assignment:
+      read: all
+
+  - name: BPF_MAP_TYPE_PERCPU_HASH update
+    description: Tests the BPF_MAP_TYPE_PERCPU_HASH map type.
+    elf_file: percpu_hash.o
+    map_state_preparation:
+      program: prepare
+      iteration_count: 1024
+    iteration_count: 10000000
+    program_cpu_assignment:
+      update: all
+
+  - name: BPF_MAP_TYPE_PERCPU_HASH update/read
+    description: Tests the BPF_MAP_TYPE_PERCPU_HASH map type.
+    elf_file: percpu_hash.o
+    map_state_preparation:
+      program: prepare
+      iteration_count: 1024
+    iteration_count: 10000000
+    program_cpu_assignment:
+      update: [0]
+      read: remaining
+
+  - name: BPF_MAP_TYPE_PERCPU_HASH replace
+    description: Tests the BPF_MAP_TYPE_PERCPU_HASH map type.
+    elf_file: percpu_hash.o
+    map_state_preparation:
+      program: prepare
+      iteration_count: 1024
+    iteration_count: 10000000
+    program_cpu_assignment:
+      replace: all
+
+  - name: BPF_MAP_TYPE_LRU_HASH read
+    description: Tests the BPF_MAP_TYPE_LRU_HASH map type.
+    elf_file: lru_hash.o
+    map_state_preparation:
+      program: prepare
+      iteration_count: 1024
+    iteration_count: 10000000
+    program_cpu_assignment:
+      read: all
+
+  - name: BPF_MAP_TYPE_LRU_HASH update
+    description: Tests the BPF_MAP_TYPE_LRU_HASH map type.
+    elf_file: lru_hash.o
+    map_state_preparation:
+      program: prepare
+      iteration_count: 1024
+    iteration_count: 10000000
+    program_cpu_assignment:
+      update: all
+
+  - name: BPF_MAP_TYPE_LRU_HASH update/read
+    description: Tests the BPF_MAP_TYPE_LRU_HASH map type.
+    elf_file: lru_hash.o
+    map_state_preparation:
+      program: prepare
+      iteration_count: 1024
+    iteration_count: 10000000
+    program_cpu_assignment:
+      update: [0]
+      read: remaining
+
+  - name: BPF_MAP_TYPE_LRU_HASH replace
+    description: Tests the BPF_MAP_TYPE_LRU_HASH map type.
+    elf_file: lru_hash.o
+    map_state_preparation:
+      program: prepare
+      iteration_count: 1024
+    iteration_count: 10000000
+    program_cpu_assignment:
+      replace: all
+
+  - name: BPF_MAP_TYPE_LRU_PERCPU_HASH read
+    description: Tests the BPF_MAP_TYPE_LRU_PERCPU_HASH map type.
+    elf_file: lru_per_cpu_hash.o
+    map_state_preparation:
+      program: prepare
+      iteration_count: 1024
+    iteration_count: 10000000
+    program_cpu_assignment:
+      read: all
+
+  - name: BPF_MAP_TYPE_LRU_PERCPU_HASH update
+    description: Tests the BPF_MAP_TYPE_LRU_PERCPU_HASH map type.
+    elf_file: lru_per_cpu_hash.o
+    map_state_preparation:
+      program: prepare
+      iteration_count: 1024
+    iteration_count: 10000000
+    program_cpu_assignment:
+      update: all
+
+  - name: BPF_MAP_TYPE_LRU_PERCPU_HASH update/read
+    description: Tests the BPF_MAP_TYPE_LRU_PERCPU_HASH map type.
+    elf_file: lru_per_cpu_hash.o
+    map_state_preparation:
+      program: prepare
+      iteration_count: 1024
+    iteration_count: 10000000
+    program_cpu_assignment:
+      update: [0]
+      read: remaining
+
+  - name: BPF_MAP_TYPE_LRU_PERCPU_HASH replace
+    description: Tests the BPF_MAP_TYPE_LRU_PERCPU_HASH map type.
+    elf_file: lru_per_cpu_hash.o
+    map_state_preparation:
+      program: prepare
+      iteration_count: 1024
+    iteration_count: 10000000
+    program_cpu_assignment:
+      replace: all
+
+  - name: BPF_MAP_TYPE_LRU_HASH rolling update
+    description: Tests the BPF_MAP_TYPE_LRU_HASH map type.
+    elf_file: rolling_lru.o
+    map_state_preparation:
+      program: prepare
       iteration_count: 8192
     iteration_count: 10000000
     program_cpu_assignment:
-      write_map_in_map: all
+      read_or_update: all
+
+  - name: BPF_MAP_TYPE_LPM_TRIE_1K read
+    description: Tests the BPF_MAP_TYPE_LPM_TRIE map type.
+    elf_file: lpm_1024.o
+    map_state_preparation:
+      program: prepare
+      iteration_count: 1024
+    iteration_count: 10000000
+    program_cpu_assignment:
+      read: all
+
+  - name: BPF_MAP_TYPE_LPM_TRIE_1K update
+    description: Tests the BPF_MAP_TYPE_LPM_TRIE map type.
+    elf_file: lpm_1024.o
+    map_state_preparation:
+      program: prepare
+      iteration_count: 1024
+    iteration_count: 10000000
+    program_cpu_assignment:
+      update: all
+
+  - name: BPF_MAP_TYPE_LPM_TRIE_1K replace
+    description: Tests the BPF_MAP_TYPE_LPM_TRIE map type.
+    elf_file: lpm_1024.o
+    map_state_preparation:
+      program: prepare
+      iteration_count: 1024
+    iteration_count: 10000000
+    program_cpu_assignment:
+      replace: all
+
+  - name: BPF_MAP_TYPE_LPM_TRIE_16K read
+    description: Tests the BPF_MAP_TYPE_LPM_TRIE map type.
+    elf_file: lpm_16384.o
+    map_state_preparation:
+      program: prepare
+      iteration_count: 16384
+    iteration_count: 10000000
+    program_cpu_assignment:
+      read: all
+
+  - name: BPF_MAP_TYPE_LPM_TRIE_16K update
+    description: Tests the BPF_MAP_TYPE_LPM_TRIE map type.
+    elf_file: lpm_16384.o
+    map_state_preparation:
+      program: prepare
+      iteration_count: 16384
+    iteration_count: 10000000
+    program_cpu_assignment:
+      update: all
+
+  - name: BPF_MAP_TYPE_LPM_TRIE_16K replace
+    description: Tests the BPF_MAP_TYPE_LPM_TRIE map type.
+    elf_file: lpm_16384.o
+    map_state_preparation:
+      program: prepare
+      iteration_count: 16384
+    iteration_count: 10000000
+    program_cpu_assignment:
+      replace: all
+
+  - name: BPF_MAP_TYPE_LPM_TRIE_256K read
+    description: Tests the BPF_MAP_TYPE_LPM_TRIE map type.
+    elf_file: lpm_262144.o
+    map_state_preparation:
+      program: prepare
+      iteration_count: 262144
+    iteration_count: 10000000
+    program_cpu_assignment:
+      read: all
+
+  - name: BPF_MAP_TYPE_LPM_TRIE_256K update
+    description: Tests the BPF_MAP_TYPE_LPM_TRIE map type.
+    elf_file: lpm_262144.o
+    map_state_preparation:
+      program: prepare
+      iteration_count: 262144
+    iteration_count: 10000000
+    program_cpu_assignment:
+      update: all
+
+  - name: BPF_MAP_TYPE_LPM_TRIE_256K replace
+    description: Tests the BPF_MAP_TYPE_LPM_TRIE map type.
+    elf_file: lpm_262144.o
+    map_state_preparation:
+      program: prepare
+      iteration_count: 262144
+    iteration_count: 10000000
+    program_cpu_assignment:
+      replace: all
+
+  - name: BPF_MAP_TYPE_LPM_TRIE_1M read
+    description: Tests the BPF_MAP_TYPE_LPM_TRIE map type.
+    elf_file: lpm_1048576.o
+    map_state_preparation:
+      program: prepare
+      iteration_count: 1048576
+    iteration_count: 10000000
+    program_cpu_assignment:
+      read: all
+
+  - name: BPF_MAP_TYPE_LPM_TRIE_1M update
+    description: Tests the BPF_MAP_TYPE_LPM_TRIE map type.
+    elf_file: lpm_1048576.o
+    map_state_preparation:
+      program: prepare
+      iteration_count: 1048576
+    iteration_count: 10000000
+    program_cpu_assignment:
+      update: all
+
+  - name: BPF_MAP_TYPE_LPM_TRIE_1M replace
+    description: Tests the BPF_MAP_TYPE_LPM_TRIE map type.
+    elf_file: lpm_1048576.o
+    map_state_preparation:
+      program: prepare
+      iteration_count: 1048576
+    iteration_count: 10000000
+    program_cpu_assignment:
+      replace: all
 
   - name: bpf_tail_call
     description: Tests the bpf_tail_call helper.
     elf_file: tail_call.o
-    iteration_count: 10000000
+    iteration_count: 1000000
     program_cpu_assignment:
-      test_bpf_tail: all
+      tail_call: all
 
-  - name: bpf_xdp_adjust_head_0
-    description: Tests the bpf_xdp_adjust_head helper with a zero offset.
-    program_type: xdp
+  - name: bpf_xdp_adjust_head_zero
+    description: Tests the bpf_xdp_adjust_head helper.
     elf_file: xdp.o
-    iteration_count: 10000000
+    iteration_count: 1000000
     program_cpu_assignment:
       test_bpf_xdp_adjust_head_0: all
 
-  - name: bpf_xdp_adjust_head_plus_100
-    description: Tests the bpf_xdp_adjust_head helper with a positive offset.
-    program_type: xdp
+  - name: bpf_xdp_adjust_head_positive
+    description: Tests the bpf_xdp_adjust_head helper.
     elf_file: xdp.o
-    iteration_count: 10000000
+    iteration_count: 1000000
     program_cpu_assignment:
       test_bpf_xdp_adjust_head_plus_100: all
 
-  - name: bpf_xdp_adjust_head_minus_100
-    description: Tests the bpf_xdp_adjust_head helper with a negative offset.
-    program_type: xdp
+  - name: bpf_xdp_adjust_head_negative
+    description: Tests the bpf_xdp_adjust_head helper.
     elf_file: xdp.o
-    iteration_count: 10000000
+    iteration_count: 1000000
     program_cpu_assignment:
       test_bpf_xdp_adjust_head_minus_100: all
-
-  - name: BPF_MAP_TYPE_LPM_TRIE_1024 read
-    description: Tests the BPF_MAP_TYPE_LPM_TRIE map type.
-    elf_file: lpm.o
-    map_state_preparation:
-      program: prepare_lpm_state_1024
-      iteration_count: 1024
-    iteration_count: 10000000
-    program_cpu_assignment:
-      read_lpm_1024: all
-
-  - name: BPF_MAP_TYPE_LPM_TRIE_16384 read
-    description: Tests the BPF_MAP_TYPE_LPM_TRIE map type.
-    elf_file: lpm.o
-    map_state_preparation:
-      program: prepare_lpm_state_16384
-      iteration_count: 16384
-    iteration_count: 10000000
-    program_cpu_assignment:
-      read_lpm_16384: all
-
-  - name: BPF_MAP_TYPE_LPM_TRIE_262144 read
-    description: Tests the BPF_MAP_TYPE_LPM_TRIE map type.
-    elf_file: lpm.o
-    map_state_preparation:
-      program: prepare_lpm_state_262144
-      iteration_count: 262144
-    iteration_count: 10000000
-    program_cpu_assignment:
-      read_lpm_262144: all
-
-  - name: BPF_MAP_TYPE_LPM_TRIE_1048576 read
-    description: Tests the BPF_MAP_TYPE_LPM_TRIE map type.
-    elf_file: lpm.o
-    map_state_preparation:
-      program: prepare_lpm_state_1048576
-      iteration_count: 1048576
-    iteration_count: 10000000
-    program_cpu_assignment:
-      read_lpm_1048576: all
-
-  - name: BPF_MAP_TYPE_LPM_TRIE_1024 Replace
-    description: Tests the BPF_MAP_TYPE_LPM_TRIE map type.
-    elf_file: lpm.o
-    map_state_preparation:
-      program: prepare_lpm_state_1024
-      iteration_count: 1024
-    iteration_count: 10000000
-    program_cpu_assignment:
-      replace_lpm_1024: all
-
-  - name: BPF_MAP_TYPE_LPM_TRIE_16384 Replace
-    description: Tests the BPF_MAP_TYPE_LPM_TRIE map type.
-    elf_file: lpm.o
-    map_state_preparation:
-      program: prepare_lpm_state_16384
-      iteration_count: 16384
-    iteration_count: 10000000
-    program_cpu_assignment:
-      replace_lpm_16384: all
-
-  - name: BPF_MAP_TYPE_LPM_TRIE_262144 Replace
-    description: Tests the BPF_MAP_TYPE_LPM_TRIE map type.
-    elf_file: lpm.o
-    map_state_preparation:
-      program: prepare_lpm_state_262144
-      iteration_count: 262144
-    iteration_count: 10000000
-    program_cpu_assignment:
-      replace_lpm_262144: all
-
-  - name: BPF_MAP_TYPE_LPM_TRIE_1048576 Replace
-    description: Tests the BPF_MAP_TYPE_LPM_TRIE map type.
-    elf_file: lpm.o
-    map_state_preparation:
-      program: prepare_lpm_state_1048576
-      iteration_count: 1048576
-    iteration_count: 10000000
-    program_cpu_assignment:
-      replace_lpm_1048576: all
-
 
   # Add more test cases as needed

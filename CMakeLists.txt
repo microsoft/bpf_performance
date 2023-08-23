@@ -62,7 +62,21 @@ add_subdirectory(bpf)
 
 enable_testing()
 
-file(COPY ${CMAKE_SOURCE_DIR}/runner/tests DESTINATION ${CMAKE_RUNTIME_OUTPUT_DIRECTORY})
+# Specify the directory you want to create
+set(tests_directory "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/tests")
+
+# Check if the directory exists
+if(NOT EXISTS ${tests_directory})
+    # Create the directory if it doesn't exist
+    file(MAKE_DIRECTORY ${tests_directory})
+endif()
+
+
+#file(COPY ${CMAKE_SOURCE_DIR}/runner/tests DESTINATION ${CMAKE_RUNTIME_OUTPUT_DIRECTORY})
+file(GLOB TESTS RELATIVE ${CMAKE_SOURCE_DIR}/runner/tests ${CMAKE_SOURCE_DIR}/runner/tests/*)
+foreach(test ${TESTS})
+  configure_file(${CMAKE_SOURCE_DIR}/runner/tests/${test} ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/tests/${test} COPYONLY)
+endforeach()
 
 # Add test for usage message
 add_test(

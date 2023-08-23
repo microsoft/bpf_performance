@@ -59,7 +59,7 @@ SEC("xdp/tail_callee3") int test_bpf_tail_callee3(struct xdp_md* ctx)
 
 SEC("xdp/tail_callee4") int test_bpf_tail_callee4(struct xdp_md* ctx) { return 0; }
 
-SEC("xdp/tail_call") int test_bpf_tail(struct xdp_md* ctx)
+SEC("xdp/tail_call") int tail_call(struct xdp_md* ctx)
 {
     bpf_tail_call(ctx, &prog_array, 0);
     return -1;

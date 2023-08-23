@@ -7,4 +7,4 @@ tests:
     elf_file: not_a_file.o
     iteration_count: 10000000
     program_cpu_assignment:
-      baseline_program: all
+      baseline: all
