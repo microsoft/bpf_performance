@@ -50,9 +50,8 @@ typedef struct _ipv4_route
         unsigned int prefix_length = 0;                                                                          \
                                                                                                                  \
         ipv4_route new_route = {0, 0};                                                                           \
-        if (!value || *value > MAX_ENTRIES) {                                                                    \
-            bpf_printk("Failed to lookup lpm_map_init\n");                                                       \
-            return 1;                                                                                            \
+        if (!value || *value >= MAX_ENTRIES) {                                                                   \
+            return 0;                                                                                            \
         }                                                                                                        \
                                                                                                                  \
         index = *value;                                                                                          \
@@ -127,10 +126,32 @@ typedef struct _ipv4_route
         return 0;                                                                                                     \
     }
 
+#define DECLARE_LPM_REPLACE(MAX_ENTRIES)                                                   \
+    SEC("xdp/replace_lpm_" #MAX_ENTRIES) int replace_lpm_##MAX_ENTRIES(void* ctx)          \
+    {                                                                                      \
+        unsigned int key = bpf_get_prandom_u32() % MAX_ENTRIES;                            \
+                                                                                           \
+        ipv4_route* test_route = bpf_map_lookup_elem(&lpm_routes_map_##MAX_ENTRIES, &key); \
+        ipv4_route route_key = {32, 0};                                                    \
+                                                                                           \
+        if (!test_route) {                                                                 \
+                                                                                           \
+            bpf_printk("Failed to lookup route %d\n", key);                                \
+            return 1;                                                                      \
+        }                                                                                  \
+        route_key = *test_route;                                                           \
+                                                                                           \
+        (void)bpf_map_delete_elem(&lpm_map_##MAX_ENTRIES, &route_key);                     \
+        (void)bpf_map_update_elem(&lpm_map_##MAX_ENTRIES, &route_key, &key, BPF_ANY);      \
+                                                                                           \
+        return 0;                                                                          \
+    }
+
 #define DECLARE_LPM_TEST(MAX_ENTRIES)      \
     DECLARE_LPM_TEST_MAPS(MAX_ENTRIES)     \
     DECLARE_LPM_PREPARE_STATE(MAX_ENTRIES) \
-    DECLARE_LPM_READ(MAX_ENTRIES)
+    DECLARE_LPM_READ(MAX_ENTRIES)          \
+    DECLARE_LPM_REPLACE(MAX_ENTRIES)
 
 DECLARE_LPM_TEST(1024)
 DECLARE_LPM_TEST(16384)

@@ -44,6 +44,13 @@
     {                                                                         \
         int key = bpf_get_prandom_u32() % MAX_ENTRIES;                        \
         return bpf_map_update_elem(&TYPE##_map, &key, &key, BPF_ANY);         \
+    }                                                                         \
+    SEC("xdp/_replace" #TYPE) int replace_##TYPE(void* ctx)                   \
+    {                                                                         \
+        int key = bpf_get_prandom_u32() % MAX_ENTRIES;                        \
+        (void)bpf_map_delete_elem(&TYPE##_map, &key);                         \
+        (void)bpf_map_update_elem(&TYPE##_map, &key, &key, BPF_ANY);          \
+        return 0;                                                             \
     }
 
 DECLARE_GENERIC_TEST_MAP(HASH)

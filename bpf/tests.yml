@@ -48,6 +48,16 @@ tests:
       update_HASH: [0]
       read_HASH: remaining
 
+  - name: Hash-table Map Replace
+    description: Tests replacing an entry in BPF_MAP_TYPE_HASH map.
+    elf_file: generic_map.o
+    map_state_preparation:
+      program: prepare_HASH_state_generic_read
+      iteration_count: 1024
+    iteration_count: 10000000
+    program_cpu_assignment:
+      replace_HASH: all
+
   - name: Per-CPU Hash-table Map Read
     description: Tests reading from a BPF_MAP_TYPE_PERCPU_HASH map.
     elf_file: generic_map.o
@@ -78,6 +88,16 @@ tests:
     program_cpu_assignment:
       update_PERCPU_HASH: [0]
       read_PERCPU_HASH: remaining
+
+  - name: Per-CPU Hash-table Map Replace
+    description: Tests replacing an entry in BPF_MAP_TYPE_PERCPU_HASH map.
+    elf_file: generic_map.o
+    map_state_preparation:
+      program: prepare_HASH_state_generic_read
+      iteration_count: 1024
+    iteration_count: 10000000
+    program_cpu_assignment:
+      replace_PERCPU_HASH: all
 
   - name: Array Map Read
     description: Tests reading from a BPF_MAP_TYPE_ARRAY map.
@@ -139,6 +159,16 @@ tests:
     iteration_count: 10000000
     program_cpu_assignment:
       update_LRU_HASH: all
+
+  - name: LRU Hash-table Map Replace
+    description: Tests writing to a BPF_MAP_TYPE_LRU_HASH map.
+    elf_file: generic_map.o
+    map_state_preparation:
+      program: prepare_LRU_HASH_state_generic_read
+      iteration_count: 1024
+    iteration_count: 10000000
+    program_cpu_assignment:
+      replace_LRU_HASH: all
 
   - name: LRU Hash-table rolling update
     description: Tests reading and writing to a BPF_MAP_TYPE_LRU_HASH map with a rolling key.
@@ -208,7 +238,7 @@ tests:
     program_cpu_assignment:
       test_bpf_xdp_adjust_head_minus_100: all
 
-  - name: BPF_MAP_TYPE_LPM_TRIE_1024
+  - name: BPF_MAP_TYPE_LPM_TRIE_1024 read
     description: Tests the BPF_MAP_TYPE_LPM_TRIE map type.
     elf_file: lpm.o
     map_state_preparation:
@@ -218,7 +248,7 @@ tests:
     program_cpu_assignment:
       read_lpm_1024: all
 
-  - name: BPF_MAP_TYPE_LPM_TRIE_16384
+  - name: BPF_MAP_TYPE_LPM_TRIE_16384 read
     description: Tests the BPF_MAP_TYPE_LPM_TRIE map type.
     elf_file: lpm.o
     map_state_preparation:
@@ -228,7 +258,7 @@ tests:
     program_cpu_assignment:
       read_lpm_16384: all
 
-  - name: BPF_MAP_TYPE_LPM_TRIE_262144
+  - name: BPF_MAP_TYPE_LPM_TRIE_262144 read
     description: Tests the BPF_MAP_TYPE_LPM_TRIE map type.
     elf_file: lpm.o
     map_state_preparation:
@@ -238,7 +268,7 @@ tests:
     program_cpu_assignment:
       read_lpm_262144: all
 
-  - name: BPF_MAP_TYPE_LPM_TRIE_1048576
+  - name: BPF_MAP_TYPE_LPM_TRIE_1048576 read
     description: Tests the BPF_MAP_TYPE_LPM_TRIE map type.
     elf_file: lpm.o
     map_state_preparation:
@@ -247,5 +277,46 @@ tests:
     iteration_count: 10000000
     program_cpu_assignment:
       read_lpm_1048576: all
+
+  - name: BPF_MAP_TYPE_LPM_TRIE_1024 Replace
+    description: Tests the BPF_MAP_TYPE_LPM_TRIE map type.
+    elf_file: lpm.o
+    map_state_preparation:
+      program: prepare_lpm_state_1024
+      iteration_count: 1024
+    iteration_count: 10000000
+    program_cpu_assignment:
+      replace_lpm_1024: all
+
+  - name: BPF_MAP_TYPE_LPM_TRIE_16384 Replace
+    description: Tests the BPF_MAP_TYPE_LPM_TRIE map type.
+    elf_file: lpm.o
+    map_state_preparation:
+      program: prepare_lpm_state_16384
+      iteration_count: 16384
+    iteration_count: 10000000
+    program_cpu_assignment:
+      replace_lpm_16384: all
+
+  - name: BPF_MAP_TYPE_LPM_TRIE_262144 Replace
+    description: Tests the BPF_MAP_TYPE_LPM_TRIE map type.
+    elf_file: lpm.o
+    map_state_preparation:
+      program: prepare_lpm_state_262144
+      iteration_count: 262144
+    iteration_count: 10000000
+    program_cpu_assignment:
+      replace_lpm_262144: all
+
+  - name: BPF_MAP_TYPE_LPM_TRIE_1048576 Replace
+    description: Tests the BPF_MAP_TYPE_LPM_TRIE map type.
+    elf_file: lpm.o
+    map_state_preparation:
+      program: prepare_lpm_state_1048576
+      iteration_count: 1048576
+    iteration_count: 10000000
+    program_cpu_assignment:
+      replace_lpm_1048576: all
+
 
   # Add more test cases as needed
