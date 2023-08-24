@@ -3,8 +3,10 @@
 
 # Script to pull artifact from latest scheduled run of the eBPF-For-Windows pipeline
 
+
 param(
-    [Parameter(Mandatory=$true)] [string] $ArtifactName,
+    # Set of artifacts to download. This is a list of strings, each of which is the name of an artifact to download.
+    [Parameter(Mandatory=$true)] [string[]] $ArtifactsToDownload,
     [Parameter(Mandatory=$true)] [string] $OutputPath,
     [Parameter(Mandatory=$false)] [string] $Owner = "microsoft",
     [Parameter(Mandatory=$false)] [string] $Repo = "ebpf-for-windows",
@@ -20,6 +22,29 @@ if (!$runid) {
     $runid = $run.workflow_runs[0].id
 }
 
-Write-Output "Using run ID $runid in branch $Branch in repo $Owner/$Repo to fetch artifact $ArtifactName to $OutputPath."
+# if $OutputPath\runid.txt exists and contains the same runid, we've already downloaded this artifact
+if (Test-Path "$OutputPath\runid.txt") {
+    $oldrunid = Get-Content "$OutputPath\runid.txt"
+    if ($oldrunid -eq $runid) {
+        Write-Output "Artifact $ArtifactName from run $runid already downloaded to $OutputPath."
+        return
+    }
+}
 
-gh run download $runid -R "$Owner/$Repo" -n $ArtifactName -D $OutputPath
+# Remove all files in the $OutputPath without prompting
+Remove-Item -Path $OutputPath\* -Recurse -Force -ErrorAction SilentlyContinue
+
+Write-Output "Using run ID $runid in branch $Branch in repo $Owner/$Repo to fetch artifact $ArtifactsToDownload to $OutputPath."
+
+# Expand ArtifactsToDownload into a string and add -n to the beginning of each one
+
+$ArtifactsToDownload | ForEach-Object {
+    gh run download $runid -R "$Owner/$Repo" -n $_ -D $OutputPath
+    # Throw if exit code != 0
+    if ($LASTEXITCODE -ne 0) {
+        throw "gh run download failed with exit code $LASTEXITCODE"
+    }
+}
+
+# Write the runid to a file so we can check it next time
+Set-Content -Path "$OutputPath\runid.txt" -Value $runid
