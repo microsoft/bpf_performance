@@ -29,6 +29,10 @@ if (HAS_BPF_TEST_RUN_OPTS_BATCH_SIZE)
   add_compile_definitions(HAS_BPF_TEST_RUN_OPTS_BATCH_SIZE)
 endif()
 
+set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/lib)
+set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/lib)
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/bin)
+
 add_executable(
   bpf_performance_runner
   runner.cc

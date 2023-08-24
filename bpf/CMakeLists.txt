@@ -1,6 +1,10 @@
 # Copyright (c) Microsoft Corporation
 # SPDX-License-Identifier: MIT
 
+set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/lib)
+set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/lib)
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/bin)
+
 # Each test consists of a C file, an output file name, and an optional option, seperated by commas.
 set(test_cases
     "baseline"
@@ -93,7 +97,11 @@ function(convert_to_native file_name out_name option)
     set(bpf_obj_file_name ${out_name}.o)
     set(bpf_obj_file_path ${CMAKE_CURRENT_BINARY_DIR}/${bpf_obj_file_name})
     set(bpf_sys_file_name ${out_name}.sys)
-    set(bpf_sys_file_path ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${bpf_sys_file_name})
+    set(bpf_pdb_file_name ${out_name}.pdb)
+    set(bpf_sys_file_path ${CMAKE_CURRENT_BINARY_DIR}/${bpf_sys_file_name})
+    set(bpf_pdb_file_path ${CMAKE_CURRENT_BINARY_DIR}/${bpf_pdb_file_name})
+    set(bpf_sys_file_output_path ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${bpf_sys_file_name})
+    set(bpf_pdb_file_output_path ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${bpf_pdb_file_name})
 
     # Copy the .o file to the output directory as part of post build
     add_custom_command(
@@ -105,15 +113,26 @@ function(convert_to_native file_name out_name option)
 
     # Run the powershell script to convert the .o file to a .sys file
     add_custom_command(
-        OUTPUT ${bpf_sys_file_path}
-        COMMAND powershell -ExecutionPolicy Bypass -File ${EBPF_BIN_PATH}/Convert-BpfToNative.ps1 -FileName ${bpf_obj_file_name} -IncludeDir ${EBPF_INC_PATH} -OutDir ${CMAKE_RUNTIME_OUTPUT_DIRECTORY} -BinDir ${EBPF_BIN_PATH}
+        OUTPUT ${bpf_sys_file_path} ${bpf_pdb_file_path}
+        COMMAND powershell -ExecutionPolicy Bypass -File ${EBPF_BIN_PATH}/Convert-BpfToNative.ps1 -FileName ${bpf_obj_file_name} -IncludeDir ${EBPF_INC_PATH} -OutDir ${CMAKE_CURRENT_BINARY_DIR} -BinDir ${EBPF_BIN_PATH}
         DEPENDS ${bpf_obj_file_path} ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/export_program_info.log
         COMMENT "Converting BPF object ${bpf_obj_file_path} to native"
         POST_BUILD
     )
 
     # Add a custom target that depends on the .sys file
-    add_custom_target(${out_name}_SYS ALL DEPENDS ${bpf_sys_file_path} SOURCES ${bpf_obj_file_path})
+    add_custom_target(${out_name}_SYS ALL DEPENDS ${bpf_sys_file_path} ${bpf_pdb_file_path} SOURCES ${bpf_obj_file_path})
+
+    # Copy the .sys file to the output directory as part of post build
+    add_custom_command(
+        OUTPUT ${bpf_sys_file_output_path}
+        COMMAND ${CMAKE_COMMAND} -E copy ${bpf_sys_file_path} ${bpf_sys_file_output_path}
+        DEPENDS ${bpf_sys_file_path}
+        COMMENT "Copying BPF object ${bpf_sys_file_path} to output directory"
+        POST_BUILD)
+
+    # Add a custom target that depends on the .sys file
+    add_custom_target(${bpf_sys_file_name}_out ALL DEPENDS ${bpf_sys_file_output_path} SOURCES ${bpf_sys_file_path})
 endfunction()
 
 configure_file(

@@ -89,13 +89,13 @@ jobs:
 
     - name: Build
       # Build your program with the given configuration
-      run: cmake --build ${{github.workspace}}/build --config ${{env.BUILD_TYPE}} --parallel
+      run: cmake --build ${{github.workspace}}/build --config ${{env.BUILD_TYPE}}
 
     - name: Upload artifacts
       uses: actions/upload-artifact@v2
       with:
         name: build-${{env.BUILD_TYPE}}-${{inputs.platform}}
-        path: ${{github.workspace}}/build
+        path: ${{github.workspace}}/build/bin
 
     - name: Create results directory
       run: mkdir -p ${{github.workspace}}/results
