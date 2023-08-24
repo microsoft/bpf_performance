@@ -69,7 +69,7 @@ jobs:
       uses: actions/cache@v2
       with:
         path: ${{github.workspace}}/local_packages
-        key: ebpf-for-windows-run-id-${{env.RUNID}}
+        key: ${{inputs.platform}}-${{inputs.configuration}}-ebpf-for-windows-run-id-${{env.RUNID}}
 
     - name: Download daily nuget package and MSI installer - Windows-2019 or Windows-2022
       env:
