@@ -60,6 +60,7 @@ main(int argc, char** argv)
         std::optional<int> iteration_count_override;
         std::optional<int> cpu_count_override;
         std::optional<bool> ignore_return_code;
+        bool csv_header_printed = false;
 
         // Add option "-i" for test input file.
         cmd_options.add(
@@ -372,8 +373,8 @@ main(int argc, char** argv)
                 }
             }
 
-            // Print a CSV header if this is the first test.
-            if (test == tests[0]) {
+            // Print a CSV header if not already printed.
+            if (!csv_header_printed) {
                 std::cout << "Test,";
                 for (size_t i = 0; i < opts.size(); i++) {
                     if (!cpu_program_assignments[i].has_value()) {
@@ -386,6 +387,7 @@ main(int argc, char** argv)
                     }
                 }
                 std::cout << std::endl;
+                csv_header_printed = true;
             }
 
             // Print the average execution time for each program on each CPU.

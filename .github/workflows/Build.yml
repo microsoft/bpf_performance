@@ -119,7 +119,8 @@ jobs:
       if: inputs.platform == 'ubuntu-22.04'
       working-directory: ${{github.workspace}}/build/bin
       run: |
-        sudo ./bpf_performance_runner -i tests.yml | tee ${{github.workspace}}/results/jit-${{inputs.platform}}-${{env.BUILD_TYPE}}.csv
+        sudo ./bpf_performance_runner -i tests.yml -r | tee ${{github.workspace}}/results/jit-${{inputs.platform}}-${{env.BUILD_TYPE}}.csv
+        exit ${PIPESTATUS[0]}
 
     - name: Install prerequisites - Windows-2019 or Windows-2022
       if: inputs.platform == 'windows-2019' || inputs.platform == 'windows-2022'
@@ -132,7 +133,7 @@ jobs:
       if: inputs.platform == 'windows-2019' || inputs.platform == 'windows-2022'
       working-directory: ${{github.workspace}}/build/bin
       run: |
-        ${{env.BUILD_TYPE}}\bpf_performance_runner.exe -i tests.yml -e .sys | Tee-Object -FilePath ${{github.workspace}}/results/native-${inputs.platform}-${{env.BUILD_TYPE}}.csv
+        ${{env.BUILD_TYPE}}\bpf_performance_runner.exe -i tests.yml -e .sys -r | Tee-Object -FilePath ${{github.workspace}}/results/native-${inputs.platform}-${{env.BUILD_TYPE}}.csv
 
     - name: Tests - Windows 2019 or Windows 2022 - JIT
       if: inputs.platform == 'windows-2019' || inputs.platform == 'windows-2022'
