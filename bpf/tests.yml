@@ -398,4 +398,11 @@ tests:
     program_cpu_assignment:
       test_bpf_xdp_adjust_head_minus_100: all
 
+  - name: bpf_tail_callee_max
+    description: Tests the max tail call callees.
+    elf_file: max_tail_call.o
+    iteration_count: 1000000
+    program_cpu_assignment:
+      xdp_test_caller: all
+
   # Add more test cases as needed
