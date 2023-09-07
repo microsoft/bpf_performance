@@ -133,20 +133,32 @@ jobs:
       if: inputs.platform == 'windows-2019' || inputs.platform == 'windows-2022'
       working-directory: ${{github.workspace}}/build/bin
       run: |
-        ${{env.BUILD_TYPE}}\bpf_performance_runner.exe -i tests.yml -e .sys -r | Tee-Object -FilePath ${{github.workspace}}/results/native-${inputs.platform}-${{env.BUILD_TYPE}}.csv
+        $pre_command = 'wpr.exe -start CPU'
+        $post_command = 'wpr.exe -stop ""${{github.workspace}}\results\%NAME%.etl""'
+        ${{env.BUILD_TYPE}}\bpf_performance_runner.exe -i tests.yml -e .sys -r --pre "$pre_command" --post "$post_command" | Tee-Object -FilePath ${{github.workspace}}/results/native-${inputs.platform}-${{env.BUILD_TYPE}}.csv
 
     - name: Tests - Windows 2019 or Windows 2022 - JIT
       if: inputs.platform == 'windows-2019' || inputs.platform == 'windows-2022'
       working-directory: ${{github.workspace}}/build/bin
       # Run with option to ignore failing return code
       run: |
-        ${{env.BUILD_TYPE}}\bpf_performance_runner.exe -i tests.yml -r | Tee-Object -FilePath ${{github.workspace}}/results/jit-${inputs.platform}-${{env.BUILD_TYPE}}.csv
+        $pre_command = 'wpr.exe -start CPU'
+        $post_command = 'wpr.exe -stop ""${{github.workspace}}\results\%NAME%-jit.etl""'
+        ${{env.BUILD_TYPE}}\bpf_performance_runner.exe -i tests.yml -r --pre "$pre_command" --post "$post_command" | Tee-Object -FilePath ${{github.workspace}}/results/native-${inputs.platform}-${{env.BUILD_TYPE}}.csv
 
     - name: Upload results
       uses: actions/upload-artifact@v2
       with:
         name: results-${{env.BUILD_TYPE}}-${{inputs.platform}}
-        path: ${{github.workspace}}/results
+        path: |
+          ${{github.workspace}}/results/*.csv
+
+    - name: Upload profile
+      uses: actions/upload-artifact@v2
+      with:
+        name: profile-${{env.BUILD_TYPE}}-${{inputs.platform}}
+        path: |
+          ${{github.workspace}}/results/*.etl
 
     - name: Self-Tests
       if: inputs.platform == 'ubuntu-22.04'

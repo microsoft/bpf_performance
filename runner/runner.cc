@@ -4,9 +4,12 @@
 #include "options.h"
 #include <bpf/bpf.h>
 #include <bpf/libbpf.h>
+#include <chrono>
+#include <iomanip>
 #include <iostream>
 #include <optional>
 #include <regex>
+#include <sstream>
 #include <thread>
 #include <vector>
 #include <yaml-cpp/yaml.h>
@@ -28,9 +31,40 @@ typedef std::unique_ptr<struct bpf_object, bpf_object_deleter> bpf_object_ptr;
 // Set string runner_platform to "linux" to indicate that this is a Linux runner.
 #if defined(__linux__)
 const std::string runner_platform = "Linux";
+#define time_t_to_utc_tm(TM, TIME) gmtime_r(TIME, TM)
 #else
 const std::string runner_platform = "Windows";
+#define popen _popen
+#define pclose _pclose
+#define time_t_to_utc_tm(TM, TIME) gmtime_s(TM, TIME)
 #endif
+
+int run_command_and_capture_output(const std::string& command, std::string& command_output)
+{
+    FILE* pipe = popen(command.c_str(), "r");
+
+    // Read until end of file.
+    while (!feof(pipe)) {
+        char buffer[1024];
+        if (fgets(buffer, sizeof(buffer), pipe) != nullptr) {
+            command_output += buffer;
+        }
+    }
+
+    // Return the exit code.
+    return pclose(pipe);
+}
+
+// Function to convert std::chrono time point to ISO 8601 UTC string.
+std::string to_iso8601(const std::chrono::system_clock::time_point tp)
+{
+    std::time_t t = std::chrono::system_clock::to_time_t(tp);
+    std::tm tm;
+    time_t_to_utc_tm(&tm, &t);
+    std::stringstream ss;
+    ss << std::put_time(&tm, "%FT%T%z");
+    return ss.str();
+}
 
 // This program runs a set of BPF programs and reports the average execution time for each program.
 // It reads a YAML file that contains the following fields:
@@ -60,6 +94,8 @@ main(int argc, char** argv)
         std::optional<int> iteration_count_override;
         std::optional<int> cpu_count_override;
         std::optional<bool> ignore_return_code;
+        std::optional<std::string> pre_test_command;
+        std::optional<std::string> post_test_command;
         bool csv_header_printed = false;
 
         // Add option "-i" for test input file.
@@ -101,6 +137,20 @@ main(int argc, char** argv)
             1,
             [&ignore_return_code](auto iter) { ignore_return_code = {true}; },
             "Ignore return code from BPF programs");
+
+        // Add option to run a command before each test.
+        cmd_options.add(
+            "--pre",
+            2,
+            [&pre_test_command](auto iter) { pre_test_command = *iter; },
+            "Command to run before each test");
+
+        // Add option to run a command after each test.
+        cmd_options.add(
+            "--post",
+            2,
+            [&post_test_command](auto iter) { post_test_command = *iter; },
+            "Command to run after each test");
 
         // Parse command line options.
         cmd_options.parse(argc, argv);
@@ -323,6 +373,23 @@ main(int argc, char** argv)
                 }
             }
 
+            // Run the pre-test command if specified.
+            if (pre_test_command.has_value()) {
+                std::string command = pre_test_command.value();
+                std::string command_output;
+                command = std::regex_replace(command, std::regex("%NAME%"), name);
+                command = std::regex_replace(command, std::regex("%ELF_FILE%"), elf_file);
+                command = std::regex_replace(command, std::regex("%ITERATION_COUNT%"), std::to_string(iteration_count));
+                command = std::regex_replace(command, std::regex("%CPU_COUNT%"), std::to_string(cpu_count));
+                command = std::regex_replace(command, std::regex("%BATCH_SIZE%"), std::to_string(batch_size));
+                if (run_command_and_capture_output(command, command_output) != 0) {
+                    std::cerr << "Pre-test command failed: " << command << std::endl;
+                    std::cerr << command_output << std::endl;
+                }
+            }
+
+            auto now = std::chrono::system_clock::now();
+
             // Run each entry point via bpf_prog_test_run_opts in a thread.
             std::vector<std::jthread> threads;
             std::vector<bpf_test_run_opts> opts(cpu_count);
@@ -373,15 +440,32 @@ main(int argc, char** argv)
                 }
             }
 
+            // Run the post-test command if specified.
+            if (post_test_command.has_value()) {
+                std::string command = post_test_command.value();
+                std::string command_output;
+                command = std::regex_replace(command, std::regex("%NAME%"), name);
+                command = std::regex_replace(command, std::regex("%ELF_FILE%"), elf_file);
+                command = std::regex_replace(command, std::regex("%ITERATION_COUNT%"), std::to_string(iteration_count));
+                command = std::regex_replace(command, std::regex("%CPU_COUNT%"), std::to_string(cpu_count));
+                command = std::regex_replace(command, std::regex("%BATCH_SIZE%"), std::to_string(batch_size));
+
+                if (run_command_and_capture_output(command, command_output) != 0) {
+                    std::cerr << "Post-test command failed: " << command << std::endl;
+                    std::cerr << command_output << std::endl;
+                }
+            }
+
             // Print a CSV header if not already printed.
             if (!csv_header_printed) {
+                std::cout << "Timestamp,";
                 std::cout << "Test,";
+                std::cout << "Average Duration (ns),";
                 for (size_t i = 0; i < opts.size(); i++) {
                     if (!cpu_program_assignments[i].has_value()) {
                         continue;
                     }
-                    auto& opt = opts[i];
-                    std::cout << "CPU " << i;
+                    std::cout << "CPU " << i << " Duration (ns)";
                     if (i < opts.size() - 1) {
                         std::cout << ",";
                     }
@@ -391,7 +475,15 @@ main(int argc, char** argv)
             }
 
             // Print the average execution time for each program on each CPU.
-            std::cout << name << ",";
+            std::cout  << to_iso8601(now) << "," << name << ",";
+
+            uint64_t total_duration = 0;
+            uint64_t total_count = 0;
+            for (auto opt : opts) {
+                total_duration += opt.duration;
+                total_count ++;
+            }
+            std::cout << total_duration / total_count << ",";
 
             for (size_t i = 0; i < opts.size(); i++) {
                 if (!cpu_program_assignments[i].has_value()) {

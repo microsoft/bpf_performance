@@ -96,7 +96,7 @@ tests:
     program_cpu_assignment:
       update: all
 
-  - name: BPF_MAP_TYPE_HASH update/read
+  - name: BPF_MAP_TYPE_HASH update and read
     description: Tests the BPF_MAP_TYPE_HASH map type.
     elf_file: hash.o
     map_state_preparation:
@@ -137,7 +137,7 @@ tests:
     program_cpu_assignment:
       update: all
 
-  - name: BPF_MAP_TYPE_PERCPU_HASH update/read
+  - name: BPF_MAP_TYPE_PERCPU_HASH update and read
     description: Tests the BPF_MAP_TYPE_PERCPU_HASH map type.
     elf_file: percpu_hash.o
     map_state_preparation:
@@ -178,7 +178,7 @@ tests:
     program_cpu_assignment:
       update: all
 
-  - name: BPF_MAP_TYPE_LRU_HASH update/read
+  - name: BPF_MAP_TYPE_LRU_HASH update and read
     description: Tests the BPF_MAP_TYPE_LRU_HASH map type.
     elf_file: lru_hash.o
     map_state_preparation:
@@ -219,7 +219,7 @@ tests:
     program_cpu_assignment:
       update: all
 
-  - name: BPF_MAP_TYPE_LRU_PERCPU_HASH update/read
+  - name: BPF_MAP_TYPE_LRU_PERCPU_HASH update and read
     description: Tests the BPF_MAP_TYPE_LRU_PERCPU_HASH map type.
     elf_file: lru_per_cpu_hash.o
     map_state_preparation:
