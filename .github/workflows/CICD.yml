@@ -15,6 +15,7 @@ on:
     - cron: '00 21 * * *'
 
 permissions:
+  id-token: write
   contents: read
   packages: write
 
@@ -25,91 +26,33 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  windows_release:
-    uses: ./.github/workflows/Build.yml
-    with:
-      platform: windows-2019
-      configuration: RelWithDebInfo
-      enable_sanitizers: false
-      enable_coverage: false
+  build_and_test:
+    strategy:
+      matrix:
+        configuration: [ 'Release', 'Debug' ]
+        platform: [ 'ubuntu-22.04', 'windows-2019', 'windows-2022' ]
+        option: [ none, sanitizer, coverage, jit ]
+        exclude:
+          - platform: windows-2019
+            option: sanitizer
+          - platform: windows-2019
+            option: coverage
+          - platform: windows-2022
+            option: sanitizer
+          - platform: windows-2022
+            option: coverage
+          - platform: ubuntu-22.04
+            option: jit
 
-  windows_debug:
     uses: ./.github/workflows/Build.yml
     with:
-      platform: windows-2019
-      configuration: Debug
-      enable_sanitizers: false
-      enable_coverage: false
-
-  windows_release_2022:
-    uses: ./.github/workflows/Build.yml
-    with:
-      platform: windows-2022
-      configuration: RelWithDebInfo
-      enable_sanitizers: false
-      enable_coverage: false
-
-  windows_debug_2022:
-    uses: ./.github/workflows/Build.yml
-    with:
-      platform: windows-2022
-      configuration: Debug
-      enable_sanitizers: false
-      enable_coverage: false
-
-  ubuntu_release:
-    uses: ./.github/workflows/Build.yml
-    with:
-      platform: ubuntu-22.04
-      configuration: Release
-      enable_sanitizers: false
-      enable_coverage: false
-      publish_docker: true
-
-  ubuntu_debug:
-    uses: ./.github/workflows/Build.yml
-    with:
-      platform: ubuntu-22.04
-      configuration: Debug
-      enable_sanitizers: false
-      enable_coverage: false
-
-  ubuntu_release_sanitizers:
-    uses: ./.github/workflows/Build.yml
-    with:
-      platform: ubuntu-22.04
-      configuration: Release
-      enable_sanitizers: true
-      enable_coverage: false
-
-  ubuntu_debug_sanitizers:
-    uses: ./.github/workflows/Build.yml
-    with:
-      platform: ubuntu-22.04
-      configuration: Debug
-      enable_sanitizers: true
-      enable_coverage: false
-
-  ubuntu_release_coverage:
-    uses: ./.github/workflows/Build.yml
-    with:
-      platform: ubuntu-22.04
-      configuration: Release
-      enable_sanitizers: false
-      enable_coverage: true
-
-  ubuntu_debug_coverage:
-    uses: ./.github/workflows/Build.yml
-    with:
-      platform: ubuntu-22.04
-      configuration: Debug
-      enable_sanitizers: false
-      enable_coverage: true
+      platform: ${{ matrix.platform }}
+      configuration: ${{ matrix.configuration }}
+      option: ${{ matrix.option }}
 
   finish:
     needs:
-      - ubuntu_release_coverage
-      - ubuntu_debug_coverage
+      - build_and_test
     runs-on: ubuntu-22.04
     steps:
     - name: Coveralls Finished
@@ -117,3 +60,36 @@ jobs:
       with:
         github-token: ${{ secrets.github_token }}
         parallel-finished: true
+
+
+  # Note: This can't be in a workflow_call as the login action doesn't work.
+  upload_results:
+    needs:
+      - build_and_test
+    strategy:
+      matrix:
+        platform: [ 'ubuntu-22.04', 'windows-2019', 'windows-2022' ]
+
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Download performance result artifacts
+      uses: actions/download-artifact@v2
+      with:
+        name: results-Release-${{matrix.platform}}-none
+        path: results
+
+    - name: Post-process results
+      run: |
+        python3 scripts/process_results.py --csv-directory ${{github.workspace}}/results --sql-script-file ${{github.workspace}}/results/upload.sql --commit_id ${{github.sha}} --platform ${{matrix.platform}}
+
+    - name: Upload results to POSTGRES
+      env:
+        PGHOST: ${{secrets.PGHOST}}
+        PGUSER: ${{secrets.PGUSER}}
+        PGPORT: ${{secrets.PGPORT}}
+        PGDATABASE: ${{secrets.PGDATABASE}}
+        PGPASSWORD: ${{secrets.PGPASSWORD}}
+      run: |
+        psql -f ${{github.workspace}}/results/upload.sql

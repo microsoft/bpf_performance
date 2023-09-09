@@ -12,15 +12,9 @@ on:
       configuration:
         required: true
         type: string
-      enable_sanitizers:
+      option:
         required: false
-        type: boolean
-      enable_coverage:
-        required: false
-        type: boolean
-      publish_docker:
-        required: false
-        type: boolean
+        type: string
 
 permissions:
   contents: read
@@ -89,10 +83,10 @@ jobs:
     - name: Configure CMake - Ubuntu-22.04
       if: inputs.platform == 'ubuntu-22.04'
       run: |
-        if [ "${{inputs.enable_sanitizers}}" = "true" ]; then
+        if [ "${{inputs.option}}" = "sanitizer" ]; then
           export SANITIZER_FLAGS="-fsanitize=address -fsanitize=undefined -fno-sanitize-recover=all"
         fi
-        if [ "${{inputs.enable_coverage}}" = "true" ]; then
+        if [ "${{inputs.option}}" = "coverage" ]; then
           export COVERAGE_FLAGS="-DCMAKE_CXX_FLAGS=\"--coverage\" -DCMAKE_C_FLAGS=\"--coverage\""
         fi
         cmake \
@@ -116,7 +110,7 @@ jobs:
       run: mkdir -p ${{github.workspace}}/results
 
     - name: Tests - Ubuntu-22.04
-      if: inputs.platform == 'ubuntu-22.04'
+      if: inputs.platform == 'ubuntu-22.04' && inputs.option == 'none'
       working-directory: ${{github.workspace}}/build/bin
       run: |
         sudo ./bpf_performance_runner -i tests.yml -r | tee ${{github.workspace}}/results/jit-${{inputs.platform}}-${{env.BUILD_TYPE}}.csv
@@ -130,7 +124,7 @@ jobs:
         echo "C:\Program Files\ebpf-for-windows" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
 
     - name: Tests - Windows 2019 or Windows 2022 - Native
-      if: inputs.platform == 'windows-2019' || inputs.platform == 'windows-2022'
+      if: (inputs.platform == 'windows-2019' || inputs.platform == 'windows-2022') && inputs.option == 'none'
       working-directory: ${{github.workspace}}/build/bin
       run: |
         $pre_command = 'wpr.exe -start CPU'
@@ -138,7 +132,7 @@ jobs:
         ${{env.BUILD_TYPE}}\bpf_performance_runner.exe -i tests.yml -e .sys -r --pre "$pre_command" --post "$post_command" | Tee-Object -FilePath ${{github.workspace}}/results/native-${inputs.platform}-${{env.BUILD_TYPE}}.csv
 
     - name: Tests - Windows 2019 or Windows 2022 - JIT
-      if: inputs.platform == 'windows-2019' || inputs.platform == 'windows-2022'
+      if: (inputs.platform == 'windows-2019' || inputs.platform == 'windows-2022') && inputs.option == 'jit'
       working-directory: ${{github.workspace}}/build/bin
       # Run with option to ignore failing return code
       run: |
@@ -149,14 +143,14 @@ jobs:
     - name: Upload results
       uses: actions/upload-artifact@v2
       with:
-        name: results-${{env.BUILD_TYPE}}-${{inputs.platform}}
+        name: results-${{env.BUILD_TYPE}}-${{inputs.platform}}-${{inputs.option}}
         path: |
           ${{github.workspace}}/results/*.csv
 
     - name: Upload profile
       uses: actions/upload-artifact@v2
       with:
-        name: profile-${{env.BUILD_TYPE}}-${{inputs.platform}}
+        name: profile-${{env.BUILD_TYPE}}-${{inputs.platform}}-${{inputs.option}}
         path: |
           ${{github.workspace}}/results/*.etl
 
