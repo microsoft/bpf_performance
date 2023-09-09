@@ -1,0 +1,3920 @@
+{
+  "annotations": {
+    "list": [
+      {
+        "builtIn": 1,
+        "datasource": {
+          "type": "grafana",
+          "uid": "-- Grafana --"
+        },
+        "enable": true,
+        "hide": true,
+        "iconColor": "rgba(0, 211, 255, 1)",
+        "name": "Annotations & Alerts",
+        "type": "dashboard"
+      }
+    ]
+  },
+  "description": "",
+  "editable": true,
+  "fiscalYearStartMonth": 0,
+  "graphTooltip": 0,
+  "id": 1,
+  "links": [],
+  "liveNow": false,
+  "panels": [
+    {
+      "datasource": {
+        "type": "postgres",
+        "uid": "ad921a16-67d8-4174-a55c-87105258fc36"
+      },
+      "description": "",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "drawStyle": "line",
+            "fillOpacity": 0,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "insertNulls": false,
+            "lineInterpolation": "linear",
+            "lineWidth": 1,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "auto",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 0
+      },
+      "id": 1,
+      "options": {
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "single",
+          "sort": "none"
+        }
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "postgres",
+            "uid": "ad921a16-67d8-4174-a55c-87105258fc36"
+          },
+          "editorMode": "code",
+          "format": "table",
+          "rawQuery": true,
+          "rawSql": "SELECT \"timestamp\", value as Baseline FROM benchmarkresults WHERE (metric = 'Baseline' AND platform = 'windows-2019') LIMIT 50 ",
+          "refId": "A",
+          "sql": {
+            "columns": [
+              {
+                "parameters": [
+                  {
+                    "name": "\"timestamp\"",
+                    "type": "functionParameter"
+                  }
+                ],
+                "type": "function"
+              },
+              {
+                "parameters": [
+                  {
+                    "name": "value",
+                    "type": "functionParameter"
+                  }
+                ],
+                "type": "function"
+              }
+            ],
+            "groupBy": [
+              {
+                "property": {
+                  "type": "string"
+                },
+                "type": "groupBy"
+              }
+            ],
+            "limit": 50,
+            "whereJsonTree": {
+              "children1": [
+                {
+                  "id": "bb8a8a9b-89ab-4cde-b012-318a7b1df149",
+                  "properties": {
+                    "field": "metric",
+                    "operator": "equal",
+                    "value": [
+                      "Baseline"
+                    ],
+                    "valueSrc": [
+                      "value"
+                    ],
+                    "valueType": [
+                      "text"
+                    ]
+                  },
+                  "type": "rule"
+                },
+                {
+                  "id": "aab8999a-4567-489a-bcde-f18a7b1e17cf",
+                  "properties": {
+                    "field": "platform",
+                    "operator": "equal",
+                    "value": [
+                      "windows-2019"
+                    ],
+                    "valueSrc": [
+                      "value"
+                    ],
+                    "valueType": [
+                      "text"
+                    ]
+                  },
+                  "type": "rule"
+                }
+              ],
+              "id": "a9baa8a8-89ab-4cde-b012-318a7b1d2d1d",
+              "type": "group"
+            },
+            "whereString": "(metric = 'Baseline' AND platform = 'windows-2019')"
+          },
+          "table": "benchmarkresults"
+        },
+        {
+          "datasource": {
+            "type": "postgres",
+            "uid": "ad921a16-67d8-4174-a55c-87105258fc36"
+          },
+          "editorMode": "code",
+          "format": "table",
+          "hide": false,
+          "rawQuery": true,
+          "rawSql": "SELECT \"timestamp\", value as bpf_get_prandom_u32 FROM benchmarkresults WHERE (metric = 'bpf_get_prandom_u32' AND platform = 'windows-2019') LIMIT 50 ",
+          "refId": "B",
+          "sql": {
+            "columns": [
+              {
+                "parameters": [
+                  {
+                    "name": "\"timestamp\"",
+                    "type": "functionParameter"
+                  }
+                ],
+                "type": "function"
+              },
+              {
+                "parameters": [
+                  {
+                    "name": "value",
+                    "type": "functionParameter"
+                  }
+                ],
+                "type": "function"
+              }
+            ],
+            "groupBy": [
+              {
+                "property": {
+                  "type": "string"
+                },
+                "type": "groupBy"
+              }
+            ],
+            "limit": 50,
+            "whereJsonTree": {
+              "children1": [
+                {
+                  "id": "bb8a8a9b-89ab-4cde-b012-318a7b1df149",
+                  "properties": {
+                    "field": "metric",
+                    "operator": "equal",
+                    "value": [
+                      "Baseline"
+                    ],
+                    "valueSrc": [
+                      "value"
+                    ],
+                    "valueType": [
+                      "text"
+                    ]
+                  },
+                  "type": "rule"
+                },
+                {
+                  "id": "aab8999a-4567-489a-bcde-f18a7b1e17cf",
+                  "properties": {
+                    "field": "platform",
+                    "operator": "equal",
+                    "value": [
+                      "windows-2019"
+                    ],
+                    "valueSrc": [
+                      "value"
+                    ],
+                    "valueType": [
+                      "text"
+                    ]
+                  },
+                  "type": "rule"
+                }
+              ],
+              "id": "a9baa8a8-89ab-4cde-b012-318a7b1d2d1d",
+              "type": "group"
+            },
+            "whereString": "(metric = 'Baseline' AND platform = 'windows-2019')"
+          },
+          "table": "benchmarkresults"
+        },
+        {
+          "datasource": {
+            "type": "postgres",
+            "uid": "ad921a16-67d8-4174-a55c-87105258fc36"
+          },
+          "editorMode": "code",
+          "format": "table",
+          "hide": false,
+          "rawQuery": true,
+          "rawSql": "SELECT \"timestamp\", value as bpf_xdp_adjust_head_zero FROM benchmarkresults WHERE (metric = 'bpf_xdp_adjust_head_zero' AND platform = 'windows-2019') LIMIT 50 ",
+          "refId": "C",
+          "sql": {
+            "columns": [
+              {
+                "parameters": [
+                  {
+                    "name": "\"timestamp\"",
+                    "type": "functionParameter"
+                  }
+                ],
+                "type": "function"
+              },
+              {
+                "parameters": [
+                  {
+                    "name": "value",
+                    "type": "functionParameter"
+                  }
+                ],
+                "type": "function"
+              }
+            ],
+            "groupBy": [
+              {
+                "property": {
+                  "type": "string"
+                },
+                "type": "groupBy"
+              }
+            ],
+            "limit": 50,
+            "whereJsonTree": {
+              "children1": [
+                {
+                  "id": "bb8a8a9b-89ab-4cde-b012-318a7b1df149",
+                  "properties": {
+                    "field": "metric",
+                    "operator": "equal",
+                    "value": [
+                      "Baseline"
+                    ],
+                    "valueSrc": [
+                      "value"
+                    ],
+                    "valueType": [
+                      "text"
+                    ]
+                  },
+                  "type": "rule"
+                },
+                {
+                  "id": "aab8999a-4567-489a-bcde-f18a7b1e17cf",
+                  "properties": {
+                    "field": "platform",
+                    "operator": "equal",
+                    "value": [
+                      "windows-2019"
+                    ],
+                    "valueSrc": [
+                      "value"
+                    ],
+                    "valueType": [
+                      "text"
+                    ]
+                  },
+                  "type": "rule"
+                }
+              ],
+              "id": "a9baa8a8-89ab-4cde-b012-318a7b1d2d1d",
+              "type": "group"
+            },
+            "whereString": "(metric = 'Baseline' AND platform = 'windows-2019')"
+          },
+          "table": "benchmarkresults"
+        },
+        {
+          "datasource": {
+            "type": "postgres",
+            "uid": "ad921a16-67d8-4174-a55c-87105258fc36"
+          },
+          "editorMode": "code",
+          "format": "table",
+          "hide": false,
+          "rawQuery": true,
+          "rawSql": "SELECT \"timestamp\", value as bpf_xdp_adjust_head_positive FROM benchmarkresults WHERE (metric = 'bpf_xdp_adjust_head_positive' AND platform = 'windows-2019') LIMIT 50 ",
+          "refId": "D",
+          "sql": {
+            "columns": [
+              {
+                "parameters": [
+                  {
+                    "name": "\"timestamp\"",
+                    "type": "functionParameter"
+                  }
+                ],
+                "type": "function"
+              },
+              {
+                "parameters": [
+                  {
+                    "name": "value",
+                    "type": "functionParameter"
+                  }
+                ],
+                "type": "function"
+              }
+            ],
+            "groupBy": [
+              {
+                "property": {
+                  "type": "string"
+                },
+                "type": "groupBy"
+              }
+            ],
+            "limit": 50,
+            "whereJsonTree": {
+              "children1": [
+                {
+                  "id": "bb8a8a9b-89ab-4cde-b012-318a7b1df149",
+                  "properties": {
+                    "field": "metric",
+                    "operator": "equal",
+                    "value": [
+                      "Baseline"
+                    ],
+                    "valueSrc": [
+                      "value"
+                    ],
+                    "valueType": [
+                      "text"
+                    ]
+                  },
+                  "type": "rule"
+                },
+                {
+                  "id": "aab8999a-4567-489a-bcde-f18a7b1e17cf",
+                  "properties": {
+                    "field": "platform",
+                    "operator": "equal",
+                    "value": [
+                      "windows-2019"
+                    ],
+                    "valueSrc": [
+                      "value"
+                    ],
+                    "valueType": [
+                      "text"
+                    ]
+                  },
+                  "type": "rule"
+                }
+              ],
+              "id": "a9baa8a8-89ab-4cde-b012-318a7b1d2d1d",
+              "type": "group"
+            },
+            "whereString": "(metric = 'Baseline' AND platform = 'windows-2019')"
+          },
+          "table": "benchmarkresults"
+        },
+        {
+          "datasource": {
+            "type": "postgres",
+            "uid": "ad921a16-67d8-4174-a55c-87105258fc36"
+          },
+          "editorMode": "code",
+          "format": "table",
+          "hide": false,
+          "rawQuery": true,
+          "rawSql": "SELECT \"timestamp\", value as bpf_xdp_adjust_head_negative FROM benchmarkresults WHERE (metric = 'bpf_xdp_adjust_head_negative' AND platform = 'windows-2019') LIMIT 50 ",
+          "refId": "E",
+          "sql": {
+            "columns": [
+              {
+                "parameters": [
+                  {
+                    "name": "\"timestamp\"",
+                    "type": "functionParameter"
+                  }
+                ],
+                "type": "function"
+              },
+              {
+                "parameters": [
+                  {
+                    "name": "value",
+                    "type": "functionParameter"
+                  }
+                ],
+                "type": "function"
+              }
+            ],
+            "groupBy": [
+              {
+                "property": {
+                  "type": "string"
+                },
+                "type": "groupBy"
+              }
+            ],
+            "limit": 50,
+            "whereJsonTree": {
+              "children1": [
+                {
+                  "id": "bb8a8a9b-89ab-4cde-b012-318a7b1df149",
+                  "properties": {
+                    "field": "metric",
+                    "operator": "equal",
+                    "value": [
+                      "Baseline"
+                    ],
+                    "valueSrc": [
+                      "value"
+                    ],
+                    "valueType": [
+                      "text"
+                    ]
+                  },
+                  "type": "rule"
+                },
+                {
+                  "id": "aab8999a-4567-489a-bcde-f18a7b1e17cf",
+                  "properties": {
+                    "field": "platform",
+                    "operator": "equal",
+                    "value": [
+                      "windows-2019"
+                    ],
+                    "valueSrc": [
+                      "value"
+                    ],
+                    "valueType": [
+                      "text"
+                    ]
+                  },
+                  "type": "rule"
+                }
+              ],
+              "id": "a9baa8a8-89ab-4cde-b012-318a7b1d2d1d",
+              "type": "group"
+            },
+            "whereString": "(metric = 'Baseline' AND platform = 'windows-2019')"
+          },
+          "table": "benchmarkresults"
+        }
+      ],
+      "title": "eBPF For Windows - Server 2019 - Helpers",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "postgres",
+        "uid": "ad921a16-67d8-4174-a55c-87105258fc36"
+      },
+      "description": "",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "drawStyle": "line",
+            "fillOpacity": 0,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "insertNulls": false,
+            "lineInterpolation": "linear",
+            "lineWidth": 1,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "auto",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 0
+      },
+      "id": 2,
+      "options": {
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "single",
+          "sort": "none"
+        }
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "postgres",
+            "uid": "ad921a16-67d8-4174-a55c-87105258fc36"
+          },
+          "editorMode": "code",
+          "format": "table",
+          "rawQuery": true,
+          "rawSql": "SELECT \"timestamp\", value as \"BPF_MAP_TYPE_ARRAY read\" FROM benchmarkresults WHERE (metric = 'BPF_MAP_TYPE_ARRAY read' AND platform = 'windows-2019') LIMIT 50 ",
+          "refId": "A",
+          "sql": {
+            "columns": [
+              {
+                "parameters": [
+                  {
+                    "name": "\"timestamp\"",
+                    "type": "functionParameter"
+                  }
+                ],
+                "type": "function"
+              },
+              {
+                "parameters": [
+                  {
+                    "name": "value",
+                    "type": "functionParameter"
+                  }
+                ],
+                "type": "function"
+              }
+            ],
+            "groupBy": [
+              {
+                "property": {
+                  "type": "string"
+                },
+                "type": "groupBy"
+              }
+            ],
+            "limit": 50,
+            "whereJsonTree": {
+              "children1": [
+                {
+                  "id": "bb8a8a9b-89ab-4cde-b012-318a7b1df149",
+                  "properties": {
+                    "field": "metric",
+                    "operator": "equal",
+                    "value": [
+                      "Baseline"
+                    ],
+                    "valueSrc": [
+                      "value"
+                    ],
+                    "valueType": [
+                      "text"
+                    ]
+                  },
+                  "type": "rule"
+                },
+                {
+                  "id": "aab8999a-4567-489a-bcde-f18a7b1e17cf",
+                  "properties": {
+                    "field": "platform",
+                    "operator": "equal",
+                    "value": [
+                      "windows-2019"
+                    ],
+                    "valueSrc": [
+                      "value"
+                    ],
+                    "valueType": [
+                      "text"
+                    ]
+                  },
+                  "type": "rule"
+                }
+              ],
+              "id": "a9baa8a8-89ab-4cde-b012-318a7b1d2d1d",
+              "type": "group"
+            },
+            "whereString": "(metric = 'Baseline' AND platform = 'windows-2019')"
+          },
+          "table": "benchmarkresults"
+        },
+        {
+          "datasource": {
+            "type": "postgres",
+            "uid": "ad921a16-67d8-4174-a55c-87105258fc36"
+          },
+          "editorMode": "code",
+          "format": "table",
+          "hide": false,
+          "rawQuery": true,
+          "rawSql": "SELECT \"timestamp\", value as \"BPF_MAP_TYPE_ARRAY update\" FROM benchmarkresults WHERE (metric = 'BPF_MAP_TYPE_ARRAY update' AND platform = 'windows-2019') LIMIT 50 ",
+          "refId": "B",
+          "sql": {
+            "columns": [
+              {
+                "parameters": [
+                  {
+                    "name": "\"timestamp\"",
+                    "type": "functionParameter"
+                  }
+                ],
+                "type": "function"
+              },
+              {
+                "parameters": [
+                  {
+                    "name": "value",
+                    "type": "functionParameter"
+                  }
+                ],
+                "type": "function"
+              }
+            ],
+            "groupBy": [
+              {
+                "property": {
+                  "type": "string"
+                },
+                "type": "groupBy"
+              }
+            ],
+            "limit": 50,
+            "whereJsonTree": {
+              "children1": [
+                {
+                  "id": "bb8a8a9b-89ab-4cde-b012-318a7b1df149",
+                  "properties": {
+                    "field": "metric",
+                    "operator": "equal",
+                    "value": [
+                      "Baseline"
+                    ],
+                    "valueSrc": [
+                      "value"
+                    ],
+                    "valueType": [
+                      "text"
+                    ]
+                  },
+                  "type": "rule"
+                },
+                {
+                  "id": "aab8999a-4567-489a-bcde-f18a7b1e17cf",
+                  "properties": {
+                    "field": "platform",
+                    "operator": "equal",
+                    "value": [
+                      "windows-2019"
+                    ],
+                    "valueSrc": [
+                      "value"
+                    ],
+                    "valueType": [
+                      "text"
+                    ]
+                  },
+                  "type": "rule"
+                }
+              ],
+              "id": "a9baa8a8-89ab-4cde-b012-318a7b1d2d1d",
+              "type": "group"
+            },
+            "whereString": "(metric = 'Baseline' AND platform = 'windows-2019')"
+          },
+          "table": "benchmarkresults"
+        },
+        {
+          "datasource": {
+            "type": "postgres",
+            "uid": "ad921a16-67d8-4174-a55c-87105258fc36"
+          },
+          "editorMode": "code",
+          "format": "table",
+          "hide": false,
+          "rawQuery": true,
+          "rawSql": "SELECT \"timestamp\", value as \"BPF_MAP_TYPE_ARRAY replace\" FROM benchmarkresults WHERE (metric = 'BPF_MAP_TYPE_ARRAY replace' AND platform = 'windows-2019') LIMIT 50 ",
+          "refId": "C",
+          "sql": {
+            "columns": [
+              {
+                "parameters": [
+                  {
+                    "name": "\"timestamp\"",
+                    "type": "functionParameter"
+                  }
+                ],
+                "type": "function"
+              },
+              {
+                "parameters": [
+                  {
+                    "name": "value",
+                    "type": "functionParameter"
+                  }
+                ],
+                "type": "function"
+              }
+            ],
+            "groupBy": [
+              {
+                "property": {
+                  "type": "string"
+                },
+                "type": "groupBy"
+              }
+            ],
+            "limit": 50,
+            "whereJsonTree": {
+              "children1": [
+                {
+                  "id": "bb8a8a9b-89ab-4cde-b012-318a7b1df149",
+                  "properties": {
+                    "field": "metric",
+                    "operator": "equal",
+                    "value": [
+                      "Baseline"
+                    ],
+                    "valueSrc": [
+                      "value"
+                    ],
+                    "valueType": [
+                      "text"
+                    ]
+                  },
+                  "type": "rule"
+                },
+                {
+                  "id": "aab8999a-4567-489a-bcde-f18a7b1e17cf",
+                  "properties": {
+                    "field": "platform",
+                    "operator": "equal",
+                    "value": [
+                      "windows-2019"
+                    ],
+                    "valueSrc": [
+                      "value"
+                    ],
+                    "valueType": [
+                      "text"
+                    ]
+                  },
+                  "type": "rule"
+                }
+              ],
+              "id": "a9baa8a8-89ab-4cde-b012-318a7b1d2d1d",
+              "type": "group"
+            },
+            "whereString": "(metric = 'Baseline' AND platform = 'windows-2019')"
+          },
+          "table": "benchmarkresults"
+        }
+      ],
+      "title": "eBPF For Windows - Server 2019 - BPF_MAP_TYPE_ARRAY",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "postgres",
+        "uid": "ad921a16-67d8-4174-a55c-87105258fc36"
+      },
+      "description": "",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "drawStyle": "line",
+            "fillOpacity": 0,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "insertNulls": false,
+            "lineInterpolation": "linear",
+            "lineWidth": 1,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "auto",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 8
+      },
+      "id": 3,
+      "options": {
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "single",
+          "sort": "none"
+        }
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "postgres",
+            "uid": "ad921a16-67d8-4174-a55c-87105258fc36"
+          },
+          "editorMode": "code",
+          "format": "table",
+          "rawQuery": true,
+          "rawSql": "SELECT \"timestamp\", value as \"BPF_MAP_TYPE_PERCPU_ARRAY read\" FROM benchmarkresults WHERE (metric = 'BPF_MAP_TYPE_PERCPU_ARRAY read' AND platform = 'windows-2019') LIMIT 50 ",
+          "refId": "A",
+          "sql": {
+            "columns": [
+              {
+                "parameters": [
+                  {
+                    "name": "\"timestamp\"",
+                    "type": "functionParameter"
+                  }
+                ],
+                "type": "function"
+              },
+              {
+                "parameters": [
+                  {
+                    "name": "value",
+                    "type": "functionParameter"
+                  }
+                ],
+                "type": "function"
+              }
+            ],
+            "groupBy": [
+              {
+                "property": {
+                  "type": "string"
+                },
+                "type": "groupBy"
+              }
+            ],
+            "limit": 50,
+            "whereJsonTree": {
+              "children1": [
+                {
+                  "id": "bb8a8a9b-89ab-4cde-b012-318a7b1df149",
+                  "properties": {
+                    "field": "metric",
+                    "operator": "equal",
+                    "value": [
+                      "Baseline"
+                    ],
+                    "valueSrc": [
+                      "value"
+                    ],
+                    "valueType": [
+                      "text"
+                    ]
+                  },
+                  "type": "rule"
+                },
+                {
+                  "id": "aab8999a-4567-489a-bcde-f18a7b1e17cf",
+                  "properties": {
+                    "field": "platform",
+                    "operator": "equal",
+                    "value": [
+                      "windows-2019"
+                    ],
+                    "valueSrc": [
+                      "value"
+                    ],
+                    "valueType": [
+                      "text"
+                    ]
+                  },
+                  "type": "rule"
+                }
+              ],
+              "id": "a9baa8a8-89ab-4cde-b012-318a7b1d2d1d",
+              "type": "group"
+            },
+            "whereString": "(metric = 'Baseline' AND platform = 'windows-2019')"
+          },
+          "table": "benchmarkresults"
+        },
+        {
+          "datasource": {
+            "type": "postgres",
+            "uid": "ad921a16-67d8-4174-a55c-87105258fc36"
+          },
+          "editorMode": "code",
+          "format": "table",
+          "hide": false,
+          "rawQuery": true,
+          "rawSql": "SELECT \"timestamp\", value as \"BPF_MAP_TYPE_PERCPU_ARRAY update\" FROM benchmarkresults WHERE (metric = 'BPF_MAP_TYPE_PERCPU_ARRAY update' AND platform = 'windows-2019') LIMIT 50 ",
+          "refId": "B",
+          "sql": {
+            "columns": [
+              {
+                "parameters": [
+                  {
+                    "name": "\"timestamp\"",
+                    "type": "functionParameter"
+                  }
+                ],
+                "type": "function"
+              },
+              {
+                "parameters": [
+                  {
+                    "name": "value",
+                    "type": "functionParameter"
+                  }
+                ],
+                "type": "function"
+              }
+            ],
+            "groupBy": [
+              {
+                "property": {
+                  "type": "string"
+                },
+                "type": "groupBy"
+              }
+            ],
+            "limit": 50,
+            "whereJsonTree": {
+              "children1": [
+                {
+                  "id": "bb8a8a9b-89ab-4cde-b012-318a7b1df149",
+                  "properties": {
+                    "field": "metric",
+                    "operator": "equal",
+                    "value": [
+                      "Baseline"
+                    ],
+                    "valueSrc": [
+                      "value"
+                    ],
+                    "valueType": [
+                      "text"
+                    ]
+                  },
+                  "type": "rule"
+                },
+                {
+                  "id": "aab8999a-4567-489a-bcde-f18a7b1e17cf",
+                  "properties": {
+                    "field": "platform",
+                    "operator": "equal",
+                    "value": [
+                      "windows-2019"
+                    ],
+                    "valueSrc": [
+                      "value"
+                    ],
+                    "valueType": [
+                      "text"
+                    ]
+                  },
+                  "type": "rule"
+                }
+              ],
+              "id": "a9baa8a8-89ab-4cde-b012-318a7b1d2d1d",
+              "type": "group"
+            },
+            "whereString": "(metric = 'Baseline' AND platform = 'windows-2019')"
+          },
+          "table": "benchmarkresults"
+        },
+        {
+          "datasource": {
+            "type": "postgres",
+            "uid": "ad921a16-67d8-4174-a55c-87105258fc36"
+          },
+          "editorMode": "code",
+          "format": "table",
+          "hide": false,
+          "rawQuery": true,
+          "rawSql": "SELECT \"timestamp\", value as \"BPF_MAP_TYPE_PERCPU_ARRAY replace\" FROM benchmarkresults WHERE (metric = 'BPF_MAP_TYPE_PERCPU_ARRAY replace' AND platform = 'windows-2019') LIMIT 50 ",
+          "refId": "C",
+          "sql": {
+            "columns": [
+              {
+                "parameters": [
+                  {
+                    "name": "\"timestamp\"",
+                    "type": "functionParameter"
+                  }
+                ],
+                "type": "function"
+              },
+              {
+                "parameters": [
+                  {
+                    "name": "value",
+                    "type": "functionParameter"
+                  }
+                ],
+                "type": "function"
+              }
+            ],
+            "groupBy": [
+              {
+                "property": {
+                  "type": "string"
+                },
+                "type": "groupBy"
+              }
+            ],
+            "limit": 50,
+            "whereJsonTree": {
+              "children1": [
+                {
+                  "id": "bb8a8a9b-89ab-4cde-b012-318a7b1df149",
+                  "properties": {
+                    "field": "metric",
+                    "operator": "equal",
+                    "value": [
+                      "Baseline"
+                    ],
+                    "valueSrc": [
+                      "value"
+                    ],
+                    "valueType": [
+                      "text"
+                    ]
+                  },
+                  "type": "rule"
+                },
+                {
+                  "id": "aab8999a-4567-489a-bcde-f18a7b1e17cf",
+                  "properties": {
+                    "field": "platform",
+                    "operator": "equal",
+                    "value": [
+                      "windows-2019"
+                    ],
+                    "valueSrc": [
+                      "value"
+                    ],
+                    "valueType": [
+                      "text"
+                    ]
+                  },
+                  "type": "rule"
+                }
+              ],
+              "id": "a9baa8a8-89ab-4cde-b012-318a7b1d2d1d",
+              "type": "group"
+            },
+            "whereString": "(metric = 'Baseline' AND platform = 'windows-2019')"
+          },
+          "table": "benchmarkresults"
+        }
+      ],
+      "title": "eBPF For Windows - Server 2019 - BPF_MAP_TYPE_PERCPU_ARRAY",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "postgres",
+        "uid": "ad921a16-67d8-4174-a55c-87105258fc36"
+      },
+      "description": "",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "drawStyle": "line",
+            "fillOpacity": 0,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "insertNulls": false,
+            "lineInterpolation": "linear",
+            "lineWidth": 1,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "auto",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 8
+      },
+      "id": 4,
+      "options": {
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "single",
+          "sort": "none"
+        }
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "postgres",
+            "uid": "ad921a16-67d8-4174-a55c-87105258fc36"
+          },
+          "editorMode": "code",
+          "format": "table",
+          "rawQuery": true,
+          "rawSql": "SELECT \"timestamp\", value as \"BPF_MAP_TYPE_HASH read\" FROM benchmarkresults WHERE (metric = 'BPF_MAP_TYPE_HASH read' AND platform = 'windows-2019') LIMIT 50 ",
+          "refId": "A",
+          "sql": {
+            "columns": [
+              {
+                "parameters": [
+                  {
+                    "name": "\"timestamp\"",
+                    "type": "functionParameter"
+                  }
+                ],
+                "type": "function"
+              },
+              {
+                "parameters": [
+                  {
+                    "name": "value",
+                    "type": "functionParameter"
+                  }
+                ],
+                "type": "function"
+              }
+            ],
+            "groupBy": [
+              {
+                "property": {
+                  "type": "string"
+                },
+                "type": "groupBy"
+              }
+            ],
+            "limit": 50,
+            "whereJsonTree": {
+              "children1": [
+                {
+                  "id": "bb8a8a9b-89ab-4cde-b012-318a7b1df149",
+                  "properties": {
+                    "field": "metric",
+                    "operator": "equal",
+                    "value": [
+                      "Baseline"
+                    ],
+                    "valueSrc": [
+                      "value"
+                    ],
+                    "valueType": [
+                      "text"
+                    ]
+                  },
+                  "type": "rule"
+                },
+                {
+                  "id": "aab8999a-4567-489a-bcde-f18a7b1e17cf",
+                  "properties": {
+                    "field": "platform",
+                    "operator": "equal",
+                    "value": [
+                      "windows-2019"
+                    ],
+                    "valueSrc": [
+                      "value"
+                    ],
+                    "valueType": [
+                      "text"
+                    ]
+                  },
+                  "type": "rule"
+                }
+              ],
+              "id": "a9baa8a8-89ab-4cde-b012-318a7b1d2d1d",
+              "type": "group"
+            },
+            "whereString": "(metric = 'Baseline' AND platform = 'windows-2019')"
+          },
+          "table": "benchmarkresults"
+        },
+        {
+          "datasource": {
+            "type": "postgres",
+            "uid": "ad921a16-67d8-4174-a55c-87105258fc36"
+          },
+          "editorMode": "code",
+          "format": "table",
+          "hide": false,
+          "rawQuery": true,
+          "rawSql": "SELECT \"timestamp\", value as \"BPF_MAP_TYPE_HASH update\" FROM benchmarkresults WHERE (metric = 'BPF_MAP_TYPE_HASH update' AND platform = 'windows-2019') LIMIT 50 ",
+          "refId": "B",
+          "sql": {
+            "columns": [
+              {
+                "parameters": [
+                  {
+                    "name": "\"timestamp\"",
+                    "type": "functionParameter"
+                  }
+                ],
+                "type": "function"
+              },
+              {
+                "parameters": [
+                  {
+                    "name": "value",
+                    "type": "functionParameter"
+                  }
+                ],
+                "type": "function"
+              }
+            ],
+            "groupBy": [
+              {
+                "property": {
+                  "type": "string"
+                },
+                "type": "groupBy"
+              }
+            ],
+            "limit": 50,
+            "whereJsonTree": {
+              "children1": [
+                {
+                  "id": "bb8a8a9b-89ab-4cde-b012-318a7b1df149",
+                  "properties": {
+                    "field": "metric",
+                    "operator": "equal",
+                    "value": [
+                      "Baseline"
+                    ],
+                    "valueSrc": [
+                      "value"
+                    ],
+                    "valueType": [
+                      "text"
+                    ]
+                  },
+                  "type": "rule"
+                },
+                {
+                  "id": "aab8999a-4567-489a-bcde-f18a7b1e17cf",
+                  "properties": {
+                    "field": "platform",
+                    "operator": "equal",
+                    "value": [
+                      "windows-2019"
+                    ],
+                    "valueSrc": [
+                      "value"
+                    ],
+                    "valueType": [
+                      "text"
+                    ]
+                  },
+                  "type": "rule"
+                }
+              ],
+              "id": "a9baa8a8-89ab-4cde-b012-318a7b1d2d1d",
+              "type": "group"
+            },
+            "whereString": "(metric = 'Baseline' AND platform = 'windows-2019')"
+          },
+          "table": "benchmarkresults"
+        },
+        {
+          "datasource": {
+            "type": "postgres",
+            "uid": "ad921a16-67d8-4174-a55c-87105258fc36"
+          },
+          "editorMode": "code",
+          "format": "table",
+          "hide": false,
+          "rawQuery": true,
+          "rawSql": "SELECT \"timestamp\", value as \"BPF_MAP_TYPE_HASH replace\" FROM benchmarkresults WHERE (metric = 'BPF_MAP_TYPE_HASH replace' AND platform = 'windows-2019') LIMIT 50 ",
+          "refId": "C",
+          "sql": {
+            "columns": [
+              {
+                "parameters": [
+                  {
+                    "name": "\"timestamp\"",
+                    "type": "functionParameter"
+                  }
+                ],
+                "type": "function"
+              },
+              {
+                "parameters": [
+                  {
+                    "name": "value",
+                    "type": "functionParameter"
+                  }
+                ],
+                "type": "function"
+              }
+            ],
+            "groupBy": [
+              {
+                "property": {
+                  "type": "string"
+                },
+                "type": "groupBy"
+              }
+            ],
+            "limit": 50,
+            "whereJsonTree": {
+              "children1": [
+                {
+                  "id": "bb8a8a9b-89ab-4cde-b012-318a7b1df149",
+                  "properties": {
+                    "field": "metric",
+                    "operator": "equal",
+                    "value": [
+                      "Baseline"
+                    ],
+                    "valueSrc": [
+                      "value"
+                    ],
+                    "valueType": [
+                      "text"
+                    ]
+                  },
+                  "type": "rule"
+                },
+                {
+                  "id": "aab8999a-4567-489a-bcde-f18a7b1e17cf",
+                  "properties": {
+                    "field": "platform",
+                    "operator": "equal",
+                    "value": [
+                      "windows-2019"
+                    ],
+                    "valueSrc": [
+                      "value"
+                    ],
+                    "valueType": [
+                      "text"
+                    ]
+                  },
+                  "type": "rule"
+                }
+              ],
+              "id": "a9baa8a8-89ab-4cde-b012-318a7b1d2d1d",
+              "type": "group"
+            },
+            "whereString": "(metric = 'Baseline' AND platform = 'windows-2019')"
+          },
+          "table": "benchmarkresults"
+        },
+        {
+          "datasource": {
+            "type": "postgres",
+            "uid": "ad921a16-67d8-4174-a55c-87105258fc36"
+          },
+          "editorMode": "code",
+          "format": "table",
+          "hide": false,
+          "rawQuery": true,
+          "rawSql": "SELECT \"timestamp\", value as \"BPF_MAP_TYPE_HASH update and read\" FROM benchmarkresults WHERE (metric = 'BPF_MAP_TYPE_HASH update and read' AND platform = 'windows-2019') LIMIT 50 ",
+          "refId": "D",
+          "sql": {
+            "columns": [
+              {
+                "parameters": [
+                  {
+                    "name": "\"timestamp\"",
+                    "type": "functionParameter"
+                  }
+                ],
+                "type": "function"
+              },
+              {
+                "parameters": [
+                  {
+                    "name": "value",
+                    "type": "functionParameter"
+                  }
+                ],
+                "type": "function"
+              }
+            ],
+            "groupBy": [
+              {
+                "property": {
+                  "type": "string"
+                },
+                "type": "groupBy"
+              }
+            ],
+            "limit": 50,
+            "whereJsonTree": {
+              "children1": [
+                {
+                  "id": "bb8a8a9b-89ab-4cde-b012-318a7b1df149",
+                  "properties": {
+                    "field": "metric",
+                    "operator": "equal",
+                    "value": [
+                      "Baseline"
+                    ],
+                    "valueSrc": [
+                      "value"
+                    ],
+                    "valueType": [
+                      "text"
+                    ]
+                  },
+                  "type": "rule"
+                },
+                {
+                  "id": "aab8999a-4567-489a-bcde-f18a7b1e17cf",
+                  "properties": {
+                    "field": "platform",
+                    "operator": "equal",
+                    "value": [
+                      "windows-2019"
+                    ],
+                    "valueSrc": [
+                      "value"
+                    ],
+                    "valueType": [
+                      "text"
+                    ]
+                  },
+                  "type": "rule"
+                }
+              ],
+              "id": "a9baa8a8-89ab-4cde-b012-318a7b1d2d1d",
+              "type": "group"
+            },
+            "whereString": "(metric = 'Baseline' AND platform = 'windows-2019')"
+          },
+          "table": "benchmarkresults"
+        }
+      ],
+      "title": "eBPF For Windows - Server 2019 - BPF_MAP_TYPE_HASH",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "postgres",
+        "uid": "ad921a16-67d8-4174-a55c-87105258fc36"
+      },
+      "description": "",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "drawStyle": "line",
+            "fillOpacity": 0,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "insertNulls": false,
+            "lineInterpolation": "linear",
+            "lineWidth": 1,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "auto",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 16
+      },
+      "id": 5,
+      "options": {
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "single",
+          "sort": "none"
+        }
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "postgres",
+            "uid": "ad921a16-67d8-4174-a55c-87105258fc36"
+          },
+          "editorMode": "code",
+          "format": "table",
+          "rawQuery": true,
+          "rawSql": "SELECT \"timestamp\", value as \"BPF_MAP_TYPE_PERCPU_HASH read\" FROM benchmarkresults WHERE (metric = 'BPF_MAP_TYPE_PERCPU_HASH read' AND platform = 'windows-2019') LIMIT 50 ",
+          "refId": "A",
+          "sql": {
+            "columns": [
+              {
+                "parameters": [
+                  {
+                    "name": "\"timestamp\"",
+                    "type": "functionParameter"
+                  }
+                ],
+                "type": "function"
+              },
+              {
+                "parameters": [
+                  {
+                    "name": "value",
+                    "type": "functionParameter"
+                  }
+                ],
+                "type": "function"
+              }
+            ],
+            "groupBy": [
+              {
+                "property": {
+                  "type": "string"
+                },
+                "type": "groupBy"
+              }
+            ],
+            "limit": 50,
+            "whereJsonTree": {
+              "children1": [
+                {
+                  "id": "bb8a8a9b-89ab-4cde-b012-318a7b1df149",
+                  "properties": {
+                    "field": "metric",
+                    "operator": "equal",
+                    "value": [
+                      "Baseline"
+                    ],
+                    "valueSrc": [
+                      "value"
+                    ],
+                    "valueType": [
+                      "text"
+                    ]
+                  },
+                  "type": "rule"
+                },
+                {
+                  "id": "aab8999a-4567-489a-bcde-f18a7b1e17cf",
+                  "properties": {
+                    "field": "platform",
+                    "operator": "equal",
+                    "value": [
+                      "windows-2019"
+                    ],
+                    "valueSrc": [
+                      "value"
+                    ],
+                    "valueType": [
+                      "text"
+                    ]
+                  },
+                  "type": "rule"
+                }
+              ],
+              "id": "a9baa8a8-89ab-4cde-b012-318a7b1d2d1d",
+              "type": "group"
+            },
+            "whereString": "(metric = 'Baseline' AND platform = 'windows-2019')"
+          },
+          "table": "benchmarkresults"
+        },
+        {
+          "datasource": {
+            "type": "postgres",
+            "uid": "ad921a16-67d8-4174-a55c-87105258fc36"
+          },
+          "editorMode": "code",
+          "format": "table",
+          "hide": false,
+          "rawQuery": true,
+          "rawSql": "SELECT \"timestamp\", value as \"BPF_MAP_TYPE_PERCPU_HASH update\" FROM benchmarkresults WHERE (metric = 'BPF_MAP_TYPE_PERCPU_HASH update' AND platform = 'windows-2019') LIMIT 50 ",
+          "refId": "B",
+          "sql": {
+            "columns": [
+              {
+                "parameters": [
+                  {
+                    "name": "\"timestamp\"",
+                    "type": "functionParameter"
+                  }
+                ],
+                "type": "function"
+              },
+              {
+                "parameters": [
+                  {
+                    "name": "value",
+                    "type": "functionParameter"
+                  }
+                ],
+                "type": "function"
+              }
+            ],
+            "groupBy": [
+              {
+                "property": {
+                  "type": "string"
+                },
+                "type": "groupBy"
+              }
+            ],
+            "limit": 50,
+            "whereJsonTree": {
+              "children1": [
+                {
+                  "id": "bb8a8a9b-89ab-4cde-b012-318a7b1df149",
+                  "properties": {
+                    "field": "metric",
+                    "operator": "equal",
+                    "value": [
+                      "Baseline"
+                    ],
+                    "valueSrc": [
+                      "value"
+                    ],
+                    "valueType": [
+                      "text"
+                    ]
+                  },
+                  "type": "rule"
+                },
+                {
+                  "id": "aab8999a-4567-489a-bcde-f18a7b1e17cf",
+                  "properties": {
+                    "field": "platform",
+                    "operator": "equal",
+                    "value": [
+                      "windows-2019"
+                    ],
+                    "valueSrc": [
+                      "value"
+                    ],
+                    "valueType": [
+                      "text"
+                    ]
+                  },
+                  "type": "rule"
+                }
+              ],
+              "id": "a9baa8a8-89ab-4cde-b012-318a7b1d2d1d",
+              "type": "group"
+            },
+            "whereString": "(metric = 'Baseline' AND platform = 'windows-2019')"
+          },
+          "table": "benchmarkresults"
+        },
+        {
+          "datasource": {
+            "type": "postgres",
+            "uid": "ad921a16-67d8-4174-a55c-87105258fc36"
+          },
+          "editorMode": "code",
+          "format": "table",
+          "hide": false,
+          "rawQuery": true,
+          "rawSql": "SELECT \"timestamp\", value as \"BPF_MAP_TYPE_PERCPU_HASH replace\" FROM benchmarkresults WHERE (metric = 'BPF_MAP_TYPE_PERCPU_HASH replace' AND platform = 'windows-2019') LIMIT 50 ",
+          "refId": "C",
+          "sql": {
+            "columns": [
+              {
+                "parameters": [
+                  {
+                    "name": "\"timestamp\"",
+                    "type": "functionParameter"
+                  }
+                ],
+                "type": "function"
+              },
+              {
+                "parameters": [
+                  {
+                    "name": "value",
+                    "type": "functionParameter"
+                  }
+                ],
+                "type": "function"
+              }
+            ],
+            "groupBy": [
+              {
+                "property": {
+                  "type": "string"
+                },
+                "type": "groupBy"
+              }
+            ],
+            "limit": 50,
+            "whereJsonTree": {
+              "children1": [
+                {
+                  "id": "bb8a8a9b-89ab-4cde-b012-318a7b1df149",
+                  "properties": {
+                    "field": "metric",
+                    "operator": "equal",
+                    "value": [
+                      "Baseline"
+                    ],
+                    "valueSrc": [
+                      "value"
+                    ],
+                    "valueType": [
+                      "text"
+                    ]
+                  },
+                  "type": "rule"
+                },
+                {
+                  "id": "aab8999a-4567-489a-bcde-f18a7b1e17cf",
+                  "properties": {
+                    "field": "platform",
+                    "operator": "equal",
+                    "value": [
+                      "windows-2019"
+                    ],
+                    "valueSrc": [
+                      "value"
+                    ],
+                    "valueType": [
+                      "text"
+                    ]
+                  },
+                  "type": "rule"
+                }
+              ],
+              "id": "a9baa8a8-89ab-4cde-b012-318a7b1d2d1d",
+              "type": "group"
+            },
+            "whereString": "(metric = 'Baseline' AND platform = 'windows-2019')"
+          },
+          "table": "benchmarkresults"
+        },
+        {
+          "datasource": {
+            "type": "postgres",
+            "uid": "ad921a16-67d8-4174-a55c-87105258fc36"
+          },
+          "editorMode": "code",
+          "format": "table",
+          "hide": false,
+          "rawQuery": true,
+          "rawSql": "SELECT \"timestamp\", value as \"BPF_MAP_TYPE_PERCPU_HASH update and read\" FROM benchmarkresults WHERE (metric = 'BPF_MAP_TYPE_PERCPU_HASH update and read' AND platform = 'windows-2019') LIMIT 50 ",
+          "refId": "D",
+          "sql": {
+            "columns": [
+              {
+                "parameters": [
+                  {
+                    "name": "\"timestamp\"",
+                    "type": "functionParameter"
+                  }
+                ],
+                "type": "function"
+              },
+              {
+                "parameters": [
+                  {
+                    "name": "value",
+                    "type": "functionParameter"
+                  }
+                ],
+                "type": "function"
+              }
+            ],
+            "groupBy": [
+              {
+                "property": {
+                  "type": "string"
+                },
+                "type": "groupBy"
+              }
+            ],
+            "limit": 50,
+            "whereJsonTree": {
+              "children1": [
+                {
+                  "id": "bb8a8a9b-89ab-4cde-b012-318a7b1df149",
+                  "properties": {
+                    "field": "metric",
+                    "operator": "equal",
+                    "value": [
+                      "Baseline"
+                    ],
+                    "valueSrc": [
+                      "value"
+                    ],
+                    "valueType": [
+                      "text"
+                    ]
+                  },
+                  "type": "rule"
+                },
+                {
+                  "id": "aab8999a-4567-489a-bcde-f18a7b1e17cf",
+                  "properties": {
+                    "field": "platform",
+                    "operator": "equal",
+                    "value": [
+                      "windows-2019"
+                    ],
+                    "valueSrc": [
+                      "value"
+                    ],
+                    "valueType": [
+                      "text"
+                    ]
+                  },
+                  "type": "rule"
+                }
+              ],
+              "id": "a9baa8a8-89ab-4cde-b012-318a7b1d2d1d",
+              "type": "group"
+            },
+            "whereString": "(metric = 'Baseline' AND platform = 'windows-2019')"
+          },
+          "table": "benchmarkresults"
+        }
+      ],
+      "title": "eBPF For Windows - Server 2019 - BPF_MAP_TYPE_PERCPU_HASH",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "postgres",
+        "uid": "ad921a16-67d8-4174-a55c-87105258fc36"
+      },
+      "description": "",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "drawStyle": "line",
+            "fillOpacity": 0,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "insertNulls": false,
+            "lineInterpolation": "linear",
+            "lineWidth": 1,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "auto",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 16
+      },
+      "id": 6,
+      "options": {
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "single",
+          "sort": "none"
+        }
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "postgres",
+            "uid": "ad921a16-67d8-4174-a55c-87105258fc36"
+          },
+          "editorMode": "code",
+          "format": "table",
+          "rawQuery": true,
+          "rawSql": "SELECT \"timestamp\", value as \"BPF_MAP_TYPE_LRU_HASH read\" FROM benchmarkresults WHERE (metric = 'BPF_MAP_TYPE_LRU_HASH read' AND platform = 'windows-2019') LIMIT 50 ",
+          "refId": "A",
+          "sql": {
+            "columns": [
+              {
+                "parameters": [
+                  {
+                    "name": "\"timestamp\"",
+                    "type": "functionParameter"
+                  }
+                ],
+                "type": "function"
+              },
+              {
+                "parameters": [
+                  {
+                    "name": "value",
+                    "type": "functionParameter"
+                  }
+                ],
+                "type": "function"
+              }
+            ],
+            "groupBy": [
+              {
+                "property": {
+                  "type": "string"
+                },
+                "type": "groupBy"
+              }
+            ],
+            "limit": 50,
+            "whereJsonTree": {
+              "children1": [
+                {
+                  "id": "bb8a8a9b-89ab-4cde-b012-318a7b1df149",
+                  "properties": {
+                    "field": "metric",
+                    "operator": "equal",
+                    "value": [
+                      "Baseline"
+                    ],
+                    "valueSrc": [
+                      "value"
+                    ],
+                    "valueType": [
+                      "text"
+                    ]
+                  },
+                  "type": "rule"
+                },
+                {
+                  "id": "aab8999a-4567-489a-bcde-f18a7b1e17cf",
+                  "properties": {
+                    "field": "platform",
+                    "operator": "equal",
+                    "value": [
+                      "windows-2019"
+                    ],
+                    "valueSrc": [
+                      "value"
+                    ],
+                    "valueType": [
+                      "text"
+                    ]
+                  },
+                  "type": "rule"
+                }
+              ],
+              "id": "a9baa8a8-89ab-4cde-b012-318a7b1d2d1d",
+              "type": "group"
+            },
+            "whereString": "(metric = 'Baseline' AND platform = 'windows-2019')"
+          },
+          "table": "benchmarkresults"
+        },
+        {
+          "datasource": {
+            "type": "postgres",
+            "uid": "ad921a16-67d8-4174-a55c-87105258fc36"
+          },
+          "editorMode": "code",
+          "format": "table",
+          "hide": false,
+          "rawQuery": true,
+          "rawSql": "SELECT \"timestamp\", value as \"BPF_MAP_TYPE_LRU_HASH update\" FROM benchmarkresults WHERE (metric = 'BPF_MAP_TYPE_LRU_HASH update' AND platform = 'windows-2019') LIMIT 50 ",
+          "refId": "B",
+          "sql": {
+            "columns": [
+              {
+                "parameters": [
+                  {
+                    "name": "\"timestamp\"",
+                    "type": "functionParameter"
+                  }
+                ],
+                "type": "function"
+              },
+              {
+                "parameters": [
+                  {
+                    "name": "value",
+                    "type": "functionParameter"
+                  }
+                ],
+                "type": "function"
+              }
+            ],
+            "groupBy": [
+              {
+                "property": {
+                  "type": "string"
+                },
+                "type": "groupBy"
+              }
+            ],
+            "limit": 50,
+            "whereJsonTree": {
+              "children1": [
+                {
+                  "id": "bb8a8a9b-89ab-4cde-b012-318a7b1df149",
+                  "properties": {
+                    "field": "metric",
+                    "operator": "equal",
+                    "value": [
+                      "Baseline"
+                    ],
+                    "valueSrc": [
+                      "value"
+                    ],
+                    "valueType": [
+                      "text"
+                    ]
+                  },
+                  "type": "rule"
+                },
+                {
+                  "id": "aab8999a-4567-489a-bcde-f18a7b1e17cf",
+                  "properties": {
+                    "field": "platform",
+                    "operator": "equal",
+                    "value": [
+                      "windows-2019"
+                    ],
+                    "valueSrc": [
+                      "value"
+                    ],
+                    "valueType": [
+                      "text"
+                    ]
+                  },
+                  "type": "rule"
+                }
+              ],
+              "id": "a9baa8a8-89ab-4cde-b012-318a7b1d2d1d",
+              "type": "group"
+            },
+            "whereString": "(metric = 'Baseline' AND platform = 'windows-2019')"
+          },
+          "table": "benchmarkresults"
+        },
+        {
+          "datasource": {
+            "type": "postgres",
+            "uid": "ad921a16-67d8-4174-a55c-87105258fc36"
+          },
+          "editorMode": "code",
+          "format": "table",
+          "hide": false,
+          "rawQuery": true,
+          "rawSql": "SELECT \"timestamp\", value as \"BPF_MAP_TYPE_LRU_HASH replace\" FROM benchmarkresults WHERE (metric = 'BPF_MAP_TYPE_LRU_HASH replace' AND platform = 'windows-2019') LIMIT 50 ",
+          "refId": "C",
+          "sql": {
+            "columns": [
+              {
+                "parameters": [
+                  {
+                    "name": "\"timestamp\"",
+                    "type": "functionParameter"
+                  }
+                ],
+                "type": "function"
+              },
+              {
+                "parameters": [
+                  {
+                    "name": "value",
+                    "type": "functionParameter"
+                  }
+                ],
+                "type": "function"
+              }
+            ],
+            "groupBy": [
+              {
+                "property": {
+                  "type": "string"
+                },
+                "type": "groupBy"
+              }
+            ],
+            "limit": 50,
+            "whereJsonTree": {
+              "children1": [
+                {
+                  "id": "bb8a8a9b-89ab-4cde-b012-318a7b1df149",
+                  "properties": {
+                    "field": "metric",
+                    "operator": "equal",
+                    "value": [
+                      "Baseline"
+                    ],
+                    "valueSrc": [
+                      "value"
+                    ],
+                    "valueType": [
+                      "text"
+                    ]
+                  },
+                  "type": "rule"
+                },
+                {
+                  "id": "aab8999a-4567-489a-bcde-f18a7b1e17cf",
+                  "properties": {
+                    "field": "platform",
+                    "operator": "equal",
+                    "value": [
+                      "windows-2019"
+                    ],
+                    "valueSrc": [
+                      "value"
+                    ],
+                    "valueType": [
+                      "text"
+                    ]
+                  },
+                  "type": "rule"
+                }
+              ],
+              "id": "a9baa8a8-89ab-4cde-b012-318a7b1d2d1d",
+              "type": "group"
+            },
+            "whereString": "(metric = 'Baseline' AND platform = 'windows-2019')"
+          },
+          "table": "benchmarkresults"
+        },
+        {
+          "datasource": {
+            "type": "postgres",
+            "uid": "ad921a16-67d8-4174-a55c-87105258fc36"
+          },
+          "editorMode": "code",
+          "format": "table",
+          "hide": false,
+          "rawQuery": true,
+          "rawSql": "SELECT \"timestamp\", value as \"BPF_MAP_TYPE_LRU_HASH update and read\" FROM benchmarkresults WHERE (metric = 'BPF_MAP_TYPE_LRU_HASH update and read' AND platform = 'windows-2019') LIMIT 50 ",
+          "refId": "D",
+          "sql": {
+            "columns": [
+              {
+                "parameters": [
+                  {
+                    "name": "\"timestamp\"",
+                    "type": "functionParameter"
+                  }
+                ],
+                "type": "function"
+              },
+              {
+                "parameters": [
+                  {
+                    "name": "value",
+                    "type": "functionParameter"
+                  }
+                ],
+                "type": "function"
+              }
+            ],
+            "groupBy": [
+              {
+                "property": {
+                  "type": "string"
+                },
+                "type": "groupBy"
+              }
+            ],
+            "limit": 50,
+            "whereJsonTree": {
+              "children1": [
+                {
+                  "id": "bb8a8a9b-89ab-4cde-b012-318a7b1df149",
+                  "properties": {
+                    "field": "metric",
+                    "operator": "equal",
+                    "value": [
+                      "Baseline"
+                    ],
+                    "valueSrc": [
+                      "value"
+                    ],
+                    "valueType": [
+                      "text"
+                    ]
+                  },
+                  "type": "rule"
+                },
+                {
+                  "id": "aab8999a-4567-489a-bcde-f18a7b1e17cf",
+                  "properties": {
+                    "field": "platform",
+                    "operator": "equal",
+                    "value": [
+                      "windows-2019"
+                    ],
+                    "valueSrc": [
+                      "value"
+                    ],
+                    "valueType": [
+                      "text"
+                    ]
+                  },
+                  "type": "rule"
+                }
+              ],
+              "id": "a9baa8a8-89ab-4cde-b012-318a7b1d2d1d",
+              "type": "group"
+            },
+            "whereString": "(metric = 'Baseline' AND platform = 'windows-2019')"
+          },
+          "table": "benchmarkresults"
+        },
+        {
+          "datasource": {
+            "type": "postgres",
+            "uid": "ad921a16-67d8-4174-a55c-87105258fc36"
+          },
+          "editorMode": "code",
+          "format": "table",
+          "hide": false,
+          "rawQuery": true,
+          "rawSql": "SELECT \"timestamp\", value as \"BPF_MAP_TYPE_LRU_HASH rolling update\" FROM benchmarkresults WHERE (metric = 'BPF_MAP_TYPE_LRU_HASH rolling update' AND platform = 'windows-2019') LIMIT 50 ",
+          "refId": "E",
+          "sql": {
+            "columns": [
+              {
+                "parameters": [
+                  {
+                    "name": "\"timestamp\"",
+                    "type": "functionParameter"
+                  }
+                ],
+                "type": "function"
+              },
+              {
+                "parameters": [
+                  {
+                    "name": "value",
+                    "type": "functionParameter"
+                  }
+                ],
+                "type": "function"
+              }
+            ],
+            "groupBy": [
+              {
+                "property": {
+                  "type": "string"
+                },
+                "type": "groupBy"
+              }
+            ],
+            "limit": 50,
+            "whereJsonTree": {
+              "children1": [
+                {
+                  "id": "bb8a8a9b-89ab-4cde-b012-318a7b1df149",
+                  "properties": {
+                    "field": "metric",
+                    "operator": "equal",
+                    "value": [
+                      "Baseline"
+                    ],
+                    "valueSrc": [
+                      "value"
+                    ],
+                    "valueType": [
+                      "text"
+                    ]
+                  },
+                  "type": "rule"
+                },
+                {
+                  "id": "aab8999a-4567-489a-bcde-f18a7b1e17cf",
+                  "properties": {
+                    "field": "platform",
+                    "operator": "equal",
+                    "value": [
+                      "windows-2019"
+                    ],
+                    "valueSrc": [
+                      "value"
+                    ],
+                    "valueType": [
+                      "text"
+                    ]
+                  },
+                  "type": "rule"
+                }
+              ],
+              "id": "a9baa8a8-89ab-4cde-b012-318a7b1d2d1d",
+              "type": "group"
+            },
+            "whereString": "(metric = 'Baseline' AND platform = 'windows-2019')"
+          },
+          "table": "benchmarkresults"
+        }
+      ],
+      "title": "eBPF For Windows - Server 2019 - BPF_MAP_TYPE_LRU_HASH",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "postgres",
+        "uid": "ad921a16-67d8-4174-a55c-87105258fc36"
+      },
+      "description": "",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "drawStyle": "line",
+            "fillOpacity": 0,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "insertNulls": false,
+            "lineInterpolation": "linear",
+            "lineWidth": 1,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "auto",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green"
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 24
+      },
+      "id": 7,
+      "options": {
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "single",
+          "sort": "none"
+        }
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "postgres",
+            "uid": "ad921a16-67d8-4174-a55c-87105258fc36"
+          },
+          "editorMode": "code",
+          "format": "table",
+          "rawQuery": true,
+          "rawSql": "SELECT \"timestamp\", value as \"BPF_MAP_TYPE_LPM_TRIE_1K read\" FROM benchmarkresults WHERE (metric = 'BPF_MAP_TYPE_LPM_TRIE_1K read' AND platform = 'windows-2019') LIMIT 50 ",
+          "refId": "A",
+          "sql": {
+            "columns": [
+              {
+                "parameters": [
+                  {
+                    "name": "\"timestamp\"",
+                    "type": "functionParameter"
+                  }
+                ],
+                "type": "function"
+              },
+              {
+                "parameters": [
+                  {
+                    "name": "value",
+                    "type": "functionParameter"
+                  }
+                ],
+                "type": "function"
+              }
+            ],
+            "groupBy": [
+              {
+                "property": {
+                  "type": "string"
+                },
+                "type": "groupBy"
+              }
+            ],
+            "limit": 50,
+            "whereJsonTree": {
+              "children1": [
+                {
+                  "id": "bb8a8a9b-89ab-4cde-b012-318a7b1df149",
+                  "properties": {
+                    "field": "metric",
+                    "operator": "equal",
+                    "value": [
+                      "Baseline"
+                    ],
+                    "valueSrc": [
+                      "value"
+                    ],
+                    "valueType": [
+                      "text"
+                    ]
+                  },
+                  "type": "rule"
+                },
+                {
+                  "id": "aab8999a-4567-489a-bcde-f18a7b1e17cf",
+                  "properties": {
+                    "field": "platform",
+                    "operator": "equal",
+                    "value": [
+                      "windows-2019"
+                    ],
+                    "valueSrc": [
+                      "value"
+                    ],
+                    "valueType": [
+                      "text"
+                    ]
+                  },
+                  "type": "rule"
+                }
+              ],
+              "id": "a9baa8a8-89ab-4cde-b012-318a7b1d2d1d",
+              "type": "group"
+            },
+            "whereString": "(metric = 'Baseline' AND platform = 'windows-2019')"
+          },
+          "table": "benchmarkresults"
+        },
+        {
+          "datasource": {
+            "type": "postgres",
+            "uid": "ad921a16-67d8-4174-a55c-87105258fc36"
+          },
+          "editorMode": "code",
+          "format": "table",
+          "hide": false,
+          "rawQuery": true,
+          "rawSql": "SELECT \"timestamp\", value as \"BPF_MAP_TYPE_LPM_TRIE_1K update\" FROM benchmarkresults WHERE (metric = 'BPF_MAP_TYPE_LPM_TRIE_1K update' AND platform = 'windows-2019') LIMIT 50 ",
+          "refId": "B",
+          "sql": {
+            "columns": [
+              {
+                "parameters": [
+                  {
+                    "name": "\"timestamp\"",
+                    "type": "functionParameter"
+                  }
+                ],
+                "type": "function"
+              },
+              {
+                "parameters": [
+                  {
+                    "name": "value",
+                    "type": "functionParameter"
+                  }
+                ],
+                "type": "function"
+              }
+            ],
+            "groupBy": [
+              {
+                "property": {
+                  "type": "string"
+                },
+                "type": "groupBy"
+              }
+            ],
+            "limit": 50,
+            "whereJsonTree": {
+              "children1": [
+                {
+                  "id": "bb8a8a9b-89ab-4cde-b012-318a7b1df149",
+                  "properties": {
+                    "field": "metric",
+                    "operator": "equal",
+                    "value": [
+                      "Baseline"
+                    ],
+                    "valueSrc": [
+                      "value"
+                    ],
+                    "valueType": [
+                      "text"
+                    ]
+                  },
+                  "type": "rule"
+                },
+                {
+                  "id": "aab8999a-4567-489a-bcde-f18a7b1e17cf",
+                  "properties": {
+                    "field": "platform",
+                    "operator": "equal",
+                    "value": [
+                      "windows-2019"
+                    ],
+                    "valueSrc": [
+                      "value"
+                    ],
+                    "valueType": [
+                      "text"
+                    ]
+                  },
+                  "type": "rule"
+                }
+              ],
+              "id": "a9baa8a8-89ab-4cde-b012-318a7b1d2d1d",
+              "type": "group"
+            },
+            "whereString": "(metric = 'Baseline' AND platform = 'windows-2019')"
+          },
+          "table": "benchmarkresults"
+        },
+        {
+          "datasource": {
+            "type": "postgres",
+            "uid": "ad921a16-67d8-4174-a55c-87105258fc36"
+          },
+          "editorMode": "code",
+          "format": "table",
+          "hide": false,
+          "rawQuery": true,
+          "rawSql": "SELECT \"timestamp\", value as \"BPF_MAP_TYPE_LPM_TRIE_1K replace\" FROM benchmarkresults WHERE (metric = 'BPF_MAP_TYPE_LPM_TRIE_1K replace' AND platform = 'windows-2019') LIMIT 50 ",
+          "refId": "C",
+          "sql": {
+            "columns": [
+              {
+                "parameters": [
+                  {
+                    "name": "\"timestamp\"",
+                    "type": "functionParameter"
+                  }
+                ],
+                "type": "function"
+              },
+              {
+                "parameters": [
+                  {
+                    "name": "value",
+                    "type": "functionParameter"
+                  }
+                ],
+                "type": "function"
+              }
+            ],
+            "groupBy": [
+              {
+                "property": {
+                  "type": "string"
+                },
+                "type": "groupBy"
+              }
+            ],
+            "limit": 50,
+            "whereJsonTree": {
+              "children1": [
+                {
+                  "id": "bb8a8a9b-89ab-4cde-b012-318a7b1df149",
+                  "properties": {
+                    "field": "metric",
+                    "operator": "equal",
+                    "value": [
+                      "Baseline"
+                    ],
+                    "valueSrc": [
+                      "value"
+                    ],
+                    "valueType": [
+                      "text"
+                    ]
+                  },
+                  "type": "rule"
+                },
+                {
+                  "id": "aab8999a-4567-489a-bcde-f18a7b1e17cf",
+                  "properties": {
+                    "field": "platform",
+                    "operator": "equal",
+                    "value": [
+                      "windows-2019"
+                    ],
+                    "valueSrc": [
+                      "value"
+                    ],
+                    "valueType": [
+                      "text"
+                    ]
+                  },
+                  "type": "rule"
+                }
+              ],
+              "id": "a9baa8a8-89ab-4cde-b012-318a7b1d2d1d",
+              "type": "group"
+            },
+            "whereString": "(metric = 'Baseline' AND platform = 'windows-2019')"
+          },
+          "table": "benchmarkresults"
+        }
+      ],
+      "title": "eBPF For Windows - Server 2019 - BPF_MAP_TYPE_LPM_TRIE_1K",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "postgres",
+        "uid": "ad921a16-67d8-4174-a55c-87105258fc36"
+      },
+      "description": "",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "drawStyle": "line",
+            "fillOpacity": 0,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "insertNulls": false,
+            "lineInterpolation": "linear",
+            "lineWidth": 1,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "auto",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green"
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 24
+      },
+      "id": 8,
+      "options": {
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "single",
+          "sort": "none"
+        }
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "postgres",
+            "uid": "ad921a16-67d8-4174-a55c-87105258fc36"
+          },
+          "editorMode": "code",
+          "format": "table",
+          "rawQuery": true,
+          "rawSql": "SELECT \"timestamp\", value as \"BPF_MAP_TYPE_LPM_TRIE_16K read\" FROM benchmarkresults WHERE (metric = 'BPF_MAP_TYPE_LPM_TRIE_16K read' AND platform = 'windows-2019') LIMIT 50 ",
+          "refId": "A",
+          "sql": {
+            "columns": [
+              {
+                "parameters": [
+                  {
+                    "name": "\"timestamp\"",
+                    "type": "functionParameter"
+                  }
+                ],
+                "type": "function"
+              },
+              {
+                "parameters": [
+                  {
+                    "name": "value",
+                    "type": "functionParameter"
+                  }
+                ],
+                "type": "function"
+              }
+            ],
+            "groupBy": [
+              {
+                "property": {
+                  "type": "string"
+                },
+                "type": "groupBy"
+              }
+            ],
+            "limit": 50,
+            "whereJsonTree": {
+              "children1": [
+                {
+                  "id": "bb8a8a9b-89ab-4cde-b012-318a7b1df149",
+                  "properties": {
+                    "field": "metric",
+                    "operator": "equal",
+                    "value": [
+                      "Baseline"
+                    ],
+                    "valueSrc": [
+                      "value"
+                    ],
+                    "valueType": [
+                      "text"
+                    ]
+                  },
+                  "type": "rule"
+                },
+                {
+                  "id": "aab8999a-4567-489a-bcde-f18a7b1e17cf",
+                  "properties": {
+                    "field": "platform",
+                    "operator": "equal",
+                    "value": [
+                      "windows-2019"
+                    ],
+                    "valueSrc": [
+                      "value"
+                    ],
+                    "valueType": [
+                      "text"
+                    ]
+                  },
+                  "type": "rule"
+                }
+              ],
+              "id": "a9baa8a8-89ab-4cde-b012-318a7b1d2d1d",
+              "type": "group"
+            },
+            "whereString": "(metric = 'Baseline' AND platform = 'windows-2019')"
+          },
+          "table": "benchmarkresults"
+        },
+        {
+          "datasource": {
+            "type": "postgres",
+            "uid": "ad921a16-67d8-4174-a55c-87105258fc36"
+          },
+          "editorMode": "code",
+          "format": "table",
+          "hide": false,
+          "rawQuery": true,
+          "rawSql": "SELECT \"timestamp\", value as \"BPF_MAP_TYPE_LPM_TRIE_16K update\" FROM benchmarkresults WHERE (metric = 'BPF_MAP_TYPE_LPM_TRIE_16K update' AND platform = 'windows-2019') LIMIT 50 ",
+          "refId": "B",
+          "sql": {
+            "columns": [
+              {
+                "parameters": [
+                  {
+                    "name": "\"timestamp\"",
+                    "type": "functionParameter"
+                  }
+                ],
+                "type": "function"
+              },
+              {
+                "parameters": [
+                  {
+                    "name": "value",
+                    "type": "functionParameter"
+                  }
+                ],
+                "type": "function"
+              }
+            ],
+            "groupBy": [
+              {
+                "property": {
+                  "type": "string"
+                },
+                "type": "groupBy"
+              }
+            ],
+            "limit": 50,
+            "whereJsonTree": {
+              "children1": [
+                {
+                  "id": "bb8a8a9b-89ab-4cde-b012-318a7b1df149",
+                  "properties": {
+                    "field": "metric",
+                    "operator": "equal",
+                    "value": [
+                      "Baseline"
+                    ],
+                    "valueSrc": [
+                      "value"
+                    ],
+                    "valueType": [
+                      "text"
+                    ]
+                  },
+                  "type": "rule"
+                },
+                {
+                  "id": "aab8999a-4567-489a-bcde-f18a7b1e17cf",
+                  "properties": {
+                    "field": "platform",
+                    "operator": "equal",
+                    "value": [
+                      "windows-2019"
+                    ],
+                    "valueSrc": [
+                      "value"
+                    ],
+                    "valueType": [
+                      "text"
+                    ]
+                  },
+                  "type": "rule"
+                }
+              ],
+              "id": "a9baa8a8-89ab-4cde-b012-318a7b1d2d1d",
+              "type": "group"
+            },
+            "whereString": "(metric = 'Baseline' AND platform = 'windows-2019')"
+          },
+          "table": "benchmarkresults"
+        },
+        {
+          "datasource": {
+            "type": "postgres",
+            "uid": "ad921a16-67d8-4174-a55c-87105258fc36"
+          },
+          "editorMode": "code",
+          "format": "table",
+          "hide": false,
+          "rawQuery": true,
+          "rawSql": "SELECT \"timestamp\", value as \"BPF_MAP_TYPE_LPM_TRIE_16K replace\" FROM benchmarkresults WHERE (metric = 'BPF_MAP_TYPE_LPM_TRIE_16K replace' AND platform = 'windows-2019') LIMIT 50 ",
+          "refId": "C",
+          "sql": {
+            "columns": [
+              {
+                "parameters": [
+                  {
+                    "name": "\"timestamp\"",
+                    "type": "functionParameter"
+                  }
+                ],
+                "type": "function"
+              },
+              {
+                "parameters": [
+                  {
+                    "name": "value",
+                    "type": "functionParameter"
+                  }
+                ],
+                "type": "function"
+              }
+            ],
+            "groupBy": [
+              {
+                "property": {
+                  "type": "string"
+                },
+                "type": "groupBy"
+              }
+            ],
+            "limit": 50,
+            "whereJsonTree": {
+              "children1": [
+                {
+                  "id": "bb8a8a9b-89ab-4cde-b012-318a7b1df149",
+                  "properties": {
+                    "field": "metric",
+                    "operator": "equal",
+                    "value": [
+                      "Baseline"
+                    ],
+                    "valueSrc": [
+                      "value"
+                    ],
+                    "valueType": [
+                      "text"
+                    ]
+                  },
+                  "type": "rule"
+                },
+                {
+                  "id": "aab8999a-4567-489a-bcde-f18a7b1e17cf",
+                  "properties": {
+                    "field": "platform",
+                    "operator": "equal",
+                    "value": [
+                      "windows-2019"
+                    ],
+                    "valueSrc": [
+                      "value"
+                    ],
+                    "valueType": [
+                      "text"
+                    ]
+                  },
+                  "type": "rule"
+                }
+              ],
+              "id": "a9baa8a8-89ab-4cde-b012-318a7b1d2d1d",
+              "type": "group"
+            },
+            "whereString": "(metric = 'Baseline' AND platform = 'windows-2019')"
+          },
+          "table": "benchmarkresults"
+        }
+      ],
+      "title": "eBPF For Windows - Server 2019 - BPF_MAP_TYPE_LPM_TRIE_16K",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "postgres",
+        "uid": "ad921a16-67d8-4174-a55c-87105258fc36"
+      },
+      "description": "",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "drawStyle": "line",
+            "fillOpacity": 0,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "insertNulls": false,
+            "lineInterpolation": "linear",
+            "lineWidth": 1,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "auto",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green"
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 32
+      },
+      "id": 9,
+      "options": {
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "single",
+          "sort": "none"
+        }
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "postgres",
+            "uid": "ad921a16-67d8-4174-a55c-87105258fc36"
+          },
+          "editorMode": "code",
+          "format": "table",
+          "rawQuery": true,
+          "rawSql": "SELECT \"timestamp\", value as \"BPF_MAP_TYPE_LPM_TRIE_256K read\" FROM benchmarkresults WHERE (metric = 'BPF_MAP_TYPE_LPM_TRIE_256K read' AND platform = 'windows-2019') LIMIT 50 ",
+          "refId": "A",
+          "sql": {
+            "columns": [
+              {
+                "parameters": [
+                  {
+                    "name": "\"timestamp\"",
+                    "type": "functionParameter"
+                  }
+                ],
+                "type": "function"
+              },
+              {
+                "parameters": [
+                  {
+                    "name": "value",
+                    "type": "functionParameter"
+                  }
+                ],
+                "type": "function"
+              }
+            ],
+            "groupBy": [
+              {
+                "property": {
+                  "type": "string"
+                },
+                "type": "groupBy"
+              }
+            ],
+            "limit": 50,
+            "whereJsonTree": {
+              "children1": [
+                {
+                  "id": "bb8a8a9b-89ab-4cde-b012-318a7b1df149",
+                  "properties": {
+                    "field": "metric",
+                    "operator": "equal",
+                    "value": [
+                      "Baseline"
+                    ],
+                    "valueSrc": [
+                      "value"
+                    ],
+                    "valueType": [
+                      "text"
+                    ]
+                  },
+                  "type": "rule"
+                },
+                {
+                  "id": "aab8999a-4567-489a-bcde-f18a7b1e17cf",
+                  "properties": {
+                    "field": "platform",
+                    "operator": "equal",
+                    "value": [
+                      "windows-2019"
+                    ],
+                    "valueSrc": [
+                      "value"
+                    ],
+                    "valueType": [
+                      "text"
+                    ]
+                  },
+                  "type": "rule"
+                }
+              ],
+              "id": "a9baa8a8-89ab-4cde-b012-318a7b1d2d1d",
+              "type": "group"
+            },
+            "whereString": "(metric = 'Baseline' AND platform = 'windows-2019')"
+          },
+          "table": "benchmarkresults"
+        },
+        {
+          "datasource": {
+            "type": "postgres",
+            "uid": "ad921a16-67d8-4174-a55c-87105258fc36"
+          },
+          "editorMode": "code",
+          "format": "table",
+          "hide": false,
+          "rawQuery": true,
+          "rawSql": "SELECT \"timestamp\", value as \"BPF_MAP_TYPE_LPM_TRIE_256K update\" FROM benchmarkresults WHERE (metric = 'BPF_MAP_TYPE_LPM_TRIE_256K update' AND platform = 'windows-2019') LIMIT 50 ",
+          "refId": "B",
+          "sql": {
+            "columns": [
+              {
+                "parameters": [
+                  {
+                    "name": "\"timestamp\"",
+                    "type": "functionParameter"
+                  }
+                ],
+                "type": "function"
+              },
+              {
+                "parameters": [
+                  {
+                    "name": "value",
+                    "type": "functionParameter"
+                  }
+                ],
+                "type": "function"
+              }
+            ],
+            "groupBy": [
+              {
+                "property": {
+                  "type": "string"
+                },
+                "type": "groupBy"
+              }
+            ],
+            "limit": 50,
+            "whereJsonTree": {
+              "children1": [
+                {
+                  "id": "bb8a8a9b-89ab-4cde-b012-318a7b1df149",
+                  "properties": {
+                    "field": "metric",
+                    "operator": "equal",
+                    "value": [
+                      "Baseline"
+                    ],
+                    "valueSrc": [
+                      "value"
+                    ],
+                    "valueType": [
+                      "text"
+                    ]
+                  },
+                  "type": "rule"
+                },
+                {
+                  "id": "aab8999a-4567-489a-bcde-f18a7b1e17cf",
+                  "properties": {
+                    "field": "platform",
+                    "operator": "equal",
+                    "value": [
+                      "windows-2019"
+                    ],
+                    "valueSrc": [
+                      "value"
+                    ],
+                    "valueType": [
+                      "text"
+                    ]
+                  },
+                  "type": "rule"
+                }
+              ],
+              "id": "a9baa8a8-89ab-4cde-b012-318a7b1d2d1d",
+              "type": "group"
+            },
+            "whereString": "(metric = 'Baseline' AND platform = 'windows-2019')"
+          },
+          "table": "benchmarkresults"
+        },
+        {
+          "datasource": {
+            "type": "postgres",
+            "uid": "ad921a16-67d8-4174-a55c-87105258fc36"
+          },
+          "editorMode": "code",
+          "format": "table",
+          "hide": false,
+          "rawQuery": true,
+          "rawSql": "SELECT \"timestamp\", value as \"BPF_MAP_TYPE_LPM_TRIE_256K replace\" FROM benchmarkresults WHERE (metric = 'BPF_MAP_TYPE_LPM_TRIE_256K replace' AND platform = 'windows-2019') LIMIT 50 ",
+          "refId": "C",
+          "sql": {
+            "columns": [
+              {
+                "parameters": [
+                  {
+                    "name": "\"timestamp\"",
+                    "type": "functionParameter"
+                  }
+                ],
+                "type": "function"
+              },
+              {
+                "parameters": [
+                  {
+                    "name": "value",
+                    "type": "functionParameter"
+                  }
+                ],
+                "type": "function"
+              }
+            ],
+            "groupBy": [
+              {
+                "property": {
+                  "type": "string"
+                },
+                "type": "groupBy"
+              }
+            ],
+            "limit": 50,
+            "whereJsonTree": {
+              "children1": [
+                {
+                  "id": "bb8a8a9b-89ab-4cde-b012-318a7b1df149",
+                  "properties": {
+                    "field": "metric",
+                    "operator": "equal",
+                    "value": [
+                      "Baseline"
+                    ],
+                    "valueSrc": [
+                      "value"
+                    ],
+                    "valueType": [
+                      "text"
+                    ]
+                  },
+                  "type": "rule"
+                },
+                {
+                  "id": "aab8999a-4567-489a-bcde-f18a7b1e17cf",
+                  "properties": {
+                    "field": "platform",
+                    "operator": "equal",
+                    "value": [
+                      "windows-2019"
+                    ],
+                    "valueSrc": [
+                      "value"
+                    ],
+                    "valueType": [
+                      "text"
+                    ]
+                  },
+                  "type": "rule"
+                }
+              ],
+              "id": "a9baa8a8-89ab-4cde-b012-318a7b1d2d1d",
+              "type": "group"
+            },
+            "whereString": "(metric = 'Baseline' AND platform = 'windows-2019')"
+          },
+          "table": "benchmarkresults"
+        }
+      ],
+      "title": "eBPF For Windows - Server 2019 - BPF_MAP_TYPE_LPM_TRIE_256K",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "postgres",
+        "uid": "ad921a16-67d8-4174-a55c-87105258fc36"
+      },
+      "description": "",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "drawStyle": "line",
+            "fillOpacity": 0,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "insertNulls": false,
+            "lineInterpolation": "linear",
+            "lineWidth": 1,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "auto",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green"
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 32
+      },
+      "id": 10,
+      "options": {
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "single",
+          "sort": "none"
+        }
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "postgres",
+            "uid": "ad921a16-67d8-4174-a55c-87105258fc36"
+          },
+          "editorMode": "code",
+          "format": "table",
+          "rawQuery": true,
+          "rawSql": "SELECT \"timestamp\", value as \"BPF_MAP_TYPE_LPM_TRIE_1M read\" FROM benchmarkresults WHERE (metric = 'BPF_MAP_TYPE_LPM_TRIE_1M read' AND platform = 'windows-2019') LIMIT 50 ",
+          "refId": "A",
+          "sql": {
+            "columns": [
+              {
+                "parameters": [
+                  {
+                    "name": "\"timestamp\"",
+                    "type": "functionParameter"
+                  }
+                ],
+                "type": "function"
+              },
+              {
+                "parameters": [
+                  {
+                    "name": "value",
+                    "type": "functionParameter"
+                  }
+                ],
+                "type": "function"
+              }
+            ],
+            "groupBy": [
+              {
+                "property": {
+                  "type": "string"
+                },
+                "type": "groupBy"
+              }
+            ],
+            "limit": 50,
+            "whereJsonTree": {
+              "children1": [
+                {
+                  "id": "bb8a8a9b-89ab-4cde-b012-318a7b1df149",
+                  "properties": {
+                    "field": "metric",
+                    "operator": "equal",
+                    "value": [
+                      "Baseline"
+                    ],
+                    "valueSrc": [
+                      "value"
+                    ],
+                    "valueType": [
+                      "text"
+                    ]
+                  },
+                  "type": "rule"
+                },
+                {
+                  "id": "aab8999a-4567-489a-bcde-f18a7b1e17cf",
+                  "properties": {
+                    "field": "platform",
+                    "operator": "equal",
+                    "value": [
+                      "windows-2019"
+                    ],
+                    "valueSrc": [
+                      "value"
+                    ],
+                    "valueType": [
+                      "text"
+                    ]
+                  },
+                  "type": "rule"
+                }
+              ],
+              "id": "a9baa8a8-89ab-4cde-b012-318a7b1d2d1d",
+              "type": "group"
+            },
+            "whereString": "(metric = 'Baseline' AND platform = 'windows-2019')"
+          },
+          "table": "benchmarkresults"
+        },
+        {
+          "datasource": {
+            "type": "postgres",
+            "uid": "ad921a16-67d8-4174-a55c-87105258fc36"
+          },
+          "editorMode": "code",
+          "format": "table",
+          "hide": false,
+          "rawQuery": true,
+          "rawSql": "SELECT \"timestamp\", value as \"BPF_MAP_TYPE_LPM_TRIE_1M update\" FROM benchmarkresults WHERE (metric = 'BPF_MAP_TYPE_LPM_TRIE_1M update' AND platform = 'windows-2019') LIMIT 50 ",
+          "refId": "B",
+          "sql": {
+            "columns": [
+              {
+                "parameters": [
+                  {
+                    "name": "\"timestamp\"",
+                    "type": "functionParameter"
+                  }
+                ],
+                "type": "function"
+              },
+              {
+                "parameters": [
+                  {
+                    "name": "value",
+                    "type": "functionParameter"
+                  }
+                ],
+                "type": "function"
+              }
+            ],
+            "groupBy": [
+              {
+                "property": {
+                  "type": "string"
+                },
+                "type": "groupBy"
+              }
+            ],
+            "limit": 50,
+            "whereJsonTree": {
+              "children1": [
+                {
+                  "id": "bb8a8a9b-89ab-4cde-b012-318a7b1df149",
+                  "properties": {
+                    "field": "metric",
+                    "operator": "equal",
+                    "value": [
+                      "Baseline"
+                    ],
+                    "valueSrc": [
+                      "value"
+                    ],
+                    "valueType": [
+                      "text"
+                    ]
+                  },
+                  "type": "rule"
+                },
+                {
+                  "id": "aab8999a-4567-489a-bcde-f18a7b1e17cf",
+                  "properties": {
+                    "field": "platform",
+                    "operator": "equal",
+                    "value": [
+                      "windows-2019"
+                    ],
+                    "valueSrc": [
+                      "value"
+                    ],
+                    "valueType": [
+                      "text"
+                    ]
+                  },
+                  "type": "rule"
+                }
+              ],
+              "id": "a9baa8a8-89ab-4cde-b012-318a7b1d2d1d",
+              "type": "group"
+            },
+            "whereString": "(metric = 'Baseline' AND platform = 'windows-2019')"
+          },
+          "table": "benchmarkresults"
+        },
+        {
+          "datasource": {
+            "type": "postgres",
+            "uid": "ad921a16-67d8-4174-a55c-87105258fc36"
+          },
+          "editorMode": "code",
+          "format": "table",
+          "hide": false,
+          "rawQuery": true,
+          "rawSql": "SELECT \"timestamp\", value as \"BPF_MAP_TYPE_LPM_TRIE_1M replace\" FROM benchmarkresults WHERE (metric = 'BPF_MAP_TYPE_LPM_TRIE_1M replace' AND platform = 'windows-2019') LIMIT 50 ",
+          "refId": "C",
+          "sql": {
+            "columns": [
+              {
+                "parameters": [
+                  {
+                    "name": "\"timestamp\"",
+                    "type": "functionParameter"
+                  }
+                ],
+                "type": "function"
+              },
+              {
+                "parameters": [
+                  {
+                    "name": "value",
+                    "type": "functionParameter"
+                  }
+                ],
+                "type": "function"
+              }
+            ],
+            "groupBy": [
+              {
+                "property": {
+                  "type": "string"
+                },
+                "type": "groupBy"
+              }
+            ],
+            "limit": 50,
+            "whereJsonTree": {
+              "children1": [
+                {
+                  "id": "bb8a8a9b-89ab-4cde-b012-318a7b1df149",
+                  "properties": {
+                    "field": "metric",
+                    "operator": "equal",
+                    "value": [
+                      "Baseline"
+                    ],
+                    "valueSrc": [
+                      "value"
+                    ],
+                    "valueType": [
+                      "text"
+                    ]
+                  },
+                  "type": "rule"
+                },
+                {
+                  "id": "aab8999a-4567-489a-bcde-f18a7b1e17cf",
+                  "properties": {
+                    "field": "platform",
+                    "operator": "equal",
+                    "value": [
+                      "windows-2019"
+                    ],
+                    "valueSrc": [
+                      "value"
+                    ],
+                    "valueType": [
+                      "text"
+                    ]
+                  },
+                  "type": "rule"
+                }
+              ],
+              "id": "a9baa8a8-89ab-4cde-b012-318a7b1d2d1d",
+              "type": "group"
+            },
+            "whereString": "(metric = 'Baseline' AND platform = 'windows-2019')"
+          },
+          "table": "benchmarkresults"
+        }
+      ],
+      "title": "eBPF For Windows - Server 2019 - BPF_MAP_TYPE_LPM_TRIE_1M",
+      "type": "timeseries"
+    }
+  ],
+  "refresh": "",
+  "schemaVersion": 38,
+  "style": "dark",
+  "tags": [],
+  "templating": {
+    "list": []
+  },
+  "time": {
+    "from": "2023-09-08T22:54:41.500Z",
+    "to": "2023-09-09T03:03:11.500Z"
+  },
+  "timepicker": {},
+  "timezone": "",
+  "title": "BPF Performance - Windows 2019",
+  "uid": "4d97fed8-1b9f-440a-b60c-fc4eed964b1f",
+  "version": 16,
+  "weekStart": ""
+}
