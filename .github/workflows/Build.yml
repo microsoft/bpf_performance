@@ -55,7 +55,8 @@ jobs:
       if: inputs.platform == 'windows-2019' || inputs.platform == 'windows-2022'
       run: |
         mkdir ${{github.workspace}}/local_packages
-        $runId = ((Invoke-WebRequest -Uri  "https://api.github.com/repos/microsoft/ebpf-for-windows/actions/runs?per_page=1&exclude_pull_requests=true&branch=main&status=completed&event=schedule" -Token ${{secrets.github_token}}).Content | ConvertFrom-Json).workflow_runs[0].id
+        $token = ConvertTo-SecureString -String ${{secrets.github_token}} -AsPlainText -Force
+        $runId = ((Invoke-WebRequest -Uri  "https://api.github.com/repos/microsoft/ebpf-for-windows/actions/runs?per_page=1&exclude_pull_requests=true&branch=main&status=completed&event=schedule" -Token $token).Content | ConvertFrom-Json).workflow_runs[0].id
         echo "RUNID=$runId" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
 
     - name: Cache downloaded artifacts
@@ -70,10 +71,11 @@ jobs:
         GH_TOKEN: ${{ github.token }}
       if: inputs.platform == 'windows-2019' || inputs.platform == 'windows-2022'
       run: |
+        $token = ConvertTo-SecureString -String ${{secrets.github_token}} -AsPlainText -Force
         $artifacts = @()
         $artifacts += 'ebpf-for-windows - NuGet package (Build-x64_Release)'
         $artifacts += 'ebpf-for-windows - MSI installer (Build-x64_Release)'
-        scripts\Fetch-LatestArtifacts.ps1 -ArtifactsToDownload $artifacts -OutputPath ${{github.workspace}}/local_packages -RunId ${{env.RUNID}} -GitHubToken ${{env.GITHUB_TOKEN}}
+        scripts\Fetch-LatestArtifacts.ps1 -ArtifactsToDownload $artifacts -OutputPath ${{github.workspace}}/local_packages -RunId ${{env.RUNID}} -GitHubToken $token
 
     - name: Configure CMake - Windows-2019 or Windows-2022
       if: inputs.platform == 'windows-2019' || inputs.platform == 'windows-2022'
