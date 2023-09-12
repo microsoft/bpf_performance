@@ -82,7 +82,7 @@ jobs:
 
     - name: Post-process results
       run: |
-        python3 scripts/process_results.py --csv-directory ${{github.workspace}}/results --sql-script-file ${{github.workspace}}/results/upload.sql --commit_id ${{github.sha}} --platform ${{matrix.platform}}
+        python3 scripts/process_results.py --csv-directory ${{github.workspace}}/results --sql-script-file ${{github.workspace}}/results/upload.sql --commit_id $(cat ${{github.workspace}}/results/commit_sha.txt) --platform ${{matrix.platform}}
 
     - name: Upload results to POSTGRES
       env:
