@@ -56,8 +56,16 @@ jobs:
       run: |
         mkdir ${{github.workspace}}/local_packages
         $token = ConvertTo-SecureString -String ${{secrets.github_token}} -AsPlainText -Force
-        $runId = ((Invoke-WebRequest -Uri  "https://api.github.com/repos/microsoft/ebpf-for-windows/actions/runs?per_page=1&exclude_pull_requests=true&branch=main&status=completed&event=schedule" -Token $token).Content | ConvertFrom-Json).workflow_runs[0].id
+        $workflow = ((Invoke-WebRequest -Uri  "https://api.github.com/repos/microsoft/ebpf-for-windows/actions/runs?per_page=1&exclude_pull_requests=true&branch=main&status=completed&event=schedule" -Token $token).Content | ConvertFrom-Json).workflow_runs[0]
+        $runId = $workflow.id
+        $commitSha = $workflow.head_sha
         echo "RUNID=$runId" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+        echo "COMMIT_SHA=$commitSha" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+
+    - name: Get Linux Kernel version
+      if: inputs.platform == 'ubuntu-22.04'
+      run: |
+        echo "COMMIT_SHA=$(uname -r)" >> $env:GITHUB_ENV
 
     - name: Cache downloaded artifacts
       if: inputs.platform == 'windows-2019' || inputs.platform == 'windows-2022'
@@ -109,7 +117,18 @@ jobs:
         path: ${{github.workspace}}/build/bin
 
     - name: Create results directory
-      run: mkdir -p ${{github.workspace}}/results
+      run: |
+        mkdir -p ${{github.workspace}}/results
+
+    - name: Create commit_sha.txt - Windows-2019 or Windows-2022
+      if: inputs.platform == 'windows-2019' || inputs.platform == 'windows-2022'
+      run:
+        echo ${{env.COMMIT_SHA}} | Out-File -FilePath ${{github.workspace}}/results/commit_sha.txt -Encoding utf8 -Append
+
+    - name: Create commit_sha.txt - Ubuntu-22.04
+      if: inputs.platform == 'ubuntu-22.04'
+      run: |
+        echo ${{env.COMMIT_SHA}} >> ${{github.workspace}}/results/commit_sha.txt
 
     - name: Tests - Ubuntu-22.04
       if: inputs.platform == 'ubuntu-22.04' && inputs.option == 'none'
@@ -148,6 +167,7 @@ jobs:
         name: results-${{env.BUILD_TYPE}}-${{inputs.platform}}-${{inputs.option}}
         path: |
           ${{github.workspace}}/results/*.csv
+          ${{github.workspace}}/results/commit_sha.txt
 
     - name: Upload profile
       uses: actions/upload-artifact@v2
@@ -163,13 +183,13 @@ jobs:
         cmake --build ${{github.workspace}}/build --target test --
 
     - name: Generate code coverage report
-      if: inputs.enable_coverage == true
+      if: inputs.option == 'coverage'
       run: |
         mkdir -p coverage
         lcov --capture --directory build --include '${{github.workspace}}/*' --output-file coverage/lcov.info --exclude '${{github.workspace}}/external/*' --exclude '${{github.workspace}}/build/*'
 
     - name: Coveralls Parallel
-      if: inputs.enable_coverage == true
+      if: inputs.option == 'coverage'
       uses: coverallsapp/github-action@v2.2.1
       with:
         github-token: ${{ secrets.github_token }}
