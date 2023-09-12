@@ -8,6 +8,7 @@ param(
     # Set of artifacts to download. This is a list of strings, each of which is the name of an artifact to download.
     [Parameter(Mandatory=$true)] [string[]] $ArtifactsToDownload,
     [Parameter(Mandatory=$true)] [string] $OutputPath,
+    [Parameter(Mandatory=$true)] [securestring] $GitHubToken,
     [Parameter(Mandatory=$false)] [string] $Owner = "microsoft",
     [Parameter(Mandatory=$false)] [string] $Repo = "ebpf-for-windows",
     [Parameter(Mandatory=$false)] [string] $Branch = "main",
@@ -18,7 +19,7 @@ if ($null -eq (Get-Command 'gh.exe' -ErrorAction SilentlyContinue)) {
 }
 
 if (!$runid) {
-    $run = ((Invoke-WebRequest -Uri  "https://api.github.com/repos/$Owner/$Repo/actions/runs?per_page=1&exclude_pull_requests=true&branch=$Branch&status=completed&event=schedule").Content | ConvertFrom-Json)
+    $run = ((Invoke-WebRequest -Uri "https://api.github.com/repos/$Owner/$Repo/actions/runs?per_page=1&exclude_pull_requests=true&branch=$Branch&status=completed&event=schedule" -Token $GitHubToken).Content | ConvertFrom-Json)
     $runid = $run.workflow_runs[0].id
 }
 
