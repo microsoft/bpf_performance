@@ -1,0 +1,24 @@
+services:
+    grafana:
+        container_name: grafana
+        image: grafana/grafana-oss:latest
+        restart: unless-stopped
+        ports:
+            - 80:3000
+        environment:
+            GF_RENDERING_SERVER_URL: http://renderer:8081/render
+            GF_RENDERING_CALLBACK_URL: http://grafana:3000
+            GF_LOG_FILTERS: rendering:debug
+            GF_DATABASE_TYPE: postgres
+            GF_DATABASE_HOST: bpf-performance-benchmarks.postgres.database.azure.com:5432
+            GF_DATABASE_NAME: grafana
+            GF_DATABASE_USER: postgres
+            #GF_DATABASE_PASSWORD: Password set via environment variable in Azure.
+            GF_DATABASE_SSL_MODE: require
+            GF_SECURITY_ALLOW_EMBEDDING: "true"
+            GF_FEATURE_TOGGLES_ENABLE: "publicDashboards"
+
+    renderer:
+        image: grafana/grafana-image-renderer:latest
+        ports:
+            - 8081:8081
