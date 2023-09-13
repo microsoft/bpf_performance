@@ -9,5 +9,6 @@ CREATE TABLE [dbo].[BenchmarkResults] (
     [Value]      INT           NOT NULL,
     [CommitHash] NVARCHAR (50) NOT NULL,
     [Platform]   NVARCHAR (50) NOT NULL,
+    [Repository] NVARCHAR (50),
     CONSTRAINT [PK_BenchmarkResults] PRIMARY KEY CLUSTERED ([id] ASC)
 );

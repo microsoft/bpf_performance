@@ -63,7 +63,7 @@ def parse_csv_file(csv_file):
 # The keys of the dictionary are the names of the columns.
 # The values of the dictionary are the values of the columns.
 
-def convert_csv_file_to_sql_script(csv_file, sql_script_file, commit_id, platform):
+def convert_csv_file_to_sql_script(csv_file, sql_script_file, commit_id, platform, repository):
     csv_rows = parse_csv_file(csv_file)
     sql_script_file.write("INSERT INTO BenchmarkResults (")
     sql_script_file.write(f"{TIMESTAMP_SQL_COLUMN_NAME}, ")
@@ -82,7 +82,8 @@ def convert_csv_file_to_sql_script(csv_file, sql_script_file, commit_id, platfor
         sql_script_file.write(f"'{csv_row[METRIC_COLUMN_NAME]}', ")
         sql_script_file.write(f"{csv_row[VALUE_COLUMN_NAME]}, ")
         sql_script_file.write(f"'{commit_id}', ")
-        sql_script_file.write(f"'{platform}'")
+        sql_script_file.write(f"'{platform}',")
+        sql_script_file.write(f"'{repository}'")
         # Write a comma if this is not the last row.
         if csv_row != csv_rows[-1]:
             sql_script_file.write("),\n")
@@ -95,9 +96,9 @@ def convert_csv_file_to_sql_script(csv_file, sql_script_file, commit_id, platfor
 # The keys of the dictionary are the names of the CSV files.
 # The values of the dictionary are the contents of the CSV files.
 
-def convert_csv_files_to_sql_script(csv_files, sql_script_file, commit_id, platform):
+def convert_csv_files_to_sql_script(csv_files, sql_script_file, commit_id, platform, repository):
     for csv_file_name, csv_file in csv_files.items():
-        convert_csv_file_to_sql_script(csv_file_name, sql_script_file, commit_id, platform)
+        convert_csv_file_to_sql_script(csv_file_name, sql_script_file, commit_id, platform, repository)
 
 # Main entry point.
 
@@ -107,11 +108,12 @@ def main():
     parser.add_argument("--sql-script-file", type=Path, required=True)
     parser.add_argument("--commit_id", type=str, required=True)
     parser.add_argument("--platform", type=str, required=True)
+    parser.add_argument("--repository", type=str, required=True)
     args = parser.parse_args()
 
     csv_files = parse_csv_files(args.csv_directory)
     with open(args.sql_script_file, "w") as sql_script_file:
-        convert_csv_files_to_sql_script(csv_files, sql_script_file, args.commit_id, args.platform)
+        convert_csv_files_to_sql_script(csv_files, sql_script_file, args.commit_id, args.platform, args.repository)
 
 if __name__ == "__main__":
     main()
