@@ -20,19 +20,19 @@ jobs:
 
     - name: Fetch secrets
       run: |
-        az keyvault secret show --vault-name "bpfperformacesecrets" --name "PGDATABASE" --query value >> ${{env.workspace}}/PGDATABASE
-        az keyvault secret show --vault-name "bpfperformacesecrets" --name "PGHOST" --query value >> ${{env.workspace}}/PGDATABASE
-        az keyvault secret show --vault-name "bpfperformacesecrets" --name "PGUSER" --query value >> ${{env.workspace}}/PGUSER
-        az keyvault secret show --vault-name "bpfperformacesecrets" --name "PGPASSWORD" --query value >> ${{env.workspace}}/PGPASSWORD
-        az keyvault secret show --vault-name "bpfperformacesecrets" --name "PGPORT" --query value" >> ${{env.workspace}}/PGPORT
+        az keyvault secret show --vault-name "bpfperformacesecrets" --name "PGDATABASE" --query value >> ${{github.workspace}}/PGDATABASE
+        az keyvault secret show --vault-name "bpfperformacesecrets" --name "PGHOST" --query value >> ${{github.workspace}}/PGDATABASE
+        az keyvault secret show --vault-name "bpfperformacesecrets" --name "PGUSER" --query value >> ${{github.workspace}}/PGUSER
+        az keyvault secret show --vault-name "bpfperformacesecrets" --name "PGPASSWORD" --query value >> ${{github.workspace}}/PGPASSWORD
+        az keyvault secret show --vault-name "bpfperformacesecrets" --name "PGPORT" --query value" >> ${{github.workspace}}/PGPORT
 
     - name: Test POSTGRES access
       run: |
-        export PGPASSWORD=$(cat ${{env.workspace}}/PGPASSWORD)
-        export PGHOST=$(cat ${{env.workspace}}/PGHOST)
-        export PGUSER=$(cat ${{env.workspace}}/PGUSER)
-        export PGPORT=$(cat ${{env.workspace}}/PGPORT)
-        export PGDATABASE=$(cat ${{env.workspace}}/PGDATABASE)
+        export PGPASSWORD=$(cat ${{github.workspace}}/PGPASSWORD)
+        export PGHOST=$(cat ${{github.workspace}}/PGHOST)
+        export PGUSER=$(cat ${{github.workspace}}/PGUSER)
+        export PGPORT=$(cat ${{github.workspace}}/PGPORT)
+        export PGDATABASE=$(cat ${{github.workspace}}/PGDATABASE)
         psql -c "SELECT * FROM BenchmarkResults LIMIT 50"
 
   
