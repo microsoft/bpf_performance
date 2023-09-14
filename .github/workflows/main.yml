@@ -18,8 +18,16 @@ jobs:
         tenant-id: ${{ secrets.AZURE_TENANT_ID }}
         subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}      
 
-    - name: Verify
+    - name: Fetch secrets
       run: |
-        az keyvault secret list --vault-name "bpfperformacesecrets"
+        echo "PGDATABASE=$(az keyvault secret show --vault-name "bpfperformacesecrets" --name "PGDATABASE" --query value)" >> $GITHUB_ENV
+        echo "PGHOST=$(az keyvault secret show --vault-name "bpfperformacesecrets" --name "PGHOST" --query value)" >> $GITHUB_ENV
+        echo "PGUSER=$(az keyvault secret show --vault-name "bpfperformacesecrets" --name "PGUSER" --query value)" >> $GITHUB_ENV
+        echo "PGPASSWORD=$(az keyvault secret show --vault-name "bpfperformacesecrets" --name "PGPASSWORD" --query value)" >> $GITHUB_ENV
+        echo "PGPORT=$(az keyvault secret show --vault-name "bpfperformacesecrets" --name "PGPORT" --query value)" >> $GITHUB_ENV
+
+    - name: Test POSTGRES access
+      run: |
+        psql -c "SELECT * FROM BenchmarkResults LIMIT 50"
 
   
