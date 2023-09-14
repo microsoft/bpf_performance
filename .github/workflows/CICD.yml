@@ -64,6 +64,7 @@ jobs:
 
   # Note: This can't be in a workflow_call as the login action doesn't work.
   upload_results:
+    if: github.event_name == 'schedule' || github.event_name == 'push'
     needs:
       - build_and_test
     strategy:
