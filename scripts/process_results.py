@@ -34,6 +34,8 @@ VALUE_SQL_COLUMN_NAME = "Value"
 COMMIT_HASH_SQL_COLUMN_NAME = "CommitHash"
 # The fifth column is the platform column.
 PLATFORM_SQL_COLUMN_NAME = "Platform"
+# The sixth column is the repository column.
+REPOSITORY_SQL_COLUMN_NAME = "Repository"
 
 # Parse all CSV files in the given directory and return a dictionary.
 # The keys of the dictionary are the names of the CSV files.
@@ -70,7 +72,8 @@ def convert_csv_file_to_sql_script(csv_file, sql_script_file, commit_id, platfor
     sql_script_file.write(f"{METRIC_SQL_COLUMN_NAME}, ")
     sql_script_file.write(f"{VALUE_SQL_COLUMN_NAME}, ")
     sql_script_file.write(f"{COMMIT_HASH_SQL_COLUMN_NAME}, ")
-    sql_script_file.write(f"{PLATFORM_SQL_COLUMN_NAME}")
+    sql_script_file.write(f"{PLATFORM_SQL_COLUMN_NAME}, ")
+    sql_script_file.write(f"{REPOSITORY_SQL_COLUMN_NAME}")
     sql_script_file.write(")\n")
     sql_script_file.write("VALUES\n")
     for csv_row in csv_rows:
