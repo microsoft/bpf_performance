@@ -20,6 +20,6 @@ jobs:
 
     - name: Verify
       run: |
-        az account show
+        az keyvault secret list --vault-name "bpfperformacesecrets"
 
   
