@@ -21,7 +21,7 @@ jobs:
     - name: Fetch secrets
       run: |
         az keyvault secret show --vault-name bpfperformacesecrets --name PGDATABASE --query value | sed 's/"//g' > ${{github.workspace}}/PGDATABASE
-        az keyvault secret show --vault-name bpfperformacesecrets --name PGHOST --query value | sed 's/"//g' >> ${{github.workspace}}/PGDATABASE
+        az keyvault secret show --vault-name bpfperformacesecrets --name PGHOST --query value | sed 's/"//g' >> ${{github.workspace}}/PGHOST
         az keyvault secret show --vault-name bpfperformacesecrets --name PGUSER --query value | sed 's/"//g' >> ${{github.workspace}}/PGUSER
         az keyvault secret show --vault-name bpfperformacesecrets --name PGPASSWORD --query value | sed 's/"//g' >> ${{github.workspace}}/PGPASSWORD
         az keyvault secret show --vault-name bpfperformacesecrets --name PGPORT --query value | sed 's/"//g' >> ${{github.workspace}}/PGPORT
