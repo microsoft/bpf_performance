@@ -34,6 +34,7 @@ jobs:
     - name: Install prerequisites - Ubuntu-22.04
       if: inputs.platform == 'ubuntu-22.04'
       run: |
+        sudo apt update
         sudo apt-get install -y \
          gcc-multilib \
          lcov \
