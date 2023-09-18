@@ -61,50 +61,12 @@ jobs:
         github-token: ${{ secrets.github_token }}
         parallel-finished: true
 
-
-  # Note: This can't be in a workflow_call as the login action doesn't work.
   upload_results:
     if: github.event_name == 'schedule' || github.event_name == 'push'
     needs:
       - build_and_test
-    strategy:
-      matrix:
-        platform: [ 'ubuntu-22.04', 'windows-2019', 'windows-2022' ]
-
-    runs-on: ubuntu-latest
-    steps:
-    - uses: actions/checkout@v3
-
-    - name: Download performance result artifacts
-      uses: actions/download-artifact@v2
-      with:
-        name: results-Release-${{matrix.platform}}-none
-        path: results
-
-    - name: Post-process results
-      run: |
-        python3 scripts/process_results.py --csv-directory ${{github.workspace}}/results --sql-script-file ${{github.workspace}}/results/upload.sql --commit_id "$(cat ${{github.workspace}}/results/commit_sha.txt)" --platform ${{matrix.platform}} --repository ${{github.repository}}
-
-    - name: Log into Azure
-      uses: azure/login@v1
-      with:
-        client-id: ${{ secrets.AZURE_CLIENT_ID }}
-        tenant-id: ${{ secrets.AZURE_TENANT_ID }}
-        subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
-
-    - name: Fetch secrets
-      run: |
-        az keyvault secret show --vault-name bpfperformacesecrets --name PGDATABASE --query value | sed 's/"//g' > ${{github.workspace}}/PGDATABASE
-        az keyvault secret show --vault-name bpfperformacesecrets --name PGHOST --query value | sed 's/"//g' >> ${{github.workspace}}/PGHOST
-        az keyvault secret show --vault-name bpfperformacesecrets --name PGUSER --query value | sed 's/"//g' >> ${{github.workspace}}/PGUSER
-        az keyvault secret show --vault-name bpfperformacesecrets --name PGPASSWORD --query value | sed 's/"//g' >> ${{github.workspace}}/PGPASSWORD
-        az keyvault secret show --vault-name bpfperformacesecrets --name PGPORT --query value | sed 's/"//g' >> ${{github.workspace}}/PGPORT
-
-    - name: Upload results to POSTGRES
-      run: |
-        export PGPASSWORD=$(cat ${{github.workspace}}/PGPASSWORD)
-        export PGHOST=$(cat ${{github.workspace}}/PGHOST)
-        export PGUSER=$(cat ${{github.workspace}}/PGUSER)
-        export PGPORT=$(cat ${{github.workspace}}/PGPORT)
-        export PGDATABASE=$(cat ${{github.workspace}}/PGDATABASE)
-        psql -f ${{github.workspace}}/results/upload.sql
+    uses: ./.github/workflows/UploadPerfResults.yml
+    secrets:
+      AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+      AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+      AZURE_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
