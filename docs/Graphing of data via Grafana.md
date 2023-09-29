@@ -54,9 +54,9 @@ az role assignment create --assignee-object-id $UPLOADER_PRINCIPAL_ID --assignee
 
 ## Set secrets in GitHub
 Add the following repository secrets under: "Settings -> Secrets and Variables -> Actions"
-AZURE_CLIENT_ID = $UPLOADER_CLIENT_ID
-AZURE_SUBSCRIPTION_ID = $SUBSCRIPTION_ID
-AZURE_TENANT_ID = $TENANT_ID
+1. AZURE_CLIENT_ID = $UPLOADER_CLIENT_ID
+2. AZURE_SUBSCRIPTION_ID = $SUBSCRIPTION_ID
+3. AZURE_TENANT_ID = $TENANT_ID
 
 ## Create DB
 ```
@@ -86,7 +86,7 @@ export PGDATABASE=bpf_performance
 psql -f scripts/create_table_postfgres.sql
 ```
 
-## Add db_user to postgres and grant permissions
+## Add uploader to postgres and grant permissions
 ```bash
 export PGUSER=admin
 export PGPASSWORD=$(az account get-access-token --resource-type oss-rdbms --query "[accessToken]" -o tsv)
