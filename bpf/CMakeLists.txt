@@ -7,6 +7,7 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/bin)
 
 # Each test consists of a C file, an output file name, and an optional option, seperated by commas.
 set(test_cases
+    "array_of_map"
     "baseline"
     "generic_map,hash,-DTYPE=BPF_MAP_TYPE_HASH"
     "generic_map,percpu_hash,-DTYPE=BPF_MAP_TYPE_PERCPU_HASH"
@@ -14,12 +15,12 @@ set(test_cases
     "generic_map,lru_per_cpu_hash,-DTYPE=BPF_MAP_TYPE_LRU_PERCPU_HASH"
     "generic_map,array,-DTYPE=BPF_MAP_TYPE_ARRAY"
     "generic_map,percpu_array,-DTYPE=BPF_MAP_TYPE_PERCPU_ARRAY"
+    "hash_of_map"
     "helpers"
     "lpm,lpm_1024,-DMAX_ENTRIES=1024"
     "lpm,lpm_16384,-DMAX_ENTRIES=16384"
     "lpm,lpm_262144,-DMAX_ENTRIES=262144"
     "lpm,lpm_1048576,-DMAX_ENTRIES=1048576"
-    "map_in_map"
     "rolling_lru"
     "tail_call"
     "xdp"
