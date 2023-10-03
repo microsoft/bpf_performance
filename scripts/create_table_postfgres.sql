@@ -7,5 +7,5 @@ CREATE TABLE BenchmarkResults (
     Value NUMERIC,
     CommitHash VARCHAR(255),
     Platform VARCHAR(255),
-    Repository VARCHAR(255),
+    Repository VARCHAR(255)
 );
