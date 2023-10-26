@@ -405,4 +405,25 @@ tests:
     program_cpu_assignment:
       xdp_test_caller: all
 
+  - name: bpf_ktime_get_boot_ns
+    description: Measure the overhead of the bpf_ktime_get_boot_ns helper.
+    elf_file: helpers.o
+    iteration_count: 10000000
+    program_cpu_assignment:
+      test_bpf_ktime_get_boot_ns: all
+
+  - name: bpf_ktime_get_ns
+    description: Measure the overhead of the bpf_ktime_get_ns helper.
+    elf_file: helpers.o
+    iteration_count: 10000000
+    program_cpu_assignment:
+      test_bpf_ktime_get_ns: all
+
+  - name: bpf_get_smp_processor_id
+    description: Measure the overhead of the bpf_ktime_get_ns helper.
+    elf_file: helpers.o
+    iteration_count: 10000000
+    program_cpu_assignment:
+      test_bpf_get_smp_processor_id: all
+
   # Add more test cases as needed
