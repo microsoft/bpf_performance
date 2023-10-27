@@ -7,6 +7,10 @@
 #define MAX_ENTRIES 8192
 #endif
 
+#if !defined(TYPE)
+#define TYPE BPF_MAP_TYPE_HASH_OF_MAPS
+#endif
+
 struct
 {
     __uint(type, BPF_MAP_TYPE_HASH);
@@ -17,7 +21,7 @@ struct
 
 struct
 {
-    __uint(type, BPF_MAP_TYPE_ARRAY_OF_MAPS);
+    __uint(type, TYPE);
     __type(key, unsigned int);
     __type(value, unsigned int);
     __uint(max_entries, 1);
@@ -50,11 +54,11 @@ SEC("xdp/read") int read(void* ctx)
 {
     int outer_key = 0;
     int key = bpf_get_prandom_u32() % MAX_ENTRIES;
-    void* inner_map = bpf_map_lookup_elem(&outer_map, &outer_key);
-    if (!inner_map) {
-        return 1;
+    void* map = bpf_map_lookup_elem(&outer_map, &outer_key);
+    if (!map) {
+        return 2;
     }
-    int* value = bpf_map_lookup_elem(inner_map, &key);
+    int* value = bpf_map_lookup_elem(map, &key);
     if (value) {
         return 0;
     }
@@ -66,9 +70,9 @@ SEC("xdp/update") int update(void* ctx)
 {
     int outer_key = 0;
     int key = bpf_get_prandom_u32() % MAX_ENTRIES;
-    void* inner_map = bpf_map_lookup_elem(&outer_map, &outer_key);
-    if (!inner_map) {
+    void* map = bpf_map_lookup_elem(&outer_map, &outer_key);
+    if (!map) {
         return 1;
     }
-    return bpf_map_update_elem(inner_map, &key, &key, BPF_ANY);
+    return bpf_map_update_elem(map, &key, &key, BPF_ANY);
 }
