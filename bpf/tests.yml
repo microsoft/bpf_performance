@@ -468,4 +468,11 @@ tests:
     program_cpu_assignment:
       update: all
 
+  - name: BPF_MAP_TYPE_RINGBUF output
+    description: Tests the bpf_ringbuf_output helper.
+    elf_file: ringbuf.o
+    iteration_count: 10000000
+    program_cpu_assignment:
+      output: all
+
   # Add more test cases as needed
