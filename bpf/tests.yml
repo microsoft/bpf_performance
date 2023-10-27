@@ -425,6 +425,7 @@ tests:
     iteration_count: 10000000
     program_cpu_assignment:
       test_bpf_get_smp_processor_id: all
+
   - name: BPF_MAP_TYPE_ARRAY_OF_MAPS read
     description: Tests the BPF_MAP_TYPE_ARRAY_OF_MAPS map type.
     elf_file: array_of_array.o
@@ -448,7 +449,7 @@ tests:
   - name: BPF_MAP_TYPE_HASH_OF_MAPS read
     description: Tests the BPF_MAP_TYPE_HASH_OF_MAPS map type.
     elf_file: hash_of_array.o
-    platorm: Linux
+    platform: Linux
     map_state_preparation:
       program: prepare
       iteration_count: 8192
@@ -459,7 +460,7 @@ tests:
   - name: BPF_MAP_TYPE_HASH_OF_MAPS update
     description: Tests the BPF_MAP_TYPE_HASH_OF_MAPS map type.
     elf_file: hash_of_array.o
-    platorm: Linux
+    platform: Linux
     map_state_preparation:
       program: prepare
       iteration_count: 8192
