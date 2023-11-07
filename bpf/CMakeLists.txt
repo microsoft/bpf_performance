@@ -21,6 +21,7 @@ set(test_cases
     "lpm,lpm_1048576,-DMAX_ENTRIES=1048576"
     "map_in_map,hash_of_array,-DTYPE=BPF_MAP_TYPE_HASH_OF_MAPS"
     "map_in_map,array_of_array,-DTYPE=BPF_MAP_TYPE_ARRAY_OF_MAPS"
+    "ringbuf"
     "rolling_lru"
     "tail_call"
     "xdp"
