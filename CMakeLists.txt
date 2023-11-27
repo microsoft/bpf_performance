@@ -22,7 +22,7 @@ if (PLATFORM_WINDOWS)
   else()
     # if BPF_PERF_LOCAL_NUGET_PATH is set, use that as the source for the eBPF-for-Windows package
     if(BPF_PERF_LOCAL_NUGET_PATH)
-      exec_program(${NUGET} ARGS install "eBPF-for-Windows" -ExcludeVersion -OutputDirectory ${PROJECT_BINARY_DIR}/packages -Source ${BPF_PERF_LOCAL_NUGET_PATH} -NoCache)
+      exec_program(${NUGET} ARGS install "eBPF-for-Windows" -Version 0.13.0 -ExcludeVersion -OutputDirectory ${PROJECT_BINARY_DIR}/packages -Source ${BPF_PERF_LOCAL_NUGET_PATH} -NoCache)
     else()
       exec_program(${NUGET} ARGS install "eBPF-for-Windows" -Version 0.12.0 -ExcludeVersion -OutputDirectory ${PROJECT_BINARY_DIR}/packages)
     endif()
