@@ -32,11 +32,15 @@ typedef std::unique_ptr<struct bpf_object, bpf_object_deleter> bpf_object_ptr;
 #if defined(__linux__)
 const std::string runner_platform = "Linux";
 #define time_t_to_utc_tm(TM, TIME) gmtime_r(TIME, TM)
+#define DEFAULT_PROG_TYPE BPF_PROG_TYPE_XDP
+#define DEFAULT_ATTACH_TYPE BPF_XDP
 #else
 const std::string runner_platform = "Windows";
 #define popen _popen
 #define pclose _pclose
 #define time_t_to_utc_tm(TM, TIME) gmtime_s(TM, TIME)
+#define DEFAULT_PROG_TYPE BPF_PROG_TYPE_SOCK_OPS
+#define DEFAULT_ATTACH_TYPE BPF_CGROUP_SOCK_OPS
 #endif
 
 int run_command_and_capture_output(const std::string& command, std::string& command_output)
@@ -257,9 +261,9 @@ main(int argc, char** argv)
                             throw std::runtime_error("Failed to get program type " + *program_type);
                         }
                     } else {
-                        // If program_type is not specified, use BPF_PROG_TYPE_XDP.
-                        prog_type = BPF_PROG_TYPE_XDP;
-                        attach_type = BPF_XDP;
+                        // If program_type is not specified, use DEFAULT_PROG_TYPE.
+                        prog_type = DEFAULT_PROG_TYPE;
+                        attach_type = DEFAULT_ATTACH_TYPE;
                     }
                     (void)bpf_program__set_type(program, prog_type);
                 }
@@ -299,17 +303,15 @@ main(int argc, char** argv)
                 // Run map_state_preparation program via bpf_prog_test_run_opts.
                 std::vector<uint8_t> data_in(1024);
                 std::vector<uint8_t> data_out(1024);
-                std::vector<uint8_t> context_in(4);
-                std::vector<uint8_t> context_out(4);
 
                 bpf_test_run_opts opts;
                 memset(&opts, 0, sizeof(opts));
                 opts.sz = sizeof(opts);
                 opts.repeat = prep_program_iterations;
-                opts.data_in = data_in.data();
-                opts.data_out = data_out.data();
-                opts.data_size_in = static_cast<uint32_t>(data_in.size());
-                opts.data_size_out = static_cast<uint32_t>(data_out.size());
+                opts.ctx_in = data_in.data();
+                opts.ctx_out = data_out.data();
+                opts.ctx_size_in = static_cast<uint32_t>(data_in.size());
+                opts.ctx_size_out = static_cast<uint32_t>(data_out.size());
 
                 if (bpf_prog_test_run_opts(bpf_program__fd(map_state_preparation_program), &opts)) {
                     throw std::runtime_error("Failed to run map_state_preparation program " + prep_program_name);
@@ -409,10 +411,10 @@ main(int argc, char** argv)
                     opt.sz = sizeof(opt);
                     opt.repeat = iteration_count_override.value_or(iteration_count);
                     opt.cpu = static_cast<uint32_t>(i);
-                    opt.data_in = data_in.data();
-                    opt.data_out = data_out.data();
-                    opt.data_size_in = static_cast<uint32_t>(data_in.size());
-                    opt.data_size_out = static_cast<uint32_t>(data_out.size());
+                    opt.ctx_in = data_in.data();
+                    opt.ctx_out = data_out.data();
+                    opt.ctx_size_in = static_cast<uint32_t>(data_in.size());
+                    opt.ctx_size_out = static_cast<uint32_t>(data_out.size());
 #if defined(HAS_BPF_TEST_RUN_OPTS_BATCH_SIZE)
                     opt.batch_size = batch_size;
 #endif

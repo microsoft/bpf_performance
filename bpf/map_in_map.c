@@ -38,7 +38,7 @@ struct
     __uint(max_entries, 1);
 } outer_map_init SEC(".maps");
 
-SEC("xdp/prepare") int prepare(void* ctx)
+SEC("sockops/prepare") int prepare(void* ctx)
 {
     int key = 0;
     int* value = bpf_map_lookup_elem(&outer_map_init, &key);
@@ -50,7 +50,7 @@ SEC("xdp/prepare") int prepare(void* ctx)
     return 0;
 }
 
-SEC("xdp/read") int read(void* ctx)
+SEC("sockops/read") int read(void* ctx)
 {
     int outer_key = 0;
     int key = bpf_get_prandom_u32() % MAX_ENTRIES;
@@ -66,7 +66,7 @@ SEC("xdp/read") int read(void* ctx)
     return 1;
 }
 
-SEC("xdp/update") int update(void* ctx)
+SEC("sockops/update") int update(void* ctx)
 {
     int outer_key = 0;
     int key = bpf_get_prandom_u32() % MAX_ENTRIES;

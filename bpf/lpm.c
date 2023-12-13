@@ -43,7 +43,7 @@ struct
 // Generate and store a collection of random routes with prefix lengths
 // that are distributed according to the distribution at https://bgp.potaroo.net/as2.0/bgp-active.html.
 
-SEC("xdp/prepare") int prepare(void* ctx)
+SEC("sockops/prepare") int prepare(void* ctx)
 {
     unsigned int zero = 0;
     unsigned int* value = bpf_map_lookup_elem(&lpm_map_init, &zero);
@@ -78,7 +78,7 @@ SEC("xdp/prepare") int prepare(void* ctx)
     return 0;
 }
 
-SEC("xdp/read") int read(void* ctx)
+SEC("sockops/read") int read(void* ctx)
 {
     unsigned int key = bpf_get_prandom_u32() % MAX_ENTRIES;
 
@@ -122,7 +122,7 @@ SEC("xdp/read") int read(void* ctx)
     return 0;
 }
 
-SEC("xdp/update") int update(void* ctx)
+SEC("sockops/update") int update(void* ctx)
 {
     unsigned int key = bpf_get_prandom_u32() % MAX_ENTRIES;
 
@@ -141,7 +141,7 @@ SEC("xdp/update") int update(void* ctx)
     return 0;
 }
 
-SEC("xdp/replace") int replace(void* ctx)
+SEC("sockops/replace") int replace(void* ctx)
 {
     unsigned int key = bpf_get_prandom_u32() % MAX_ENTRIES;
 
