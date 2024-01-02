@@ -25,6 +25,7 @@ set(test_cases
     "rolling_lru"
     "tail_call"
     "xdp"
+    "max_tail_call"
     )
 
 function(process_test_cases worker)
