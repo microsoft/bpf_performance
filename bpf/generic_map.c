@@ -27,7 +27,7 @@ struct
     __type(value, int);
 } map_init SEC(".maps");
 
-SEC("xdp/prepare") int prepare(void* ctx)
+SEC("sockops/prepare") int prepare(void* ctx)
 {
     int key = 0;
     int* value = bpf_map_lookup_elem(&map_init, &key);
@@ -39,7 +39,7 @@ SEC("xdp/prepare") int prepare(void* ctx)
     return 0;
 }
 
-SEC("xdp/read") int read(void* ctx)
+SEC("sockops/read") int read(void* ctx)
 {
     int key = bpf_get_prandom_u32() % MAX_ENTRIES;
     int* value = bpf_map_lookup_elem(&map, &key);
@@ -49,13 +49,13 @@ SEC("xdp/read") int read(void* ctx)
     return 1;
 }
 
-SEC("xdp/update") int update(void* ctx)
+SEC("sockops/update") int update(void* ctx)
 {
     int key = bpf_get_prandom_u32() % MAX_ENTRIES;
     return bpf_map_update_elem(&map, &key, &key, BPF_ANY);
 }
 
-SEC("xdp/replace") int replace(void* ctx)
+SEC("sockops/replace") int replace(void* ctx)
 {
     int key = bpf_get_prandom_u32() % MAX_ENTRIES;
     (void)bpf_map_delete_elem(&map, &key);

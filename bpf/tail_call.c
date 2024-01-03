@@ -5,15 +5,15 @@
 
 // Test to measure the overhead of a tail call.
 
-SEC("xdp/tail_callee0") int test_bpf_tail_callee0(struct xdp_md* ctx);
+SEC("sockops/tail_callee0") int test_bpf_tail_callee0(void* ctx);
 
-SEC("xdp/tail_callee1") int test_bpf_tail_callee1(struct xdp_md* ctx);
+SEC("sockops/tail_callee1") int test_bpf_tail_callee1(void* ctx);
 
-SEC("xdp/tail_callee2") int test_bpf_tail_callee2(struct xdp_md* ctx);
+SEC("sockops/tail_callee2") int test_bpf_tail_callee2(void* ctx);
 
-SEC("xdp/tail_callee3") int test_bpf_tail_callee3(struct xdp_md* ctx);
+SEC("sockops/tail_callee3") int test_bpf_tail_callee3(void* ctx);
 
-SEC("xdp/tail_callee4") int test_bpf_tail_callee4(struct xdp_md* ctx);
+SEC("sockops/tail_callee4") int test_bpf_tail_callee4(void* ctx);
 
 // Prog array map with 5 entry
 struct
@@ -21,7 +21,7 @@ struct
     __uint(type, BPF_MAP_TYPE_PROG_ARRAY);
     __uint(max_entries, 5);
     __uint(key_size, sizeof(__u32));
-    __array(values, int(struct xdp_md*));
+    __array(values, int(void*));
 } prog_array SEC(".maps") = {
     .values =
         {
@@ -33,33 +33,33 @@ struct
         },
 };
 
-SEC("xdp/tail_callee0") int test_bpf_tail_callee0(struct xdp_md* ctx)
+SEC("sockops/tail_callee0") int test_bpf_tail_callee0(void* ctx)
 {
     bpf_tail_call(ctx, &prog_array, 1);
     return -1;
 }
 
-SEC("xdp/tail_callee1") int test_bpf_tail_callee1(struct xdp_md* ctx)
+SEC("sockops/tail_callee1") int test_bpf_tail_callee1(void* ctx)
 {
     bpf_tail_call(ctx, &prog_array, 2);
     return -1;
 }
 
-SEC("xdp/tail_callee2") int test_bpf_tail_callee2(struct xdp_md* ctx)
+SEC("sockops/tail_callee2") int test_bpf_tail_callee2(void* ctx)
 {
     bpf_tail_call(ctx, &prog_array, 3);
     return -1;
 }
 
-SEC("xdp/tail_callee3") int test_bpf_tail_callee3(struct xdp_md* ctx)
+SEC("sockops/tail_callee3") int test_bpf_tail_callee3(void* ctx)
 {
     bpf_tail_call(ctx, &prog_array, 4);
     return -1;
 }
 
-SEC("xdp/tail_callee4") int test_bpf_tail_callee4(struct xdp_md* ctx) { return 0; }
+SEC("sockops/tail_callee4") int test_bpf_tail_callee4(void* ctx) { return 0; }
 
-SEC("xdp/tail_call") int tail_call(struct xdp_md* ctx)
+SEC("sockops/tail_call") int tail_call(void* ctx)
 {
     bpf_tail_call(ctx, &prog_array, 0);
     return -1;

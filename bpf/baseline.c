@@ -6,4 +6,4 @@
 // Simplest possible program, just pass everything, used to measure the
 // overhead of the BPF infrastructure.
 
-SEC("xdp/baseline") int baseline(void* ctx) { return 0; }
+SEC("sockops/baseline") int baseline(void* ctx) { return 0; }

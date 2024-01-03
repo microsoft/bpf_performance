@@ -381,6 +381,7 @@ tests:
     description: Tests the bpf_xdp_adjust_head helper.
     elf_file: xdp.o
     iteration_count: 1000000
+    platform: Linux
     program_cpu_assignment:
       test_bpf_xdp_adjust_head_0: all
 
@@ -388,6 +389,7 @@ tests:
     description: Tests the bpf_xdp_adjust_head helper.
     elf_file: xdp.o
     iteration_count: 1000000
+    platform: Linux
     program_cpu_assignment:
       test_bpf_xdp_adjust_head_plus_100: all
 
@@ -395,6 +397,7 @@ tests:
     description: Tests the bpf_xdp_adjust_head helper.
     elf_file: xdp.o
     iteration_count: 1000000
+    platform: Linux
     program_cpu_assignment:
       test_bpf_xdp_adjust_head_minus_100: all
 
@@ -403,7 +406,7 @@ tests:
     elf_file: max_tail_call.o
     iteration_count: 1000000
     program_cpu_assignment:
-      xdp_test_caller: all
+      test_caller: all
 
   - name: bpf_ktime_get_boot_ns
     description: Measure the overhead of the bpf_ktime_get_boot_ns helper.
