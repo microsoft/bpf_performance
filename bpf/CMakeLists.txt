@@ -117,7 +117,7 @@ function(convert_to_native file_name out_name option)
     # Run the powershell script to convert the .o file to a .sys file
     add_custom_command(
         OUTPUT ${bpf_sys_file_path} ${bpf_pdb_file_path}
-        COMMAND powershell -ExecutionPolicy Bypass -File ${EBPF_BIN_PATH}/Convert-BpfToNative.ps1 -FileName ${bpf_obj_file_name} -IncludeDir ${EBPF_INC_PATH} -OutDir ${CMAKE_CURRENT_BINARY_DIR} -BinDir ${EBPF_BIN_PATH}
+        COMMAND powershell -ExecutionPolicy Bypass -File ${EBPF_BIN_PATH}/Convert-BpfToNative.ps1 -FileName ${bpf_obj_file_name} -IncludeDir ${EBPF_INC_PATH} -OutDir ${CMAKE_CURRENT_BINARY_DIR} -BinDir ${EBPF_BIN_PATH} -Configuration $<$<CONFIG:Debug>:Debug>$<$<CONFIG:Release>:Release>
         DEPENDS ${bpf_obj_file_path} ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/export_program_info.log
         COMMENT "Converting BPF object ${bpf_obj_file_path} to native"
         POST_BUILD
