@@ -130,8 +130,6 @@ SEC("sockops/update") int update(void* ctx)
     ipv4_route route_key = {32, 0};
 
     if (!test_route) {
-
-        bpf_printk("Failed to lookup route %d\n", key);
         return 1;
     }
     route_key = *test_route;
@@ -149,8 +147,6 @@ SEC("sockops/replace") int replace(void* ctx)
     ipv4_route route_key = {32, 0};
 
     if (!test_route) {
-
-        bpf_printk("Failed to lookup route %d\n", key);
         return 1;
     }
     route_key = *test_route;
