@@ -134,8 +134,19 @@ function(convert_to_native file_name out_name option)
         COMMENT "Copying BPF object ${bpf_sys_file_path} to output directory"
         POST_BUILD)
 
+    # Copy the .pdb file to the output directory as part of post build
+    add_custom_command(
+        OUTPUT ${bpf_pdb_file_output_path}
+        COMMAND ${CMAKE_COMMAND} -E copy ${bpf_pdb_file_path} ${bpf_pdb_file_output_path}
+        DEPENDS ${bpf_pdb_file_path}
+        COMMENT "Copying BPF object ${bpf_pdb_file_path} to output directory"
+        POST_BUILD)
+
     # Add a custom target that depends on the .sys file
     add_custom_target(${bpf_sys_file_name}_out ALL DEPENDS ${bpf_sys_file_output_path} SOURCES ${bpf_sys_file_path})
+
+    # Add a custom target that depends on the .pdb file
+    add_custom_target(${bpf_pdb_file_name}_out ALL DEPENDS ${bpf_pdb_file_output_path} SOURCES ${bpf_pdb_file_path})
 endfunction()
 
 configure_file(
