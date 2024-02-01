@@ -123,8 +123,6 @@ function(convert_to_native file_name out_name option)
         POST_BUILD
     )
 
-    # Add a custom target that depends on the .sys file
-    add_custom_target(${out_name}_SYS ALL DEPENDS ${bpf_sys_file_path} ${bpf_pdb_file_path} SOURCES ${bpf_obj_file_path})
 
     # Copy the .sys file to the output directory as part of post build
     add_custom_command(
@@ -142,11 +140,10 @@ function(convert_to_native file_name out_name option)
         COMMENT "Copying BPF object ${bpf_pdb_file_path} to output directory"
         POST_BUILD)
 
-    # Add a custom target that depends on the .sys file
-    add_custom_target(${bpf_sys_file_name}_out ALL DEPENDS ${bpf_sys_file_output_path} SOURCES ${bpf_sys_file_path})
+    # Add a single custom target that depends on the .sys and .pdb file. This will ensure that the .sys and .pdb file
+    # are generated and copied to the output directory.
+    add_custom_target(${bpf_sys_file_name}_out ALL DEPENDS ${bpf_sys_file_output_path} ${bpf_pdb_file_output_path} SOURCES ${bpf_obj_file_path})
 
-    # Add a custom target that depends on the .pdb file
-    add_custom_target(${bpf_pdb_file_name}_out ALL DEPENDS ${bpf_pdb_file_output_path} SOURCES ${bpf_pdb_file_path})
 endfunction()
 
 configure_file(
