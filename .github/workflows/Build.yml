@@ -16,8 +16,13 @@ on:
         required: false
         type: string
 
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{github.repository.owner}}/${{ github.repository }}
+
 permissions:
   contents: read
+  packages: write
 
 jobs:
   build:
@@ -111,6 +116,12 @@ jobs:
       # Build your program with the given configuration
       run: cmake --build ${{github.workspace}}/build --config ${{env.BUILD_TYPE}}
 
+    - name: Copy libbpf into build/bin
+      if: inputs.platform == 'ubuntu-22.04'
+      run: |
+        cp libbpf/src/libbpf.so.* ${{github.workspace}}/build/bin
+        cp /usr/lib/x86_64-linux-gnu/libelf.so.* ${{github.workspace}}/build/bin
+
     - name: Upload artifacts
       uses: actions/upload-artifact@v2
       with:
@@ -196,3 +207,27 @@ jobs:
         github-token: ${{ secrets.github_token }}
         flag-name: run-${{inputs.build_type}}-${{inputs.platform}}-${{inputs.arch}}
         parallel: true
+
+    - name: Log in to the Container registry
+      if: inputs.platform == 'ubuntu-22.04'
+      uses: docker/login-action@343f7c4344506bcbf9b4de18042ae17996df046d
+      with:
+        registry: ${{ env.REGISTRY }}
+        username: ${{ github.actor }}
+        password: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Extract metadata (tags, labels) for Docker
+      if: inputs.platform == 'ubuntu-22.04'
+      id: meta
+      uses: docker/metadata-action@dbef88086f6cef02e264edb7dbf63250c17cef6c
+      with:
+        images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+
+    - name: Build and push Docker image
+      if: inputs.platform == 'ubuntu-22.04' && inputs.option == 'none' && inputs.configuration == 'Release' && github.event_name == 'push'
+      uses: docker/build-push-action@4a13e500e55cf31b7a5d59a38ab2040ab0f42f56
+      with:
+        context: build
+        push: true
+        tags: ${{ steps.meta.outputs.tags }}
+        labels: ${{ steps.meta.outputs.labels }}
