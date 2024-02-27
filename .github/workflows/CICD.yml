@@ -55,8 +55,13 @@ jobs:
       - build_and_test
     runs-on: ubuntu-22.04
     steps:
+    - name: Harden Runner
+      uses: step-security/harden-runner@63c24ba6bd7ba022e95695ff85de572c04a18142 # v2.7.0
+      with:
+        egress-policy: audit
+
     - name: Coveralls Finished
-      uses: coverallsapp/github-action@v2.2.1
+      uses: coverallsapp/github-action@95b1a2355bd0e526ad2fd62da9fd386ad4c98474 # v2.2.1
       with:
         github-token: ${{ secrets.github_token }}
         parallel-finished: true
