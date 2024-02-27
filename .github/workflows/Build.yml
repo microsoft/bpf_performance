@@ -75,7 +75,7 @@ jobs:
 
     - name: Cache downloaded artifacts
       if: inputs.platform == 'windows-2019' || inputs.platform == 'windows-2022'
-      uses: actions/cache@8492260343ad570701412c2f464a5877dc76bace # v2
+      uses: actions/cache@13aacd865c20de90d75de3b17ebe84f7a17d57d2 # v4.0.0
       with:
         path: ${{github.workspace}}/local_packages
         key: ${{inputs.platform}}-${{inputs.configuration}}-ebpf-for-windows-run-id-${{env.RUNID}}
