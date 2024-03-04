@@ -117,7 +117,7 @@ jobs:
       run: cmake --build ${{github.workspace}}/build --config ${{env.BUILD_TYPE}}
 
     - name: Upload artifacts
-      uses: actions/upload-artifact@82c141cc518b40d92cc801eee768e7aafc9c2fa2 # v2.3.1
+      uses: actions/upload-artifact@5d5d22a31266ced268874388b861e4b58bb5c2f3 # v4.3.1
       with:
         name: build-${{env.BUILD_TYPE}}-${{inputs.platform}}
         path: ${{github.workspace}}/build/bin
@@ -168,7 +168,7 @@ jobs:
         ${{env.BUILD_TYPE}}\bpf_performance_runner.exe -i tests.yml -r --pre "$pre_command" --post "$post_command" | Tee-Object -FilePath ${{github.workspace}}/results/native-${inputs.platform}-${{env.BUILD_TYPE}}.csv
 
     - name: Upload results
-      uses: actions/upload-artifact@82c141cc518b40d92cc801eee768e7aafc9c2fa2 # v2.3.1
+      uses: actions/upload-artifact@5d5d22a31266ced268874388b861e4b58bb5c2f3 # v4.3.1
       with:
         name: results-${{env.BUILD_TYPE}}-${{inputs.platform}}-${{inputs.option}}
         path: |
@@ -176,7 +176,7 @@ jobs:
           ${{github.workspace}}/results/commit_sha.txt
 
     - name: Upload profile
-      uses: actions/upload-artifact@82c141cc518b40d92cc801eee768e7aafc9c2fa2 # v2.3.1
+      uses: actions/upload-artifact@5d5d22a31266ced268874388b861e4b58bb5c2f3 # v4.3.1
       with:
         name: profile-${{env.BUILD_TYPE}}-${{inputs.platform}}-${{inputs.option}}
         path: |
