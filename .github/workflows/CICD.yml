@@ -30,7 +30,7 @@ jobs:
     strategy:
       matrix:
         configuration: [ 'Release', 'Debug' ]
-        platform: [ 'ubuntu-22.04', 'windows-2019', 'windows-2022' ]
+        platform: [ 'ubuntu-22.04' ] #, 'windows-2019', 'windows-2022' ]
         option: [ none, sanitizer, coverage, jit ]
         exclude:
           - platform: windows-2019

@@ -24,7 +24,7 @@ if (PLATFORM_WINDOWS)
     if(BPF_PERF_LOCAL_NUGET_PATH)
       exec_program(${NUGET} ARGS install "eBPF-for-Windows" -ExcludeVersion -OutputDirectory ${PROJECT_BINARY_DIR}/packages -Source ${BPF_PERF_LOCAL_NUGET_PATH} -NoCache)
     else()
-      exec_program(${NUGET} ARGS install "eBPF-for-Windows" -Version 0.13.0 -ExcludeVersion -OutputDirectory ${PROJECT_BINARY_DIR}/packages)
+      exec_program(${NUGET} ARGS install "eBPF-for-Windows" -Version 0.14.1 -ExcludeVersion -OutputDirectory ${PROJECT_BINARY_DIR}/packages)
     endif()
   endif()
   set(EBPF_LIB "ebpfapi")
@@ -56,6 +56,10 @@ endif()
 
 add_subdirectory(runner)
 add_subdirectory(bpf)
+
+if(CMAKE_SYSTEM_NAME STREQUAL "Linux")
+  file(COPY docker/linux/Dockerfile DESTINATION .)
+endif()
 
 enable_testing()
 
