@@ -86,15 +86,6 @@ endfunction()
 
 # Run packages\eBPF-for-Windows\build\native\bin\Convert-BpfToNative.ps1 on each .o file to produce a .sys file
 function(convert_to_native file_name out_name option)
-    # Run export_program_info.exe as a pre-build step to export the program information.
-    # This is needed to convert the .o file to a .sys file.
-    add_custom_command(
-        OUTPUT ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/export_program_info.log
-        COMMAND ${EBPF_BIN_PATH}/export_program_info.exe > ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/export_program_info.log
-        DEPENDS ${EBPF_BIN_PATH}/export_program_info.exe
-        COMMENT "Exporting program information"
-        PRE_BUILD
-    )
     message(STATUS "Converting BPF ${out_name} to native")
 
     set(bpf_obj_file_name ${out_name}.o)
@@ -118,7 +109,7 @@ function(convert_to_native file_name out_name option)
     add_custom_command(
         OUTPUT ${bpf_sys_file_path} ${bpf_pdb_file_path}
         COMMAND powershell -ExecutionPolicy Bypass -File ${EBPF_BIN_PATH}/Convert-BpfToNative.ps1 -FileName ${bpf_obj_file_name} -IncludeDir ${EBPF_INC_PATH} -OutDir ${CMAKE_CURRENT_BINARY_DIR} -BinDir ${EBPF_BIN_PATH} -Configuration $<$<CONFIG:Debug>:Debug>$<$<CONFIG:Release>:Release>
-        DEPENDS ${bpf_obj_file_path} ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/export_program_info.log
+        DEPENDS ${bpf_obj_file_path}
         COMMENT "Converting BPF object ${bpf_obj_file_path} to native"
         POST_BUILD
     )
