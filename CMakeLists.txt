@@ -31,6 +31,23 @@ if (PLATFORM_WINDOWS)
   set(EBPF_INC_PATH "${PROJECT_BINARY_DIR}/packages/eBPF-for-Windows/build/native/include")
   set(EBPF_LIB_PATH "${PROJECT_BINARY_DIR}/packages/eBPF-for-Windows/build/native/lib")
   set(EBPF_BIN_PATH "${PROJECT_BINARY_DIR}/packages/eBPF-for-Windows/build/native/bin")
+
+  # Run  export_program_info.exe from the eBPF-for-Windows package
+  execute_process(COMMAND "${EBPF_BIN_PATH}/export_program_info.exe" WORKING_DIRECTORY "${EBPF_BIN_PATH}" COMMAND_ERROR_IS_FATAL ANY)
+
+  # Download the XDP-dev-kit from GitHub
+  file(DOWNLOAD "https://github.com/microsoft/xdp-for-windows/releases/download/v1.1.0+c10f37fa/xdp-devkit-x64-1.1.0.zip" "${PROJECT_BINARY_DIR}/packages/xdp-devkit.zip")
+  # Unzip the XDP-dev-kit
+  # Create folder xdp-devkit
+  file(MAKE_DIRECTORY "${PROJECT_BINARY_DIR}/packages/xdp-devkit")
+  # Unzip the xdp-devkit.zip file into the xdp-devkit folder
+  execute_process(COMMAND ${CMAKE_COMMAND} -E tar xzf "${PROJECT_BINARY_DIR}/packages/xdp-devkit.zip" WORKING_DIRECTORY "${PROJECT_BINARY_DIR}/packages/xdp-devkit")
+
+  SET(XDP_INC_PATH "${PROJECT_BINARY_DIR}/packages/xdp-devkit/include")
+  SET(XDP_LIB_PATH "${PROJECT_BINARY_DIR}/packages/xdp-devkit/lib")
+  SET(XDP_BIN_PATH "${PROJECT_BINARY_DIR}/packages/xdp-devkit/bin")
+  # Run xdp_bpfexport.exe from the xdp-dev-kit
+  execute_process(COMMAND "${PROJECT_BINARY_DIR}/packages/xdp-devkit/bin/xdp_bpfexport.exe" WORKING_DIRECTORY "${EBPF_BIN_PATH}" COMMAND_ERROR_IS_FATAL ANY)
 elseif(PLATFORM_LINUX)
   find_package(PkgConfig REQUIRED)
   pkg_check_modules(LIBBPF REQUIRED libbpf)
