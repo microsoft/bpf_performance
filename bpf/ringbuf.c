@@ -14,7 +14,7 @@
 struct
 {
     __uint(type, BPF_MAP_TYPE_RINGBUF);
-    __uint(max_entries, (MAX_RECORDS * RECORD_SIZE));
+    __uint(max_entries, MAX_RECORDS * RECORD_SIZE);
 } map SEC(".maps");
 
 SEC("sockops/bpf_ringbuf_output") int output(void* ctx)
