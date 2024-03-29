@@ -478,16 +478,16 @@ tests:
     program_cpu_assignment:
       output: all
   
-  - name: BPF_MAP_TYPE_RINGBUF output - 200byte,10M entries
+  - name: BPF_MAP_TYPE_RINGBUF output - 10M entries of 200bytes
     description: Tests the bpf_ringbuf_output helper.
-    elf_file: ringbuf_200b_10M.o
+    elf_file: ringbuf_10M_200b.o
     iteration_count: 10000000
     program_cpu_assignment:
       output: all
   
-  - name: BPF_MAP_TYPE_RINGBUF output - 1400byte,10M entries
+  - name: BPF_MAP_TYPE_RINGBUF output - 10M entries of 1400bytes
     description: Tests the bpf_ringbuf_output helper.
-    elf_file: ringbuf_1400b_10M.o
+    elf_file: ringbuf_10M_1400b.o
     iteration_count: 10000000
     program_cpu_assignment:
       output: all
