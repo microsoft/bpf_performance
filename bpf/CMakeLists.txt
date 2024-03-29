@@ -54,7 +54,7 @@ function(process_test_cases worker)
             list(GET elements 1 out_name)
             set(option "")
             # Accumulate multiple options into one 'option' parameter
-            foreach(index RANGE 2 ${num_elements})
+            foreach(index RANGE 2 (${num_elements} - 1))
                 list(GET elements ${index} current_option)
                 # Append the current option to the existing ones
                 set(option "${option} ${current_option}")
