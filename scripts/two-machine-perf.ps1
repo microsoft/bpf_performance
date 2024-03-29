@@ -43,7 +43,7 @@ Copy-Item -ToSession $Session . -Destination $RemoteDir\cts-traffic -Recurse -Fo
 
 Write-Output "Running the tests on the remote machine"
 $Job = Invoke-Command -Session $Session -ScriptBlock {
-    .\ctsTraffic.exe -listen:* -consoleverbosity:1 -timelimit:90000
+    $RemoteDir\cts-traffic\ctsTraffic.exe -listen:* -consoleverbosity:1 -timelimit:90000
 }
 
 .\ctsTraffic.exe -target:$RemoteAddress -consoleverbosity:1 -statusfilename:clientstatus.csv -connectionfilename:clientconnections.csv -timelimit:60000
