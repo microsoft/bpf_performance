@@ -17,7 +17,10 @@ param (
     [string]$RemotePSConfiguration = "PowerShell.7",
 
     [Parameter(Mandatory = $false)]
-    [string]$RemoteDir = "C:\_work"
+    [string]$RemoteDir = "C:\_work",
+
+    [Parameter(Mandatory = $false)]
+    [string]$Duration = "60000"
 )
 
 #Set-StrictMode -Version 'Latest'
@@ -42,16 +45,63 @@ Write-Output "Copying the tests to the remote machine"
 Copy-Item -ToSession $Session . -Destination $RemoteDir\cts-traffic -Recurse -Force
 
 Write-Output "Running the tests on the remote machine"
-$Job = Invoke-Command -Session $Session -ScriptBlock {
-    $RemoteDir\cts-traffic\ctsTraffic.exe -listen:* -consoleverbosity:1 -timelimit:90000
-}
+Write-Output "Starting the remote ctsTraffic.exe for Send tests"
 
-.\ctsTraffic.exe -target:$RemoteAddress -consoleverbosity:1 -statusfilename:clientstatus.csv -connectionfilename:clientconnections.csv -timelimit:60000
+$Job = Invoke-Command -Session $Session -ScriptBlock {
+    param($RemoteDir, $Duration)
+    $CtsTraffic = "$RemoteDir\cts-traffic\ctsTraffic.exe"
+    &$CtsTraffic -listen:* -consoleverbosity:1 -timeLimit:$Duration
+} -ArgumentList $RemoteDir, $Duration -AsJob
+
+Write-Output "Starting the local ctsTraffic.exe for Send tests"
+.\ctsTraffic.exe -target:$RemoteAddress -consoleverbosity:1 -statusfilename:SendStatus.csv -connectionfilename:SendConnections.csv -timeLimit:$Duration
 
 Write-Output "Waiting for the remote job to complete"
-Wait-Job $Job | Out-Null
-Receive-Job .\.clang-format -ErrorAction SilentlyContinue
+Wait-Job $Job
+Receive-Job $Job
+
+Write-Output "Running the tests on the remote machine"
+Write-Output "Starting the remote ctsTraffic.exe for Recv tests"
+
+$Job = Invoke-Command -Session $Session -ScriptBlock {
+    param($RemoteDir, $Duration)
+    $CtsTraffic = "$RemoteDir\cts-traffic\ctsTraffic.exe"
+    &$CtsTraffic -listen:* -consoleverbosity:1 -timeLimit:$Duration -pattern:pull
+} -ArgumentList $RemoteDir, $Duration -AsJob
+
+Write-Output "Starting the local ctsTraffic.exe for Recv tests"
+.\ctsTraffic.exe -target:$RemoteAddress -consoleverbosity:1 -statusfilename:RecvStatus.csv -connectionfilename:RecvConnections.csv -pattern:pull -timeLimit:$Duration
+
+Write-Output "Waiting for the remote job to complete"
+Wait-Job $Job
+Receive-Job $Job
+
+$values = get-content .\SendConnections.csv | convertfrom-csv | select-object -Property SendBps | ForEach-Object { [long]($_.SendBps) }  | Sort-Object
+$SendMedianBps = $values[$values.Length / 2]
+Write-Output "Median SendBps: $SendMedianBps"
+
+$values = get-content .\RecvConnections.csv | convertfrom-csv | select-object -Property RecvBps | ForEach-Object { [long]($_.RecvBps) }  | Sort-Object
+$RecvMedianBps = $values[$values.Length / 2]
+Write-Output "Median RecvBps: $RecvMedianBps"
 
 Write-Output "Tests completed. Cleaning up..."
 
 Remove-PSSession $Session
+
+$CtsTrafficResults = @()
+
+$CtsTrafficResults += [PSCustomObject]@{
+    Timestamp = (Get-Date).ToUniversalTime().ToString("o")
+    Test = "CtsTraffic Send"
+    Metric = $SendMedianBps
+}
+
+$CtsTrafficResults += [PSCustomObject]@{
+    Timestamp = (Get-Date).ToUniversalTime().ToString("o")
+    Test = "CtsTraffic Recv"
+    Metric = $RecvMedianBps
+}
+
+$CtsTrafficResults | Export-Csv -Path .\ctsTrafficResults.csv -NoTypeInformation
+
+exit 0
