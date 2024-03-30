@@ -47,11 +47,11 @@ Write-Output "Starting the remote ctsTraffic.exe for Send tests"
 $Job = Invoke-Command -Session $Session -ScriptBlock {
     param($RemoteDir)
     $CtsTraffic = "$RemoteDir\cts-traffic\ctsTraffic.exe"
-    &$CtsTraffic -listen:* -consoleverbosity:1 -serverExitLimit:100
+    &$CtsTraffic -listen:* -consoleverbosity:1 -timeLimit:120000
 } -ArgumentList $RemoteDir -AsJob
 
 Write-Output "Starting the local ctsTraffic.exe for Send tests"
-.\ctsTraffic.exe -target:$RemoteAddress -consoleverbosity:1 -statusfilename:SendStatus.csv -connectionfilename:SendConnections.csv -connections:10 -iterations:10
+.\ctsTraffic.exe -target:$RemoteAddress -consoleverbosity:1 -statusfilename:SendStatus.csv -connectionfilename:SendConnections.csv -timeLimit:300000
 
 Write-Output "Waiting for the remote job to complete"
 Wait-Job $Job
@@ -63,11 +63,11 @@ Write-Output "Starting the remote ctsTraffic.exe for Recv tests"
 $Job = Invoke-Command -Session $Session -ScriptBlock {
     param($RemoteDir)
     $CtsTraffic = "$RemoteDir\cts-traffic\ctsTraffic.exe"
-    &$CtsTraffic -listen:* -consoleverbosity:1 -serverExitLimit:100 -pattern:pull
+    &$CtsTraffic -listen:* -consoleverbosity:1 -timeLimit:120000 -pattern:pull
 } -ArgumentList $RemoteDir -AsJob
 
 Write-Output "Starting the local ctsTraffic.exe for Recv tests"
-.\ctsTraffic.exe -target:$RemoteAddress -consoleverbosity:1 -statusfilename:RecvStatus.csv -connectionfilename:RecvConnections.csv -pattern:pull -connections:10 -iterations:10
+.\ctsTraffic.exe -target:$RemoteAddress -consoleverbosity:1 -statusfilename:RecvStatus.csv -connectionfilename:RecvConnections.csv -pattern:pull -timeLimit:300000
 
 Write-Output "Waiting for the remote job to complete"
 Wait-Job $Job
