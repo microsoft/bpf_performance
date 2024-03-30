@@ -17,7 +17,10 @@ param (
     [string]$RemotePSConfiguration = "PowerShell.7",
 
     [Parameter(Mandatory = $false)]
-    [string]$RemoteDir = "C:\_work"
+    [string]$RemoteDir = "C:\_work",
+
+    [Parameter(Mandatory = $false)]
+    [string]$Duration = "60000"
 )
 
 #Set-StrictMode -Version 'Latest'
@@ -45,13 +48,13 @@ Write-Output "Running the tests on the remote machine"
 Write-Output "Starting the remote ctsTraffic.exe for Send tests"
 
 $Job = Invoke-Command -Session $Session -ScriptBlock {
-    param($RemoteDir)
+    param($RemoteDir, $Duration)
     $CtsTraffic = "$RemoteDir\cts-traffic\ctsTraffic.exe"
-    &$CtsTraffic -listen:* -consoleverbosity:1 -timeLimit:120000
-} -ArgumentList $RemoteDir -AsJob
+    &$CtsTraffic -listen:* -consoleverbosity:1 -timeLimit:$Duration
+} -ArgumentList $RemoteDir, $Duration -AsJob
 
 Write-Output "Starting the local ctsTraffic.exe for Send tests"
-.\ctsTraffic.exe -target:$RemoteAddress -consoleverbosity:1 -statusfilename:SendStatus.csv -connectionfilename:SendConnections.csv -timeLimit:300000
+.\ctsTraffic.exe -target:$RemoteAddress -consoleverbosity:1 -statusfilename:SendStatus.csv -connectionfilename:SendConnections.csv -timeLimit:$Duration
 
 Write-Output "Waiting for the remote job to complete"
 Wait-Job $Job
@@ -61,13 +64,13 @@ Write-Output "Running the tests on the remote machine"
 Write-Output "Starting the remote ctsTraffic.exe for Recv tests"
 
 $Job = Invoke-Command -Session $Session -ScriptBlock {
-    param($RemoteDir)
+    param($RemoteDir, $Duration)
     $CtsTraffic = "$RemoteDir\cts-traffic\ctsTraffic.exe"
-    &$CtsTraffic -listen:* -consoleverbosity:1 -timeLimit:120000 -pattern:pull
-} -ArgumentList $RemoteDir -AsJob
+    &$CtsTraffic -listen:* -consoleverbosity:1 -timeLimit:$Duration -pattern:pull
+} -ArgumentList $RemoteDir, $Duration -AsJob
 
 Write-Output "Starting the local ctsTraffic.exe for Recv tests"
-.\ctsTraffic.exe -target:$RemoteAddress -consoleverbosity:1 -statusfilename:RecvStatus.csv -connectionfilename:RecvConnections.csv -pattern:pull -timeLimit:300000
+.\ctsTraffic.exe -target:$RemoteAddress -consoleverbosity:1 -statusfilename:RecvStatus.csv -connectionfilename:RecvConnections.csv -pattern:pull -timeLimit:$Duration
 
 Write-Output "Waiting for the remote job to complete"
 Wait-Job $Job
