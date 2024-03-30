@@ -103,3 +103,5 @@ $CtsTrafficResults += [PSCustomObject]@{
 }
 
 $CtsTrafficResults | Export-Csv -Path .\ctsTrafficResults.csv -NoTypeInformation
+
+exit 0
