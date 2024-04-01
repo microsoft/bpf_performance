@@ -36,7 +36,7 @@ function(process_test_cases worker)
         string(REPLACE "," " " elements ${test})
         separate_arguments(elements NATIVE_COMMAND ${elements})
 
-        # Append out_file and options if they are missing
+        # Append out_file and options if they are missing        
         list(LENGTH elements num_elements)
 
         if (num_elements EQUAL 1)
@@ -52,7 +52,7 @@ function(process_test_cases worker)
         if (num_elements GREATER 2)
             list(GET elements 0 file_name)
             list(GET elements 1 out_name)
-            set(option "")
+            set(option "-DBPF")
             # Accumulate multiple options into one 'option' parameter
             foreach(index RANGE 2 (${num_elements} - 1))
                 list(GET elements ${index} current_option)
