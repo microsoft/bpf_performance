@@ -49,18 +49,30 @@ function(process_test_cases worker)
             list(GET elements 1 out_name)
             set(option "-DBPF")
         endif()
-        if (num_elements GREATER 2)
+        if (num_elements EQUAL 3)
             list(GET elements 0 file_name)
             list(GET elements 1 out_name)
-            set(option "")
-            # Accumulate multiple options into one 'option' parameter
-            foreach(index RANGE 2 (${num_elements} - 1))
-                list(GET elements ${index} current_option)
-                # Append the current option to the existing ones
-                set(option "${option} ${current_option}")
-            endforeach()
+            list(GET elements 2 option)
+        endif()
+        if (num_elements EQUAL 4)
+            list(GET elements 0 file_name)
+            list(GET elements 1 out_name)
+            list(GET elements 2 option)
+            list(GET elements 3 option1)
+            set(option "${option} ${option1}")
         endif()
 
+        # if (num_elements GREATER 2)
+        #     list(GET elements 0 file_name)
+        #     list(GET elements 1 out_name)
+        #     # Accumulate multiple options into one 'option' parameter
+        #     foreach(index RANGE 2 (${num_elements} - 1))
+        #         list(GET elements ${index} current_option)
+        #         set(option "${option} ${current_option}")
+        #     endforeach()
+        # endif()
+
+        message(STATUS "Calling cmake_language(): worker=${worker}, file_name=${file_name}, out_name=${out_name}, option(s)=${option}")
         cmake_language(CALL ${worker} ${file_name} ${out_name} ${option})
     endforeach()
 endfunction()
@@ -82,6 +94,7 @@ function(build_bpf file_name out_name option)
         message(FATAL_ERROR "BPF file ${bpf_file_path} does not exist")
     endif()
 
+    message(STATUS "Building BPF object ${bpf_obj_file_path}, using: ${clang_path} ${option} -I ${EBPF_INC_PATH} -I ${CMAKE_CURRENT_BINARY_DIR} -g ${optimize_flags} -target bpf -c ${bpf_file_path} -o ${bpf_obj_file_path}")
     add_custom_command(
         OUTPUT ${bpf_obj_file_path}
         COMMAND ${clang_path} ${option} -I ${EBPF_INC_PATH} -I ${CMAKE_CURRENT_BINARY_DIR} -g ${optimize_flags} -target bpf -c ${bpf_file_path} -o ${bpf_obj_file_path}
