@@ -3,6 +3,8 @@
 
 #include "bpf.h"
 
+SEC("xdp/baseline") int test_xdp_baseline(void** ctx) { return 0; }
+
 // Test cases for bpf_xdp_adjust_head
 
 SEC("xdp/test_bpf_xdp_adjust_head_0") int test_bpf_xdp_adjust_head_0(void** ctx)
