@@ -61,6 +61,7 @@ function(process_test_cases worker)
             endforeach()
         endif()
 
+        message(STATUS "Calling cmake_language(): worker=${worker}, file_name=${file_name}, out_name=${out_name}, option(s)=${option}")
         cmake_language(CALL ${worker} ${file_name} ${out_name} ${option})
     endforeach()
 endfunction()
@@ -82,6 +83,7 @@ function(build_bpf file_name out_name option)
         message(FATAL_ERROR "BPF file ${bpf_file_path} does not exist")
     endif()
 
+    message(STATUS "Building BPF object ${bpf_obj_file_path}, using: ${clang_path} ${option} -I ${EBPF_INC_PATH} -I ${CMAKE_CURRENT_BINARY_DIR} -g ${optimize_flags} -target bpf -c ${bpf_file_path} -o ${bpf_obj_file_path}")
     add_custom_command(
         OUTPUT ${bpf_obj_file_path}
         COMMAND ${clang_path} ${option} -I ${EBPF_INC_PATH} -I ${CMAKE_CURRENT_BINARY_DIR} -g ${optimize_flags} -target bpf -c ${bpf_file_path} -o ${bpf_obj_file_path}
