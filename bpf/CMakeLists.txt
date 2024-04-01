@@ -7,27 +7,27 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/bin)
 
 # Each test consists of a C file, an output file name, and an optional option, seperated by commas.
 set(test_cases
-    "baseline"
+    "baseline,baseline,-DBPF"
     "generic_map,hash,-DTYPE=BPF_MAP_TYPE_HASH"
     "generic_map,percpu_hash,-DTYPE=BPF_MAP_TYPE_PERCPU_HASH"
     "generic_map,lru_hash,-DTYPE=BPF_MAP_TYPE_LRU_HASH"
     "generic_map,lru_per_cpu_hash,-DTYPE=BPF_MAP_TYPE_LRU_PERCPU_HASH"
     "generic_map,array,-DTYPE=BPF_MAP_TYPE_ARRAY"
     "generic_map,percpu_array,-DTYPE=BPF_MAP_TYPE_PERCPU_ARRAY"
-    "helpers"
+    "helpers,helpers,-DBPF"
     "lpm,lpm_1024,-DMAX_ENTRIES=1024"
     "lpm,lpm_16384,-DMAX_ENTRIES=16384"
     "lpm,lpm_262144,-DMAX_ENTRIES=262144"
     "lpm,lpm_1048576,-DMAX_ENTRIES=1048576"
     "map_in_map,hash_of_array,-DTYPE=BPF_MAP_TYPE_HASH_OF_MAPS"
     "map_in_map,array_of_array,-DTYPE=BPF_MAP_TYPE_ARRAY_OF_MAPS"
-    "ringbuf"
+    "ringbuf,ringbuf,-DBPF"
     "ringbuf,ringbuf_500K_200b,-DMAX_RECORDS=500000 -DRECORD_SIZE=200"
     "ringbuf,ringbuf_10K_1400b,-DMAX_RECORDS=10000 -DRECORD_SIZE=1400"
-    "rolling_lru"
-    "tail_call"
-    "xdp"
-    "max_tail_call"
+    "rolling_lru,rolling_lru,-DBPF"
+    "tail_call,tail_call,-DBPF"
+    "xdp,xdp,-DBPF"
+    "max_tail_call,max_tail_call,-DBPF"
     )
 
 function(process_test_cases worker)
@@ -36,23 +36,12 @@ function(process_test_cases worker)
         string(REPLACE "," " " elements ${test})
         separate_arguments(elements NATIVE_COMMAND ${elements})
 
-        # Append out_file and options if they are missing
+        # Append out_file and options
         list(LENGTH elements num_elements)
-
-        if (num_elements EQUAL 1)
-            list(GET elements 0 file_name)
-            set(out_name ${file_name})
-            set(option "-DBPF")
-        endif()
-        if (num_elements EQUAL 2)
-            list(GET elements 0 file_name)
-            list(GET elements 1 out_name)
-            set(option "-DBPF")
-        endif()
-        if (num_elements GREATER 2)
-            list(GET elements 0 file_name)
-            list(GET elements 1 out_name)
-            set(option "")
+        list(GET elements 0 file_name)
+        list(GET elements 1 out_name)
+        set(option "")
+        if (${num_elements} GREATER 2)
             # Accumulate multiple options into one 'option' parameter
             foreach(index RANGE 2 (${num_elements} - 1))
                 list(GET elements ${index} current_option)
@@ -122,7 +111,6 @@ function(convert_to_native file_name out_name option)
         COMMENT "Converting BPF object ${bpf_obj_file_path} to native"
         POST_BUILD
     )
-
 
     # Copy the .sys file to the output directory as part of post build
     add_custom_command(
