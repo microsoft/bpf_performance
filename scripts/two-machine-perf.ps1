@@ -77,10 +77,18 @@ Wait-Job $Job
 Receive-Job $Job
 
 $values = get-content .\SendConnections.csv | convertfrom-csv | select-object -Property SendBps | ForEach-Object { [long]($_.SendBps) }  | Sort-Object
+$SendMedianConnectionBps = $values[$values.Length / 2]
+Write-Output "Median SendConnectionBps: $SendMedianConnectionBps"
+
+$values = get-content .\SendStatus.csv | convertfrom-csv | select-object -Property SendBps | ForEach-Object { [long]($_.SendBps) }  | Sort-Object
 $SendMedianBps = $values[$values.Length / 2]
 Write-Output "Median SendBps: $SendMedianBps"
 
 $values = get-content .\RecvConnections.csv | convertfrom-csv | select-object -Property RecvBps | ForEach-Object { [long]($_.RecvBps) }  | Sort-Object
+$RecvMedianConnectionBps = $values[$values.Length / 2]
+Write-Output "Median RecvConnectionBps: $RecvMedianConnectionBps"
+
+$values = get-content .\RecvStatus.csv | convertfrom-csv | select-object -Property RecvBps | ForEach-Object { [long]($_.RecvBps) }  | Sort-Object
 $RecvMedianBps = $values[$values.Length / 2]
 Write-Output "Median RecvBps: $RecvMedianBps"
 
@@ -98,8 +106,20 @@ $CtsTrafficResults += [PSCustomObject]@{
 
 $CtsTrafficResults += [PSCustomObject]@{
     Timestamp = (Get-Date).ToUniversalTime().ToString("o")
+    Test = "CtsTraffic Send Connection"
+    Metric = $SendMedianConnectionBps
+}
+
+$CtsTrafficResults += [PSCustomObject]@{
+    Timestamp = (Get-Date).ToUniversalTime().ToString("o")
     Test = "CtsTraffic Recv"
     Metric = $RecvMedianBps
+}
+
+$CtsTrafficResults += [PSCustomObject]@{
+    Timestamp = (Get-Date).ToUniversalTime().ToString("o")
+    Test = "CtsTraffic Recv Connection"
+    Metric = $RecvMedianConnectionBps
 }
 
 $CtsTrafficResults | Export-Csv -Path .\ctsTrafficResults.csv -NoTypeInformation
