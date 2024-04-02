@@ -43,9 +43,9 @@ function(process_test_cases worker)
         set(option "")
         if (num_elements GREATER 2)
             # Accumulate multiple options into one 'option' parameter
-            foreach(index RANGE 2 (num_elements - 1))
+            foreach(index RANGE 2 (${num_elements} - 1))
                 list(GET elements ${index} current_option)
-                list(APPEND option ${current_option})
+                set(option "${option} ${current_option}")
             endforeach()
         endif()
 
