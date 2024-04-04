@@ -36,18 +36,11 @@ function(process_test_cases worker)
         string(REPLACE "," " " elements ${test})
         separate_arguments(elements NATIVE_COMMAND ${elements})
 
-        # Append out_file and options
-        list(LENGTH elements num_elements)
+        # Extract file_name, out_name, and option
         list(GET elements 0 file_name)
         list(GET elements 1 out_name)
-        set(option "")
-        if (num_elements GREATER 2)
-            # Accumulate multiple options into one 'option' parameter
-            foreach(index RANGE 2 (${num_elements} - 1))
-                list(GET elements ${index} current_option)
-                set(option "${option} ${current_option}")
-            endforeach()
-        endif()
+        list(REMOVE_AT elements 0 1)
+        string(JOIN " " option "${elements}")  # Join the remaining elements into option
 
         message(STATUS "Calling cmake_language(): worker=${worker}, file_name=${file_name}, out_name=${out_name}, option(s)=${option}")
         cmake_language(CALL ${worker} ${file_name} ${out_name} ${option})
