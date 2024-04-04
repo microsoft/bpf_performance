@@ -40,7 +40,18 @@ function(process_test_cases worker)
         list(GET elements 0 file_name)
         list(GET elements 1 out_name)
         list(REMOVE_AT elements 0 1)
-        string(JOIN " " option "${elements}")  # Join the remaining elements into option
+        
+        # Build option from remaining elements
+        set(option "")
+        foreach(element IN LISTS elements)
+            if(NOT "${element}" STREQUAL "")
+                if("${option}" STREQUAL "")
+                    set(option "${element}")
+                else()
+                    set(option "${option} ${element}")
+                endif()
+            endif()
+        endforeach()
 
         message(STATUS "Calling cmake_language(): worker=${worker}, file_name=${file_name}, out_name=${out_name}, option(s)=${option}")
         cmake_language(CALL ${worker} ${file_name} ${out_name} ${option})
