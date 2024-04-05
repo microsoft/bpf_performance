@@ -44,13 +44,7 @@ function(process_test_cases worker)
         # Build option from remaining elements
         set(option "")
         foreach(element IN LISTS elements)
-            if(NOT "${element}" STREQUAL "")
-                if("${option}" STREQUAL "")
-                    set(option "${element}")
-                else()
-                    set(option "${option} ${element}")
-                endif()
-            endif()
+            list(APPEND option "${element}")
         endforeach()
 
         message(STATUS "Calling cmake_language(): worker=${worker}, file_name=${file_name}, out_name=${out_name}, option(s)=${option}")
@@ -76,12 +70,19 @@ function(build_bpf file_name out_name option)
     endif()
 
     message(STATUS "Building BPF object ${bpf_obj_file_path}, using: ${clang_path} ${option} -I ${EBPF_INC_PATH} -I ${CMAKE_CURRENT_BINARY_DIR} -g ${optimize_flags} -target bpf -c ${bpf_file_path} -o ${bpf_obj_file_path}")
+    # add_custom_command(
+    #     OUTPUT ${bpf_obj_file_path}
+    #     COMMAND ${clang_path} ${option} -I ${EBPF_INC_PATH} -I ${CMAKE_CURRENT_BINARY_DIR} -g ${optimize_flags} -target bpf -c ${bpf_file_path} -o ${bpf_obj_file_path}
+    #     DEPENDS ${bpf_file_path}
+    #     COMMENT "Building BPF object ${bpf_obj_file_path}"
+    # )
     add_custom_command(
         OUTPUT ${bpf_obj_file_path}
-        COMMAND ${clang_path} ${option} -I ${EBPF_INC_PATH} -I ${CMAKE_CURRENT_BINARY_DIR} -g ${optimize_flags} -target bpf -c ${bpf_file_path} -o ${bpf_obj_file_path}
+        COMMAND ${CMAKE_COMMAND} -E env ${clang_path} ${option} -I ${EBPF_INC_PATH} -I ${CMAKE_CURRENT_BINARY_DIR} -g ${optimize_flags} -target bpf -c ${bpf_file_path} -o ${bpf_obj_file_path}
         DEPENDS ${bpf_file_path}
         COMMENT "Building BPF object ${bpf_obj_file_path}"
     )
+
 
     add_custom_target(${out_name}_ELF ALL DEPENDS ${bpf_obj_file_path} SOURCES ${bpf_file_path})
 endfunction()
