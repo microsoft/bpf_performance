@@ -22,8 +22,8 @@ set(test_cases
     "map_in_map,hash_of_array,-DTYPE=BPF_MAP_TYPE_HASH_OF_MAPS"
     "map_in_map,array_of_array,-DTYPE=BPF_MAP_TYPE_ARRAY_OF_MAPS"
     "ringbuf,ringbuf,-DBPF"
-    "ringbuf,ringbuf_500K_200b,-DMAX_RECORDS=500000 -DRECORD_SIZE=200"
-    "ringbuf,ringbuf_10K_1400b,-DMAX_RECORDS=10000 -DRECORD_SIZE=400"
+    "ringbuf,ringbuf_500K_200b,-DBPF -DMAX_RECORDS=500000 -DRECORD_SIZE=200"
+    "ringbuf,ringbuf_10K_1400b,-DBPF -DMAX_RECORDS=10000 -DRECORD_SIZE=400"
     "rolling_lru,rolling_lru,-DBPF"
     "tail_call,tail_call,-DBPF"
     "xdp,xdp,-DBPF"
@@ -47,7 +47,7 @@ function(process_test_cases worker test_list)
             list(APPEND option_list "${element}")
         endforeach()
 
-        message(STATUS "Calling cmake_language(): worker=${worker}, file_name=${file_name}, out_name=${out_name}, option_list=${option_list}")
+        message(STATUS "Calling cmake_language(), using: worker=${worker}, file_name=${file_name}, out_name=${out_name}, option_list=${option_list}")
         cmake_language(CALL ${worker} ${file_name} ${out_name} "${option_list}")
     endforeach()
 endfunction()
@@ -69,12 +69,12 @@ function(build_bpf file_name out_name option_list)
         message(FATAL_ERROR "BPF file ${bpf_file_path} does not exist")
     endif()
 
-    message(STATUS "Building BPF object ${bpf_obj_file_path}, using: ${clang_path} ${option_list} -I ${EBPF_INC_PATH} -I ${CMAKE_CURRENT_BINARY_DIR} -g ${optimize_flags} -target bpf -c ${bpf_file_path} -o ${bpf_obj_file_path}")
+    message(STATUS "Calling add_custom_command(), using: ${clang_path} ${option_list} -I ${EBPF_INC_PATH} -I ${CMAKE_CURRENT_BINARY_DIR} -g ${optimize_flags} -target bpf -c ${bpf_file_path} -o ${bpf_obj_file_path}")
     add_custom_command(
         OUTPUT ${bpf_obj_file_path}
         COMMAND ${clang_path} ${option_list} -I ${EBPF_INC_PATH} -I ${CMAKE_CURRENT_BINARY_DIR} -g ${optimize_flags} -target bpf -c ${bpf_file_path} -o ${bpf_obj_file_path}
         DEPENDS ${bpf_file_path}
-        COMMENT "Building BPF object ${bpf_obj_file_path}"
+        COMMENT "-- Building BPF object ${bpf_obj_file_path}"
     )
     add_custom_target(${out_name}_ELF ALL DEPENDS ${bpf_obj_file_path} SOURCES ${bpf_file_path})
 endfunction()
