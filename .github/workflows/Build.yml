@@ -122,6 +122,44 @@ jobs:
         name: build-${{env.BUILD_TYPE}}-${{inputs.platform}}
         path: ${{github.workspace}}/build/bin
 
+    - name: Setup xdp directory
+      if: inputs.platform == 'windows-2019' || inputs.platform == 'windows-2022'
+      run: |
+        mkdir -p ${{github.workspace}}\xdp
+
+    - name: Download xdp-for-windows
+      if: inputs.platform == 'windows-2019' || inputs.platform == 'windows-2022'
+      working-directory: ${{ github.workspace }}\xdp
+      run: |
+        $ProgressPreference = 'SilentlyContinue'
+        $packageBaseUrl = Get-Content -Path "${{github.workspace}}/scripts/xdp_version.txt"
+        $packageUrl = $packageBaseUrl + "/xdp-for-windows.1.1.0.msi"
+        write-output "Downloading $packageUrl"
+        Invoke-WebRequest -Uri $packageUrl -OutFile xdp-for-windows.1.1.0.msi
+        dir *.msi
+        $packageUrl = $packageBaseUrl + "/xdp-devkit-x64-1.1.0.zip"
+        write-output "Downloading $packageUrl"
+        Invoke-WebRequest -Uri $packageUrl -OutFile xdp-devkit-x64-1.1.0.zip
+        dir *.zip
+        Expand-Archive -Path "xdp-devkit-x64-1.1.0.zip" -DestinationPath .
+
+    - name: Install xdp-for-windows
+      if: inputs.platform == 'windows-2019' || inputs.platform == 'windows-2022'
+      working-directory: ${{ github.workspace }}\xdp
+      run: |
+          $installPath = "${{ github.workspace }}\xdp"
+          Write-Output "xdp installPath: $installPath"
+          Write-Output "Installing XDP for Windows"
+          CertUtil.exe -addstore Root bin\CoreNetSignRoot.cer
+          CertUtil.exe -addstore TrustedPublisher bin\CoreNetSignRoot.cer
+          $process = Start-Process msiexec.exe -Wait -ArgumentList "/i xdp-for-windows.1.1.0.msi INSTALLFOLDER=$installPath /qn" -PassThru
+          if ($process.ExitCode -ne 0) { exit $process.ExitCode }
+          Write-Output "XDP for Windows installed"
+          sc.exe query xdp
+          reg.exe add HKLM\SYSTEM\CurrentControlSet\Services\xdp\Parameters /v XdpEbpfEnabled /d 1 /t REG_DWORD /f
+          sc.exe stop xdp
+          sc.exe start xdp
+
     - name: Create results directory
       run: |
         mkdir -p ${{github.workspace}}/results
@@ -154,18 +192,14 @@ jobs:
       if: (inputs.platform == 'windows-2019' || inputs.platform == 'windows-2022') && inputs.option == 'none'
       working-directory: ${{github.workspace}}/build/bin
       run: |
-        $pre_command = 'wpr.exe -start CPU'
-        $post_command = 'wpr.exe -stop ""${{github.workspace}}\results\%NAME%.etl""'
-        ${{env.BUILD_TYPE}}\bpf_performance_runner.exe -i tests.yml -e .sys -r --pre "$pre_command" --post "$post_command" | Tee-Object -FilePath ${{github.workspace}}/results/native-${inputs.platform}-${{env.BUILD_TYPE}}.csv
+        ${{env.BUILD_TYPE}}\bpf_performance_runner.exe -i tests.yml -e .sys -r | Tee-Object -FilePath ${{github.workspace}}/results/native-${inputs.platform}-${{env.BUILD_TYPE}}.csv
 
     - name: Tests - Windows 2019 or Windows 2022 - JIT
       if: (inputs.platform == 'windows-2019' || inputs.platform == 'windows-2022') && inputs.option == 'jit'
       working-directory: ${{github.workspace}}/build/bin
       # Run with option to ignore failing return code
       run: |
-        $pre_command = 'wpr.exe -start CPU'
-        $post_command = 'wpr.exe -stop ""${{github.workspace}}\results\%NAME%-jit.etl""'
-        ${{env.BUILD_TYPE}}\bpf_performance_runner.exe -i tests.yml -r --pre "$pre_command" --post "$post_command" | Tee-Object -FilePath ${{github.workspace}}/results/native-${inputs.platform}-${{env.BUILD_TYPE}}.csv
+        ${{env.BUILD_TYPE}}\bpf_performance_runner.exe -i tests.yml -r | Tee-Object -FilePath ${{github.workspace}}/results/native-${inputs.platform}-${{env.BUILD_TYPE}}.csv
 
     - name: Upload results
       uses: actions/upload-artifact@82c141cc518b40d92cc801eee768e7aafc9c2fa2 # v2.3.1

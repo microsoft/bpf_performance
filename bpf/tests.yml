@@ -381,7 +381,8 @@ tests:
     description: Tests the bpf_xdp_adjust_head helper.
     elf_file: xdp.o
     iteration_count: 1000000
-    platform: Linux
+    program_type: xdp
+    pass_data: true
     program_cpu_assignment:
       test_bpf_xdp_adjust_head_0: all
 
@@ -389,7 +390,8 @@ tests:
     description: Tests the bpf_xdp_adjust_head helper.
     elf_file: xdp.o
     iteration_count: 1000000
-    platform: Linux
+    program_type: xdp
+    pass_data: true
     program_cpu_assignment:
       test_bpf_xdp_adjust_head_plus_100: all
 
@@ -397,7 +399,8 @@ tests:
     description: Tests the bpf_xdp_adjust_head helper.
     elf_file: xdp.o
     iteration_count: 1000000
-    platform: Linux
+    program_type: xdp
+    pass_data: true
     program_cpu_assignment:
       test_bpf_xdp_adjust_head_minus_100: all
 
@@ -452,7 +455,6 @@ tests:
   - name: BPF_MAP_TYPE_HASH_OF_MAPS read
     description: Tests the BPF_MAP_TYPE_HASH_OF_MAPS map type.
     elf_file: hash_of_array.o
-    platform: Linux
     map_state_preparation:
       program: prepare
       iteration_count: 8192
@@ -463,7 +465,6 @@ tests:
   - name: BPF_MAP_TYPE_HASH_OF_MAPS update
     description: Tests the BPF_MAP_TYPE_HASH_OF_MAPS map type.
     elf_file: hash_of_array.o
-    platform: Linux
     map_state_preparation:
       program: prepare
       iteration_count: 8192
