@@ -204,6 +204,8 @@ main(int argc, char** argv)
             int iteration_count = test["iteration_count"].as<int>();
             std::optional<std::string> program_type;
             int batch_size;
+            bool pass_data = false;
+            bool pass_context = true;
 
             // Check if value "platform" is defined and matches the current platform.
             if (test["platform"].IsDefined()) {
@@ -224,6 +226,16 @@ main(int argc, char** argv)
                 batch_size = test["batch_size"].as<int>();
             } else {
                 batch_size = 64;
+            }
+
+            // Check if pass_data is defined and use it.
+            if (test["pass_data"].IsDefined()) {
+                pass_data = test["pass_data"].as<bool>();
+            }
+
+            // Check if pass_context is defined and use it.
+            if (test["pass_context"].IsDefined()) {
+                pass_context = test["pass_context"].as<bool>();
             }
 
             // Override batch size if specified on command line.
@@ -308,10 +320,18 @@ main(int argc, char** argv)
                 memset(&opts, 0, sizeof(opts));
                 opts.sz = sizeof(opts);
                 opts.repeat = prep_program_iterations;
-                opts.ctx_in = data_in.data();
-                opts.ctx_out = data_out.data();
-                opts.ctx_size_in = static_cast<uint32_t>(data_in.size());
-                opts.ctx_size_out = static_cast<uint32_t>(data_out.size());
+                if (pass_data) {
+                    opts.data_in = data_in.data();
+                    opts.data_out = data_out.data();
+                    opts.data_size_in = static_cast<uint32_t>(data_in.size());
+                    opts.data_size_out = static_cast<uint32_t>(data_out.size());
+                }
+                if (pass_context) {
+                    opts.ctx_in = data_in.data();
+                    opts.ctx_out = data_out.data();
+                    opts.ctx_size_in = static_cast<uint32_t>(data_in.size());
+                    opts.ctx_size_out = static_cast<uint32_t>(data_out.size());
+                }
 
                 if (bpf_prog_test_run_opts(bpf_program__fd(map_state_preparation_program), &opts)) {
                     throw std::runtime_error("Failed to run map_state_preparation program " + prep_program_name);
@@ -411,10 +431,18 @@ main(int argc, char** argv)
                     opt.sz = sizeof(opt);
                     opt.repeat = iteration_count_override.value_or(iteration_count);
                     opt.cpu = static_cast<uint32_t>(i);
-                    opt.ctx_in = data_in.data();
-                    opt.ctx_out = data_out.data();
-                    opt.ctx_size_in = static_cast<uint32_t>(data_in.size());
-                    opt.ctx_size_out = static_cast<uint32_t>(data_out.size());
+                    if (pass_data) {
+                        opt.data_in = data_in.data();
+                        opt.data_out = data_out.data();
+                        opt.data_size_in = static_cast<uint32_t>(data_in.size());
+                        opt.data_size_out = static_cast<uint32_t>(data_out.size());
+                    }
+                    if (pass_context) {
+                        opt.ctx_in = data_in.data();
+                        opt.ctx_out = data_out.data();
+                        opt.ctx_size_in = static_cast<uint32_t>(data_in.size());
+                        opt.ctx_size_out = static_cast<uint32_t>(data_out.size());
+                    }
 #if defined(HAS_BPF_TEST_RUN_OPTS_BATCH_SIZE)
                     opt.batch_size = batch_size;
 #endif

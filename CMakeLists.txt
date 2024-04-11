@@ -36,7 +36,8 @@ if (PLATFORM_WINDOWS)
   execute_process(COMMAND "${EBPF_BIN_PATH}/export_program_info.exe" WORKING_DIRECTORY "${EBPF_BIN_PATH}" COMMAND_ERROR_IS_FATAL ANY)
 
   # Download the XDP-dev-kit from GitHub
-  file(DOWNLOAD "https://github.com/microsoft/xdp-for-windows/releases/download/v1.1.0%2B3b7480bf/xdp-devkit-x64-1.1.0.zip" "${PROJECT_BINARY_DIR}/packages/xdp-devkit.zip")
+  file(READ "${CMAKE_SOURCE_DIR}/scripts/xdp_version.txt" XDP_VERSION)
+  file(DOWNLOAD "${XDP_VERSION}/xdp-devkit-x64-1.1.0.zip" "${PROJECT_BINARY_DIR}/packages/xdp-devkit.zip")
   # Unzip the XDP-dev-kit
   # Create folder xdp-devkit
   file(MAKE_DIRECTORY "${PROJECT_BINARY_DIR}/packages/xdp-devkit")
