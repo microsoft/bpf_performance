@@ -20,7 +20,10 @@ param (
     [string]$RemoteDir = "C:\_work",
 
     [Parameter(Mandatory = $false)]
-    [string]$Duration = "60000"
+    [string]$Duration = "60000",
+
+    [Parameter(Mandatory = $false)]
+    [bool]$CpuProfile = $false
 )
 
 #Set-StrictMode -Version 'Latest'
@@ -53,8 +56,18 @@ $Job = Invoke-Command -Session $Session -ScriptBlock {
     &$CtsTraffic -listen:* -consoleverbosity:1 -timeLimit:$Duration
 } -ArgumentList $RemoteDir, $Duration -AsJob
 
+if ($CpuProfile) {
+    Write-Output "Starting CPU profiling"
+    wpr.exe -start CPU -filemode
+}
+
 Write-Output "Starting the local ctsTraffic.exe for Send tests"
 .\ctsTraffic.exe -target:$RemoteAddress -consoleverbosity:1 -statusfilename:SendStatus.csv -connectionfilename:SendConnections.csv -timeLimit:$Duration
+
+if ($CpuProfile) {
+    Write-Output "Stopping CPU profiling"
+    wpr.exe -stop cts_traffic_send.etl
+}
 
 Write-Output "Waiting for the remote job to complete"
 Wait-Job $Job
@@ -69,8 +82,18 @@ $Job = Invoke-Command -Session $Session -ScriptBlock {
     &$CtsTraffic -listen:* -consoleverbosity:1 -timeLimit:$Duration -pattern:pull
 } -ArgumentList $RemoteDir, $Duration -AsJob
 
+if ($CpuProfile) {
+    Write-Output "Starting CPU profiling"
+    wpr.exe -start CPU -filemode
+}
+
 Write-Output "Starting the local ctsTraffic.exe for Recv tests"
 .\ctsTraffic.exe -target:$RemoteAddress -consoleverbosity:1 -statusfilename:RecvStatus.csv -connectionfilename:RecvConnections.csv -pattern:pull -timeLimit:$Duration
+
+if ($CpuProfile) {
+    Write-Output "Stopping CPU profiling"
+    wpr.exe -stop cts_traffic_recv.etl
+}
 
 Write-Output "Waiting for the remote job to complete"
 Wait-Job $Job
