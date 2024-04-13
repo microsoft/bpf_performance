@@ -206,6 +206,7 @@ main(int argc, char** argv)
             int batch_size;
             bool pass_data = false;
             bool pass_context = true;
+            uint32_t expected_result = 0;
 
             // Check if value "platform" is defined and matches the current platform.
             if (test["platform"].IsDefined()) {
@@ -236,6 +237,11 @@ main(int argc, char** argv)
             // Check if pass_context is defined and use it.
             if (test["pass_context"].IsDefined()) {
                 pass_context = test["pass_context"].as<bool>();
+            }
+
+            // Check if expected_result is defined and use it.
+            if (test["expected_result"].IsDefined()) {
+                expected_result = test["expected_result"].as<uint32_t>();
             }
 
             // Override batch size if specified on command line.
@@ -337,9 +343,9 @@ main(int argc, char** argv)
                     throw std::runtime_error("Failed to run map_state_preparation program " + prep_program_name);
                 }
 
-                if (opts.retval != 0) {
-                    std::string message = "map_state_preparation program " + prep_program_name + " returned non-zero " +
-                                          std::to_string(opts.retval);
+                if (opts.retval != expected_result) {
+                    std::string message = "map_state_preparation program " + prep_program_name + " returned unexpected value " +
+                                          std::to_string(opts.retval) + " expected " + std::to_string(expected_result);
                     if (ignore_return_code.value_or(false)) {
                         std::cout << message << std::endl;
                     } else {
@@ -457,11 +463,11 @@ main(int argc, char** argv)
                 thread.join();
             }
 
-            // Check if any program returned non-zero.
+            // Check if any program returned unexpected result.
             for (auto& opt : opts) {
-                if (opt.retval != 0) {
+                if (opt.retval != expected_result) {
                     std::string message =
-                        "Program returned non-zero " + std::to_string(opt.retval) + " in test " + name;
+                        "Program returned unexpected result " + std::to_string(opt.retval) + " in test " + name + " expected " + std::to_string(expected_result);
                     if (ignore_return_code.value_or(false)) {
                         std::cout << message << std::endl;
                     } else {
