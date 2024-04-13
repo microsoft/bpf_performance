@@ -383,6 +383,7 @@ tests:
     iteration_count: 1000000
     program_type: xdp
     pass_data: true
+    expected_result: 1
     program_cpu_assignment:
       test_bpf_xdp_adjust_head_0: all
 
@@ -392,6 +393,7 @@ tests:
     iteration_count: 1000000
     program_type: xdp
     pass_data: true
+    expected_result: 1
     program_cpu_assignment:
       test_bpf_xdp_adjust_head_plus_100: all
 
@@ -401,6 +403,7 @@ tests:
     iteration_count: 1000000
     program_type: xdp
     pass_data: true
+    expected_result: 1
     program_cpu_assignment:
       test_bpf_xdp_adjust_head_minus_100: all
 
