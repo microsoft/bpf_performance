@@ -102,7 +102,7 @@ Receive-Job $Job
 $values = get-content .\SendConnections.csv | convertfrom-csv | select-object -Property SendBps | ForEach-Object { [long]($_.SendBps) }  | Sort-Object
 # If values is null or empty, set the median to 0
 if ($null -eq $values -or $values.Length -eq 0) {
-    Write-Error "No SendBps values found"
+    Write-Warning "No RecvBps values found"
     $SendMedianConnectionBps = 0
 } else {
     $SendMedianConnectionBps = $values[$values.Length / 2]
@@ -112,7 +112,7 @@ Write-Output "Median SendConnectionBps: $SendMedianConnectionBps"
 $values = get-content .\SendStatus.csv | convertfrom-csv | select-object -Property SendBps | ForEach-Object { [long]($_.SendBps) }  | Sort-Object
 # If values is null or empty, set the median to 0
 if ($null -eq $values -or $values.Length -eq 0) {
-    Write-Error "No SendBps values found"
+    Write-Warning "No RecvBps values found"
     $SendMedianBps = 0
 } else {
     $SendMedianBps = $values[$values.Length / 2]
@@ -122,7 +122,7 @@ Write-Output "Median SendBps: $SendMedianBps"
 $values = get-content .\RecvConnections.csv | convertfrom-csv | select-object -Property RecvBps | ForEach-Object { [long]($_.RecvBps) }  | Sort-Object
 # If values is null or empty, set the median to 0
 if ($null -eq $values -or $values.Length -eq 0) {
-    Write-Error "No RecvBps values found"
+    Write-Warning "No RecvBps values found"
     $RecvMedianConnectionBps = 0
 } else {
     $RecvMedianConnectionBps = $values[$values.Length / 2]
@@ -132,7 +132,7 @@ Write-Output "Median RecvConnectionBps: $RecvMedianConnectionBps"
 $values = get-content .\RecvStatus.csv | convertfrom-csv | select-object -Property RecvBps | ForEach-Object { [long]($_.RecvBps) }  | Sort-Object
 # If values is null or empty, set the median to 0
 if ($null -eq $values -or $values.Length -eq 0) {
-    Write-Error "No RecvBps values found"
+    Write-Warning "No RecvBps values found"
     $RecvMedianBps = 0
 } else {
     $RecvMedianBps = $values[$values.Length / 2]
