@@ -28,7 +28,7 @@ struct
 SEC("sockops/bpf_ringbuf_output") int output(void* ctx)
 {
     void* msg;
-    uint32_t key = 0;
+    int key = 0;
     msg = bpf_map_lookup_elem(&map2, &key);
     if (msg == NULL) {
         return 1;
