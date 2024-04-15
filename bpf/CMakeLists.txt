@@ -23,7 +23,7 @@ set(test_cases
     "map_in_map,array_of_array,-DTYPE=BPF_MAP_TYPE_ARRAY_OF_MAPS"
     "ringbuf,ringbuf,-DBPF -DMAX_RECORDS=1024 -DRECORD_SIZE=128"
     "ringbuf,ringbuf_500K_200b,-DBPF -DMAX_RECORDS=500000 -DRECORD_SIZE=200"
-    "ringbuf,ringbuf_10K_1400b,-DBPF -DMAX_RECORDS=10000 -DRECORD_SIZE=400"
+    "ringbuf,ringbuf_10K_1400b,-DBPF -DMAX_RECORDS=10000 -DRECORD_SIZE=1400"
     "rolling_lru,rolling_lru,-DBPF"
     "tail_call,tail_call,-DBPF"
     "xdp,xdp,-DBPF"
