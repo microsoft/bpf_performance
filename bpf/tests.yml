@@ -482,8 +482,8 @@ tests:
     program_cpu_assignment:
       output: all
   
-  - name: BPF_MAP_TYPE_RINGBUF output - 250K entries of 400bytes
-    description: Tests the bpf_ringbuf_output helper writing 250K entries of 400bytes.
+  - name: BPF_MAP_TYPE_RINGBUF output - 300K entries of 400bytes
+    description: Tests the bpf_ringbuf_output helper writing 300K entries of 400bytes.
     elf_file: ringbuf_300K_400b.o
     iteration_count: 300000
     program_cpu_assignment:

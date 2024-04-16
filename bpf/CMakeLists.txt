@@ -24,7 +24,7 @@ set(test_cases
     # The smallest power of 2 that is >= (128 * 1024) is 2^17 = 131072
     "ringbuf,ringbuf,-DBPF -DRB_SIZE=131072 -DRECORD_SIZE=128"
     # The smallest power of 2 that is >= (400 * 300000) is 2^27 = 134217728
-    "ringbuf,ringbuf_250K_400b,-DBPF -DRB_SIZE=134217728 -DRECORD_SIZE=400"
+    "ringbuf,ringbuf_300K_400b,-DBPF -DRB_SIZE=134217728 -DRECORD_SIZE=400"
     # The smallest power of 2 that is >= (1420 * 100000) is 2^28 = 268435456
     "ringbuf,ringbuf_100K_1420b,-DBPF -DRB_SIZE=268435456 -DRECORD_SIZE=1420"
     "rolling_lru,rolling_lru,-DBPF"
