@@ -3,8 +3,8 @@
 
 #include "bpf.h"
 
-#if !defined(MAX_RECORDS)
-#define MAX_RECORDS 1024
+#if !defined(RB_SIZE)
+#define RB_SIZE (128 * 1024)
 #endif
 
 #if !defined(RECORD_SIZE)
@@ -14,7 +14,7 @@
 struct
 {
     __uint(type, BPF_MAP_TYPE_RINGBUF);
-    __uint(max_entries, MAX_RECORDS* RECORD_SIZE);
+    __uint(max_entries, RB_SIZE);
 } rb_map SEC(".maps");
 
 struct

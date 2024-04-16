@@ -21,9 +21,12 @@ set(test_cases
     "lpm,lpm_1048576,-DMAX_ENTRIES=1048576"
     "map_in_map,hash_of_array,-DTYPE=BPF_MAP_TYPE_HASH_OF_MAPS"
     "map_in_map,array_of_array,-DTYPE=BPF_MAP_TYPE_ARRAY_OF_MAPS"
-    "ringbuf,ringbuf,-DBPF -DMAX_RECORDS=1024 -DRECORD_SIZE=128"
-    "ringbuf,ringbuf_250K_400b,-DBPF -DMAX_RECORDS=250000 -DRECORD_SIZE=400"
-    "ringbuf,ringbuf_12K_1420b,-DBPF -DMAX_RECORDS=11832 -DRECORD_SIZE=1420"
+    # The smallest power of 2 that is >= (128 * 1024) is 2^17 = 131072
+    "ringbuf,ringbuf,-DBPF -DRB_SIZE=131072 -DRECORD_SIZE=128"
+    # The smallest power of 2 that is >= (400 * 300000) is 2^27 = 134217728
+    "ringbuf,ringbuf_250K_400b,-DBPF -DRB_SIZE=134217728 -DRECORD_SIZE=400"
+    # The smallest power of 2 that is >= (1420 * 100000) is 2^28 = 268435456
+    "ringbuf,ringbuf_100K_1420b,-DBPF -DRB_SIZE=268435456 -DRECORD_SIZE=1420"
     "rolling_lru,rolling_lru,-DBPF"
     "tail_call,tail_call,-DBPF"
     "xdp,xdp,-DBPF"
