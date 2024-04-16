@@ -20,7 +20,10 @@ param (
     [string]$RemoteDir = "C:\_work",
 
     [Parameter(Mandatory = $false)]
-    [string]$Duration = "60000"
+    [string]$Duration = "60000",
+
+    [Parameter(Mandatory = $false)]
+    [bool]$CpuProfile = $false
 )
 
 #Set-StrictMode -Version 'Latest'
@@ -53,8 +56,18 @@ $Job = Invoke-Command -Session $Session -ScriptBlock {
     &$CtsTraffic -listen:* -consoleverbosity:1 -timeLimit:$Duration
 } -ArgumentList $RemoteDir, $Duration -AsJob
 
+if ($CpuProfile) {
+    Write-Output "Starting CPU profiling"
+    wpr.exe -start CPU -filemode
+}
+
 Write-Output "Starting the local ctsTraffic.exe for Send tests"
 .\ctsTraffic.exe -target:$RemoteAddress -consoleverbosity:1 -statusfilename:SendStatus.csv -connectionfilename:SendConnections.csv -timeLimit:$Duration
+
+if ($CpuProfile) {
+    Write-Output "Stopping CPU profiling"
+    wpr.exe -stop cts_traffic_send.etl
+}
 
 Write-Output "Waiting for the remote job to complete"
 Wait-Job $Job
@@ -69,26 +82,61 @@ $Job = Invoke-Command -Session $Session -ScriptBlock {
     &$CtsTraffic -listen:* -consoleverbosity:1 -timeLimit:$Duration -pattern:pull
 } -ArgumentList $RemoteDir, $Duration -AsJob
 
+if ($CpuProfile) {
+    Write-Output "Starting CPU profiling"
+    wpr.exe -start CPU -filemode
+}
+
 Write-Output "Starting the local ctsTraffic.exe for Recv tests"
 .\ctsTraffic.exe -target:$RemoteAddress -consoleverbosity:1 -statusfilename:RecvStatus.csv -connectionfilename:RecvConnections.csv -pattern:pull -timeLimit:$Duration
+
+if ($CpuProfile) {
+    Write-Output "Stopping CPU profiling"
+    wpr.exe -stop cts_traffic_recv.etl
+}
 
 Write-Output "Waiting for the remote job to complete"
 Wait-Job $Job
 Receive-Job $Job
 
 $values = get-content .\SendConnections.csv | convertfrom-csv | select-object -Property SendBps | ForEach-Object { [long]($_.SendBps) }  | Sort-Object
-$SendMedianConnectionBps = $values[$values.Length / 2]
+# If values is null or empty, set the median to 0
+if ($null -eq $values -or $values.Length -eq 0) {
+    Write-Warning "No RecvBps values found"
+    $SendMedianConnectionBps = 0
+} else {
+    $SendMedianConnectionBps = $values[$values.Length / 2]
+}
 Write-Output "Median SendConnectionBps: $SendMedianConnectionBps"
 
 $values = get-content .\SendStatus.csv | convertfrom-csv | select-object -Property SendBps | ForEach-Object { [long]($_.SendBps) }  | Sort-Object
-$SendMedianBps = $values[$values.Length / 2]
+# If values is null or empty, set the median to 0
+if ($null -eq $values -or $values.Length -eq 0) {
+    Write-Warning "No RecvBps values found"
+    $SendMedianBps = 0
+} else {
+    $SendMedianBps = $values[$values.Length / 2]
+}
 Write-Output "Median SendBps: $SendMedianBps"
 
 $values = get-content .\RecvConnections.csv | convertfrom-csv | select-object -Property RecvBps | ForEach-Object { [long]($_.RecvBps) }  | Sort-Object
-$RecvMedianConnectionBps = $values[$values.Length / 2]
+# If values is null or empty, set the median to 0
+if ($null -eq $values -or $values.Length -eq 0) {
+    Write-Warning "No RecvBps values found"
+    $RecvMedianConnectionBps = 0
+} else {
+    $RecvMedianConnectionBps = $values[$values.Length / 2]
+}
 Write-Output "Median RecvConnectionBps: $RecvMedianConnectionBps"
 
 $values = get-content .\RecvStatus.csv | convertfrom-csv | select-object -Property RecvBps | ForEach-Object { [long]($_.RecvBps) }  | Sort-Object
+# If values is null or empty, set the median to 0
+if ($null -eq $values -or $values.Length -eq 0) {
+    Write-Warning "No RecvBps values found"
+    $RecvMedianBps = 0
+} else {
+    $RecvMedianBps = $values[$values.Length / 2]
+}
 $RecvMedianBps = $values[$values.Length / 2]
 Write-Output "Median RecvBps: $RecvMedianBps"
 

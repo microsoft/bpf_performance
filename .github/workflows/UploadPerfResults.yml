@@ -37,7 +37,7 @@ jobs:
     - uses: actions/checkout@9bb56186c3b09b4f86b1c65136769dd318469633 # v4.1.2
 
     - name: Download performance result artifacts
-      uses: actions/download-artifact@c850b930e6ba138125429b7e5c93fc707a7f8427 # v4.1.4
+      uses: actions/download-artifact@cbed621e49e4c01b044d60f6c80ea4ed6328b281 # v2.1.1
       with:
         name: results-Release-${{matrix.platform}}-none
         path: results
@@ -47,7 +47,7 @@ jobs:
         python3 scripts/process_results.py --csv-directory ${{github.workspace}}/results --sql-script-file ${{github.workspace}}/results/upload.sql --commit_id "$(cat ${{github.workspace}}/results/commit_sha.txt)" --platform ${{matrix.platform}} --repository ${{github.repository}}
 
     - name: Log into Azure
-      uses: azure/login@cb79c773a3cfa27f31f25eb3f677781210c9ce3d # v1.6.1
+      uses: azure/login@8c334a195cbb38e46038007b304988d888bf676a # v2.0.0
       with:
         client-id: ${{ secrets.AZURE_CLIENT_ID }}
         tenant-id: ${{ secrets.AZURE_TENANT_ID }}

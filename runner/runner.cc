@@ -204,6 +204,9 @@ main(int argc, char** argv)
             int iteration_count = test["iteration_count"].as<int>();
             std::optional<std::string> program_type;
             int batch_size;
+            bool pass_data = false;
+            bool pass_context = true;
+            uint32_t expected_result = 0;
 
             // Check if value "platform" is defined and matches the current platform.
             if (test["platform"].IsDefined()) {
@@ -224,6 +227,21 @@ main(int argc, char** argv)
                 batch_size = test["batch_size"].as<int>();
             } else {
                 batch_size = 64;
+            }
+
+            // Check if pass_data is defined and use it.
+            if (test["pass_data"].IsDefined()) {
+                pass_data = test["pass_data"].as<bool>();
+            }
+
+            // Check if pass_context is defined and use it.
+            if (test["pass_context"].IsDefined()) {
+                pass_context = test["pass_context"].as<bool>();
+            }
+
+            // Check if expected_result is defined and use it.
+            if (test["expected_result"].IsDefined()) {
+                expected_result = test["expected_result"].as<uint32_t>();
             }
 
             // Override batch size if specified on command line.
@@ -308,18 +326,26 @@ main(int argc, char** argv)
                 memset(&opts, 0, sizeof(opts));
                 opts.sz = sizeof(opts);
                 opts.repeat = prep_program_iterations;
-                opts.ctx_in = data_in.data();
-                opts.ctx_out = data_out.data();
-                opts.ctx_size_in = static_cast<uint32_t>(data_in.size());
-                opts.ctx_size_out = static_cast<uint32_t>(data_out.size());
+                if (pass_data) {
+                    opts.data_in = data_in.data();
+                    opts.data_out = data_out.data();
+                    opts.data_size_in = static_cast<uint32_t>(data_in.size());
+                    opts.data_size_out = static_cast<uint32_t>(data_out.size());
+                }
+                if (pass_context) {
+                    opts.ctx_in = data_in.data();
+                    opts.ctx_out = data_out.data();
+                    opts.ctx_size_in = static_cast<uint32_t>(data_in.size());
+                    opts.ctx_size_out = static_cast<uint32_t>(data_out.size());
+                }
 
                 if (bpf_prog_test_run_opts(bpf_program__fd(map_state_preparation_program), &opts)) {
                     throw std::runtime_error("Failed to run map_state_preparation program " + prep_program_name);
                 }
 
-                if (opts.retval != 0) {
-                    std::string message = "map_state_preparation program " + prep_program_name + " returned non-zero " +
-                                          std::to_string(opts.retval);
+                if (opts.retval != expected_result) {
+                    std::string message = "map_state_preparation program " + prep_program_name + " returned unexpected value " +
+                                          std::to_string(opts.retval) + " expected " + std::to_string(expected_result);
                     if (ignore_return_code.value_or(false)) {
                         std::cout << message << std::endl;
                     } else {
@@ -411,10 +437,18 @@ main(int argc, char** argv)
                     opt.sz = sizeof(opt);
                     opt.repeat = iteration_count_override.value_or(iteration_count);
                     opt.cpu = static_cast<uint32_t>(i);
-                    opt.ctx_in = data_in.data();
-                    opt.ctx_out = data_out.data();
-                    opt.ctx_size_in = static_cast<uint32_t>(data_in.size());
-                    opt.ctx_size_out = static_cast<uint32_t>(data_out.size());
+                    if (pass_data) {
+                        opt.data_in = data_in.data();
+                        opt.data_out = data_out.data();
+                        opt.data_size_in = static_cast<uint32_t>(data_in.size());
+                        opt.data_size_out = static_cast<uint32_t>(data_out.size());
+                    }
+                    if (pass_context) {
+                        opt.ctx_in = data_in.data();
+                        opt.ctx_out = data_out.data();
+                        opt.ctx_size_in = static_cast<uint32_t>(data_in.size());
+                        opt.ctx_size_out = static_cast<uint32_t>(data_out.size());
+                    }
 #if defined(HAS_BPF_TEST_RUN_OPTS_BATCH_SIZE)
                     opt.batch_size = batch_size;
 #endif
@@ -429,11 +463,11 @@ main(int argc, char** argv)
                 thread.join();
             }
 
-            // Check if any program returned non-zero.
+            // Check if any program returned unexpected result.
             for (auto& opt : opts) {
-                if (opt.retval != 0) {
+                if (opt.retval != expected_result) {
                     std::string message =
-                        "Program returned non-zero " + std::to_string(opt.retval) + " in test " + name;
+                        "Program returned unexpected result " + std::to_string(opt.retval) + " in test " + name + " expected " + std::to_string(expected_result);
                     if (ignore_return_code.value_or(false)) {
                         std::cout << message << std::endl;
                     } else {
