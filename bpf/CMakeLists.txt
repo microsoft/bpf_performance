@@ -14,7 +14,7 @@ set(test_cases
     "generic_map,lru_per_cpu_hash,-DTYPE=BPF_MAP_TYPE_LRU_PERCPU_HASH"
     "generic_map,array,-DTYPE=BPF_MAP_TYPE_ARRAY"
     "generic_map,percpu_array,-DTYPE=BPF_MAP_TYPE_PERCPU_ARRAY"
-    "helpers,helpers"
+    "helpers,helpers,-DBPF"
     "lpm,lpm_1024,-DMAX_ENTRIES=1024"
     "lpm,lpm_16384,-DMAX_ENTRIES=16384"
     "lpm,lpm_262144,-DMAX_ENTRIES=262144"
