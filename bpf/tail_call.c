@@ -61,7 +61,7 @@ SEC("sockops/tail_callee4") int test_bpf_tail_callee4(void* ctx) { return 0; }
 
 SEC("sockops/tail_call") int tail_call(void* ctx)
 {
-    uint64_t cookie = bpf_get_socket_cookie(ctx);
+    long long cookie = bpf_get_socket_cookie(ctx);
     bpf_tail_call(ctx, &prog_array, 0);
     return -1;
 }
