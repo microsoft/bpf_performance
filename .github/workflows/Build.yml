@@ -129,6 +129,8 @@ jobs:
 
     - name: Download xdp-for-windows
       if: inputs.platform == 'windows-2019' || inputs.platform == 'windows-2022'
+      env:
+          GH_TOKEN: ${{ github.token }}
       working-directory: ${{ github.workspace }}\xdp
       run: |
         $ProgressPreference = 'SilentlyContinue'
