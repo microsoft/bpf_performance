@@ -19,6 +19,9 @@ on:
 permissions:
   contents: read
 
+env:
+  XDP_VERSION: '1.1.0'
+
 jobs:
   build:
 
@@ -129,19 +132,17 @@ jobs:
 
     - name: Download xdp-for-windows
       if: inputs.platform == 'windows-2019' || inputs.platform == 'windows-2022'
+      env:
+          GH_TOKEN: ${{ github.token }}
       working-directory: ${{ github.workspace }}\xdp
       run: |
         $ProgressPreference = 'SilentlyContinue'
-        $packageBaseUrl = Get-Content -Path "${{github.workspace}}/scripts/xdp_version.txt"
-        $packageUrl = $packageBaseUrl + "/xdp-for-windows.1.1.0.msi"
-        write-output "Downloading $packageUrl"
-        Invoke-WebRequest -Uri $packageUrl -OutFile xdp-for-windows.1.1.0.msi
+        $releases = (gh release -R microsoft/xdp-for-windows list --json name,isPrerelease,createdAt | ConvertFrom-Json)
+        $release = ($releases | Where-Object -Property isPrerelease -eq true | Sort-Object -Property createdAt -Descending)[0]
+        gh release download -R microsoft/xdp-for-windows $release.name
         dir *.msi
-        $packageUrl = $packageBaseUrl + "/xdp-devkit-x64-1.1.0.zip"
-        write-output "Downloading $packageUrl"
-        Invoke-WebRequest -Uri $packageUrl -OutFile xdp-devkit-x64-1.1.0.zip
         dir *.zip
-        Expand-Archive -Path "xdp-devkit-x64-1.1.0.zip" -DestinationPath .
+        Expand-Archive -Path "xdp-devkit-x64-${{env.XDP_VERSION}}.zip" -DestinationPath .
 
     - name: Install xdp-for-windows
       if: inputs.platform == 'windows-2019' || inputs.platform == 'windows-2022'
