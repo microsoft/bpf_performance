@@ -62,7 +62,7 @@ if ($CpuProfile) {
 }
 
 Write-Output "Starting the local ctsTraffic.exe for Send tests"
-.\ctsTraffic.exe -target:$RemoteAddress -consoleverbosity:1 -statusfilename:SendStatus.csv -connectionfilename:SendConnections.csv -timeLimit:$Duration
+.\ctsTraffic.exe -target:$RemoteAddress -consoleverbosity:1 -statusfilename:SendStatus.csv -connectionfilename:SendConnections.csv -timeLimit:$Duration -Buffer:1048576 -connections:32 -transfer:0xffffffffffff -MsgWaitAll:on  -Verify:connection -PrePostRecvs:3 -io:rioiocp
 
 if ($CpuProfile) {
     Write-Output "Stopping CPU profiling"
@@ -88,7 +88,7 @@ if ($CpuProfile) {
 }
 
 Write-Output "Starting the local ctsTraffic.exe for Recv tests"
-.\ctsTraffic.exe -target:$RemoteAddress -consoleverbosity:1 -statusfilename:RecvStatus.csv -connectionfilename:RecvConnections.csv -pattern:pull -timeLimit:$Duration
+.\ctsTraffic.exe -target:$RemoteAddress -consoleverbosity:1 -statusfilename:RecvStatus.csv -connectionfilename:RecvConnections.csv -pattern:pull -timeLimit:$Duration -Buffer:1048576 -connections:32 -transfer:0xffffffffffff -MsgWaitAll:on  -Verify:connection -PrePostRecvs:3 -io:rioiocp
 
 if ($CpuProfile) {
     Write-Output "Stopping CPU profiling"
