@@ -53,7 +53,7 @@ Write-Output "Starting the remote ctsTraffic.exe for Send tests"
 $Job = Invoke-Command -Session $Session -ScriptBlock {
     param($RemoteDir, $Duration)
     $CtsTraffic = "$RemoteDir\cts-traffic\ctsTraffic.exe"
-    &$CtsTraffic -listen:* -consoleverbosity:0 -timeLimit:$Duration -Buffer:1048576 -transfer:0xffffffffffff -MsgWaitAll:on  -Verify:connection -PrePostRecvs:3 -io:rioiocp  -StatusUpdate:15000
+    &$CtsTraffic -listen:* -consoleverbosity:1 -timeLimit:$Duration -Buffer:1048576 -transfer:0xffffffffffff -MsgWaitAll:on  -Verify:connection -PrePostRecvs:3 -io:rioiocp
 } -ArgumentList $RemoteDir, $Duration -AsJob
 
 if ($CpuProfile) {
@@ -62,7 +62,7 @@ if ($CpuProfile) {
 }
 
 Write-Output "Starting the local ctsTraffic.exe for Send tests"
-.\ctsTraffic.exe -target:$RemoteAddress -consoleverbosity:0 -statusfilename:SendStatus.csv -connectionfilename:SendConnections.csv -timeLimit:$Duration -Buffer:1048576 -connections:32 -transfer:0xffffffffffff -MsgWaitAll:on  -Verify:connection -PrePostRecvs:3 -io:rioiocp -StatusUpdate:15000
+.\ctsTraffic.exe -target:$RemoteAddress -consoleverbosity:1 -statusfilename:SendStatus.csv -connectionfilename:SendConnections.csv -timeLimit:$Duration -Buffer:1048576 -connections:32 -transfer:0xffffffffffff -MsgWaitAll:on  -Verify:connection -PrePostRecvs:3 -io:rioiocp
 
 if ($CpuProfile) {
     Write-Output "Stopping CPU profiling"
@@ -79,7 +79,7 @@ Write-Output "Starting the remote ctsTraffic.exe for Recv tests"
 $Job = Invoke-Command -Session $Session -ScriptBlock {
     param($RemoteDir, $Duration)
     $CtsTraffic = "$RemoteDir\cts-traffic\ctsTraffic.exe"
-    &$CtsTraffic -listen:* -consoleverbosity:0 -timeLimit:$Duration -pattern:pull -Buffer:1048576 -transfer:0xffffffffffff -MsgWaitAll:on  -Verify:connection -PrePostRecvs:3 -io:rioiocp -StatusUpdate:15000
+    &$CtsTraffic -listen:* -consoleverbosity:1 -timeLimit:$Duration -pattern:pull -Buffer:1048576 -transfer:0xffffffffffff -MsgWaitAll:on  -Verify:connection -PrePostRecvs:3 -io:rioiocp
 } -ArgumentList $RemoteDir, $Duration -AsJob
 
 if ($CpuProfile) {
@@ -88,7 +88,7 @@ if ($CpuProfile) {
 }
 
 Write-Output "Starting the local ctsTraffic.exe for Recv tests"
-.\ctsTraffic.exe -target:$RemoteAddress -consoleverbosity:0 -statusfilename:RecvStatus.csv -connectionfilename:RecvConnections.csv -pattern:pull -timeLimit:$Duration -Buffer:1048576 -connections:32 -transfer:0xffffffffffff -MsgWaitAll:on  -Verify:connection -PrePostRecvs:3 -io:rioiocp  -StatusUpdate:15000
+.\ctsTraffic.exe -target:$RemoteAddress -consoleverbosity:1 -statusfilename:RecvStatus.csv -connectionfilename:RecvConnections.csv -pattern:pull -timeLimit:$Duration -Buffer:1048576 -connections:32 -transfer:0xffffffffffff -MsgWaitAll:on  -Verify:connection -PrePostRecvs:3 -io:rioiocp
 
 if ($CpuProfile) {
     Write-Output "Stopping CPU profiling"
@@ -143,15 +143,6 @@ Write-Output "Peak RecvBps: $RecvPeakBps"
 Write-Output "Tests completed. Cleaning up..."
 
 Write-Output "Debug logging"
-
-Write-Output "SendStatus"
-Get-Content .\SendStatus.csv
-Write-Output "SendConnections"
-Get-Content .\SendConnections.csv
-Write-Output "RecvStatus"
-Get-Content .\RecvStatus.csv
-Write-Output "RecvConnections"
-Get-Content .\RecvConnections.csv
 
 Remove-PSSession $Session
 
