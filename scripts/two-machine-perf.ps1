@@ -20,7 +20,7 @@ param (
     [string]$RemoteDir = "C:\_work",
 
     [Parameter(Mandatory = $false)]
-    [string]$Duration = "300000",
+    [string]$Duration = "60000",
 
     [Parameter(Mandatory = $false)]
     [bool]$CpuProfile = $false
