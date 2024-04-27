@@ -53,7 +53,7 @@ Write-Output "Starting the remote ctsTraffic.exe for Send tests"
 $Job = Invoke-Command -Session $Session -ScriptBlock {
     param($RemoteDir, $Duration)
     $CtsTraffic = "$RemoteDir\cts-traffic\ctsTraffic.exe"
-    &$CtsTraffic -listen:* -consoleverbosity:1 -timeLimit:$Duration
+    &$CtsTraffic -listen:* -consoleverbosity:1 -timeLimit:$Duration -Buffer:1048576 -connections:32 -transfer:0xffffffffffff -MsgWaitAll:on  -Verify:connection -PrePostRecvs:3 -io:rioiocp
 } -ArgumentList $RemoteDir, $Duration -AsJob
 
 if ($CpuProfile) {
@@ -79,7 +79,7 @@ Write-Output "Starting the remote ctsTraffic.exe for Recv tests"
 $Job = Invoke-Command -Session $Session -ScriptBlock {
     param($RemoteDir, $Duration)
     $CtsTraffic = "$RemoteDir\cts-traffic\ctsTraffic.exe"
-    &$CtsTraffic -listen:* -consoleverbosity:1 -timeLimit:$Duration -pattern:pull
+    &$CtsTraffic -listen:* -consoleverbosity:1 -timeLimit:$Duration -pattern:pull -Buffer:1048576 -connections:32 -transfer:0xffffffffffff -MsgWaitAll:on  -Verify:connection -PrePostRecvs:3 -io:rioiocp
 } -ArgumentList $RemoteDir, $Duration -AsJob
 
 if ($CpuProfile) {
