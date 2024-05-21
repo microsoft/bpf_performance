@@ -75,6 +75,7 @@ $Job = Invoke-Command -Session $Session -ScriptBlock {
 } -ArgumentList $RemoteDir, $Duration -AsJob
 
 if ($CpuProfile) {
+    wpr.exe -cancel
     Write-Output "Starting CPU profiling"
     wpr.exe -start CPU -filemode
 }
