@@ -23,7 +23,10 @@ param (
     [string]$Duration = "60000",
 
     [Parameter(Mandatory = $false)]
-    [bool]$CpuProfile = $false
+    [bool]$CpuProfile = $false,
+
+    [Parameter(Mandatory = $false)]
+    [int]$ConcurrentConnections = 32
 )
 
 #Set-StrictMode -Version 'Latest'
@@ -81,7 +84,7 @@ if ($CpuProfile) {
 }
 
 Write-Output "Starting the local ctsTraffic.exe for Send tests"
-.\ctsTraffic.exe -target:$RemoteAddress -consoleverbosity:1 -statusfilename:SendStatus.csv -connectionfilename:SendConnections.csv -timeLimit:$Duration -Buffer:1048576 -connections:32 -transfer:0xffffffffffff -MsgWaitAll:on  -Verify:connection -PrePostRecvs:3 -io:rioiocp
+.\ctsTraffic.exe -target:$RemoteAddress -consoleverbosity:1 -statusfilename:SendStatus.csv -connectionfilename:SendConnections.csv -timeLimit:$Duration -Buffer:1048576 -connections:$ConcurrentConnections -transfer:0xffffffffffff -MsgWaitAll:on  -Verify:connection -PrePostRecvs:3 -io:rioiocp
 
 if ($CpuProfile) {
     Write-Output "Stopping CPU profiling"
@@ -98,8 +101,8 @@ Write-Output "Starting the remote ctsTraffic.exe for Recv tests"
 $Job = Invoke-Command -Session $Session -ScriptBlock {
     param($RemoteDir, $Duration)
     $CtsTraffic = "$RemoteDir\cts-traffic\ctsTraffic.exe"
-    &$CtsTraffic -listen:* -consoleverbosity:1 -timeLimit:$Duration -pattern:pull -Buffer:1048576 -transfer:0xffffffffffff -MsgWaitAll:on  -Verify:connection -PrePostRecvs:3 -io:rioiocp
-} -ArgumentList $RemoteDir, $Duration -AsJob
+    &$CtsTraffic -listen:* -consoleverbosity:1 -timeLimit:$Duration -pattern:pull -Buffer:1048576 -connections:$ConcurrentConnections -transfer:0xffffffffffff -MsgWaitAll:on  -Verify:connection -PrePostRecvs:3 -io:rioiocp
+} -ArgumentList $RemoteDir, $Duration, $ConcurrentConnections -AsJob
 
 if ($CpuProfile) {
     Write-Output "Starting CPU profiling"
