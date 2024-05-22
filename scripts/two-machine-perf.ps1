@@ -33,6 +33,8 @@ param (
 $PSDefaultParameterValues['*:ErrorAction'] = 'Stop'
 #$ProgressPreference = 'SilentlyContinue'
 
+Write-Output "Running test with Config: $Config, Arch: $Arch, PeerName: $PeerName, RemotePSConfiguration: $RemotePSConfiguration, RemoteDir: $RemoteDir, Duration: $Duration, CpuProfile: $CpuProfile, ConcurrentConnections: $ConcurrentConnections"
+
 # Set up the connection to the peer over remote powershell.
 Write-Output "Connecting to $PeerName..."
 $Username = (Get-ItemProperty 'HKLM:\Software\Microsoft\Windows NT\CurrentVersion\Winlogon').DefaultUserName
