@@ -48,7 +48,6 @@ if ($null -eq $Session) {
 $CommonOptions = @()
 $CommonOptions += "-consoleverbosity:1"
 $CommonOptions += "-timeLimit:$Duration"
-$CommonOptions += "-connections:$ConcurrentConnections"
 $CommonOptions += "-Buffer:1048576"
 $CommonOptions += "-transfer:0xffffffffffff"
 $CommonOptions += "-MsgWaitAll:on"
@@ -56,6 +55,11 @@ $CommonOptions += "-Verify:connection"
 $CommonOptions += "-PrePostRecvs:3"
 $CommonOptions += "-CpuSetGroupId:0"
 $CommonOptions += "-io:iocp"
+
+$ClientOptions = @()
+$ClientOptions += $CommonOptions
+$ClientOptions += "-connections:$ConcurrentConnections"
+
 
 
 # Find all the local and remote IP and MAC addresses.
@@ -81,7 +85,7 @@ if ($CpuProfile) {
 }
 
 Write-Output "Starting the local ctsTraffic.exe for Send tests"
-.\ctsTraffic.exe -target:$RemoteAddress -statusfilename:SendStatus.csv -connectionfilename:SendConnections.csv $CommonOptions
+.\ctsTraffic.exe -target:$RemoteAddress -statusfilename:SendStatus.csv -connectionfilename:SendConnections.csv $ClientOptions
 
 if ($CpuProfile) {
     Write-Output "Stopping CPU profiling"
@@ -107,7 +111,7 @@ if ($CpuProfile) {
 }
 
 Write-Output "Starting the local ctsTraffic.exe for Recv tests"
-.\ctsTraffic.exe -target:$RemoteAddress -statusfilename:RecvStatus.csv -connectionfilename:RecvConnections.csv -pattern:pull $CommonOptions
+.\ctsTraffic.exe -target:$RemoteAddress -statusfilename:RecvStatus.csv -connectionfilename:RecvConnections.csv -pattern:pull $ClientOptions
 
 if ($CpuProfile) {
     Write-Output "Stopping CPU profiling"
