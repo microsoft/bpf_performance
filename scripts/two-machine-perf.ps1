@@ -55,28 +55,10 @@ Copy-Item -ToSession $Session . -Destination $RemoteDir\cts-traffic -Recurse -Fo
 Write-Output "Running the tests on the remote machine"
 Write-Output "Starting the remote ctsTraffic.exe for Send tests"
 
-# Set RSS on NIC on remote machine
-$Job = Invoke-Command -Session $Session -ScriptBlock {
-    $processor_count = $env:NUMBER_OF_PROCESSORS / 2
-
-    $physical_nics = Get-NetAdapter | Where-Object -Property "PhysicalMediaType" -EQ "802.3"
-    foreach ($nic in $physical_nics) {
-        Set-NetAdapterRss -Name $nic.Name -MaxProcessors $processor_count -NumberOfReceiveQueues $processor_count
-    }
-}
-
-# Set RSS on NIC on local machine
-$physical_nics = Get-NetAdapter | Where-Object -Property "PhysicalMediaType" -EQ "802.3"
-$processor_count = $env:NUMBER_OF_PROCESSORS / 2
-foreach ($nic in $physical_nics) {
-    Write-Output "Setting RSS on $nic.Name to $processor_count processors"
-    Set-NetAdapterRss -Name $nic.Name -MaxProcessors $processor_count -NumberOfReceiveQueues $processor_count
-}
-
 $Job = Invoke-Command -Session $Session -ScriptBlock {
     param($RemoteDir, $Duration)
     $CtsTraffic = "$RemoteDir\cts-traffic\ctsTraffic.exe"
-    &$CtsTraffic -listen:* -consoleverbosity:1 -timeLimit:$Duration -Buffer:1048576 -transfer:0xffffffffffff -MsgWaitAll:on  -Verify:connection -PrePostRecvs:3 -io:rioiocp
+    &$CtsTraffic -listen:* -consoleverbosity:1 -timeLimit:$Duration -Buffer:1048576 -transfer:0xffffffffffff -MsgWaitAll:on  -Verify:connection -PrePostRecvs:3  -CpuSetGroupId:0
 } -ArgumentList $RemoteDir, $Duration -AsJob
 
 if ($CpuProfile) {
@@ -86,7 +68,7 @@ if ($CpuProfile) {
 }
 
 Write-Output "Starting the local ctsTraffic.exe for Send tests"
-.\ctsTraffic.exe -target:$RemoteAddress -consoleverbosity:1 -statusfilename:SendStatus.csv -connectionfilename:SendConnections.csv -timeLimit:$Duration -Buffer:1048576 -connections:$ConcurrentConnections -transfer:0xffffffffffff -MsgWaitAll:on  -Verify:connection -PrePostRecvs:3 -io:rioiocp
+.\ctsTraffic.exe -target:$RemoteAddress -consoleverbosity:1 -statusfilename:SendStatus.csv -connectionfilename:SendConnections.csv -timeLimit:$Duration -Buffer:1048576 -connections:$ConcurrentConnections -transfer:0xffffffffffff -MsgWaitAll:on  -Verify:connection -PrePostRecvs:3 -CpuSetGroupId:0
 
 if ($CpuProfile) {
     Write-Output "Stopping CPU profiling"
@@ -103,7 +85,7 @@ Write-Output "Starting the remote ctsTraffic.exe for Recv tests"
 $Job = Invoke-Command -Session $Session -ScriptBlock {
     param($RemoteDir, $Duration)
     $CtsTraffic = "$RemoteDir\cts-traffic\ctsTraffic.exe"
-    &$CtsTraffic -listen:* -consoleverbosity:1 -timeLimit:$Duration -pattern:pull -Buffer:1048576 -connections:$ConcurrentConnections -transfer:0xffffffffffff -MsgWaitAll:on  -Verify:connection -PrePostRecvs:3 -io:rioiocp
+    &$CtsTraffic -listen:* -consoleverbosity:1 -timeLimit:$Duration -pattern:pull -Buffer:1048576 -connections:$ConcurrentConnections -transfer:0xffffffffffff -MsgWaitAll:on  -Verify:connection -PrePostRecvs:3 -CpuSetGroupId:0
 } -ArgumentList $RemoteDir, $Duration, $ConcurrentConnections -AsJob
 
 if ($CpuProfile) {
@@ -112,7 +94,7 @@ if ($CpuProfile) {
 }
 
 Write-Output "Starting the local ctsTraffic.exe for Recv tests"
-.\ctsTraffic.exe -target:$RemoteAddress -consoleverbosity:1 -statusfilename:RecvStatus.csv -connectionfilename:RecvConnections.csv -pattern:pull -timeLimit:$Duration -Buffer:1048576 -connections:32 -transfer:0xffffffffffff -MsgWaitAll:on  -Verify:connection -PrePostRecvs:3 -io:rioiocp
+.\ctsTraffic.exe -target:$RemoteAddress -consoleverbosity:1 -statusfilename:RecvStatus.csv -connectionfilename:RecvConnections.csv -pattern:pull -timeLimit:$Duration -Buffer:1048576 -connections:$ConcurrentConnections  -transfer:0xffffffffffff -MsgWaitAll:on -Verify:connection -PrePostRecvs:3 -CpuSetGroupId:0
 
 if ($CpuProfile) {
     Write-Output "Stopping CPU profiling"
@@ -165,22 +147,6 @@ $RecvPeakBps = $values[$values.Length / 2]
 Write-Output "Peak RecvBps: $RecvPeakBps"
 
 Write-Output "Tests completed. Cleaning up..."
-
-# Set RSS on NIC on remote machine
-$Job = Invoke-Command -Session $Session -ScriptBlock {
-    $physical_nics = Get-NetAdapter | Where-Object -Property "PhysicalMediaType" -EQ "802.3"
-    foreach ($nic in $physical_nics) {
-        Set-NetAdapterRss -Name $nic.Name -MaxProcessors 8 -NumberOfReceiveQueues 8
-    }
-}
-
-# Set RSS on NIC on local machine
-$physical_nics = Get-NetAdapter | Where-Object -Property "PhysicalMediaType" -EQ "802.3"
-foreach ($nic in $physical_nics) {
-    Write-Output "Setting RSS on $nic.Name to 8 processors"
-    Set-NetAdapterRss -Name $nic.Name -MaxProcessors 8 -NumberOfReceiveQueues 8
-}
-
 
 Write-Output "Debug logging"
 
