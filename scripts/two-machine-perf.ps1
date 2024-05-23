@@ -45,6 +45,8 @@ if ($null -eq $Session) {
     Write-Error "Failed to create remote session"
 }
 
+$SamplingInterval = $Duration / 12 # Default to 5 samples per second when running for 60 seconds
+
 $CommonOptions = @()
 $CommonOptions += "-consoleverbosity:1"
 $CommonOptions += "-timeLimit:$Duration"
@@ -55,6 +57,7 @@ $CommonOptions += "-Verify:connection"
 $CommonOptions += "-PrePostRecvs:3"
 $CommonOptions += "-CpuSetGroupId:0"
 $CommonOptions += "-io:iocp"
+$CommonOptions += "-StatusUpdate::$SamplingInterval"
 
 $ClientOptions = @()
 $ClientOptions += $CommonOptions
