@@ -58,13 +58,14 @@ $CommonOptions += "-Verify:connection"
 $CommonOptions += "-PrePostRecvs:3"
 $CommonOptions += "-CpuSetGroupId:0"
 $CommonOptions += "-io:iocp"
-$CommonOptions += "-StatusUpdate::$SamplingInterval"
 
 $ClientOptions = @()
 $ClientOptions += $CommonOptions
 $ClientOptions += "-connections:$ConcurrentConnections"
+$ClientOptions += "-StatusUpdate::$SamplingInterval"
 
-
+Write-Output "Client options: $ClientOptions"
+Write-Output "Common options: $CommonOptions"
 
 # Find all the local and remote IP and MAC addresses.
 $RemoteAddress = [System.Net.Dns]::GetHostAddresses($Session.ComputerName)[0].IPAddressToString
