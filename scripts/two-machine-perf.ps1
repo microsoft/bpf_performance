@@ -46,6 +46,7 @@ if ($null -eq $Session) {
 }
 
 $SamplingInterval = $Duration / 12 # Default to 5 samples per second when running for 60 seconds
+Write-Output Sampling interval: $SamplingInterval
 
 $CommonOptions = @()
 $CommonOptions += "-consoleverbosity:1"
