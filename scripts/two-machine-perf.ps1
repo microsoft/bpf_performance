@@ -45,6 +45,19 @@ if ($null -eq $Session) {
     Write-Error "Failed to create remote session"
 }
 
+$CommonOptions = @()
+$CommonOptions += "-consoleverbosity:1"
+$CommonOptions += "-timeLimit:$Duration"
+$CommonOptions += "-connections:$ConcurrentConnections"
+$CommonOptions += "-Buffer:1048576"
+$CommonOptions += "-transfer:0xffffffffffff"
+$CommonOptions += "-MsgWaitAll:on"
+$CommonOptions += "-Verify:connection"
+$CommonOptions += "-PrePostRecvs:3"
+$CommonOptions += "-CpuSetGroupId:0"
+$CommonOptions += "-io:iocp"
+
+
 # Find all the local and remote IP and MAC addresses.
 $RemoteAddress = [System.Net.Dns]::GetHostAddresses($Session.ComputerName)[0].IPAddressToString
 Write-Output "Successfully connected to peer: $RemoteAddress"
@@ -56,10 +69,10 @@ Write-Output "Running the tests on the remote machine"
 Write-Output "Starting the remote ctsTraffic.exe for Send tests"
 
 $Job = Invoke-Command -Session $Session -ScriptBlock {
-    param($RemoteDir, $Duration)
+    param($RemoteDir, $CommonOptions)
     $CtsTraffic = "$RemoteDir\cts-traffic\ctsTraffic.exe"
-    &$CtsTraffic -listen:* -consoleverbosity:1 -timeLimit:$Duration -Buffer:1048576 -transfer:0xffffffffffff -MsgWaitAll:on  -Verify:connection -PrePostRecvs:3  -CpuSetGroupId:0
-} -ArgumentList $RemoteDir, $Duration -AsJob
+    &$CtsTraffic -listen:* $CommonOptions
+} -ArgumentList $RemoteDir, $CommonOptions -AsJob
 
 if ($CpuProfile) {
     wpr.exe -cancel
@@ -68,7 +81,7 @@ if ($CpuProfile) {
 }
 
 Write-Output "Starting the local ctsTraffic.exe for Send tests"
-.\ctsTraffic.exe -target:$RemoteAddress -consoleverbosity:1 -statusfilename:SendStatus.csv -connectionfilename:SendConnections.csv -timeLimit:$Duration -Buffer:1048576 -connections:$ConcurrentConnections -transfer:0xffffffffffff -MsgWaitAll:on  -Verify:connection -PrePostRecvs:3 -CpuSetGroupId:0
+.\ctsTraffic.exe -target:$RemoteAddress -statusfilename:SendStatus.csv -connectionfilename:SendConnections.csv $CommonOptions
 
 if ($CpuProfile) {
     Write-Output "Stopping CPU profiling"
@@ -83,10 +96,10 @@ Write-Output "Running the tests on the remote machine"
 Write-Output "Starting the remote ctsTraffic.exe for Recv tests"
 
 $Job = Invoke-Command -Session $Session -ScriptBlock {
-    param($RemoteDir, $Duration)
+    param($RemoteDir, $CommonOptions)
     $CtsTraffic = "$RemoteDir\cts-traffic\ctsTraffic.exe"
-    &$CtsTraffic -listen:* -consoleverbosity:1 -timeLimit:$Duration -pattern:pull -Buffer:1048576 -connections:$ConcurrentConnections -transfer:0xffffffffffff -MsgWaitAll:on  -Verify:connection -PrePostRecvs:3 -CpuSetGroupId:0
-} -ArgumentList $RemoteDir, $Duration, $ConcurrentConnections -AsJob
+    &$CtsTraffic -listen:* -pattern:pull $CommonOptions
+} -ArgumentList $RemoteDir, $CommonOptions -AsJob
 
 if ($CpuProfile) {
     Write-Output "Starting CPU profiling"
@@ -94,7 +107,7 @@ if ($CpuProfile) {
 }
 
 Write-Output "Starting the local ctsTraffic.exe for Recv tests"
-.\ctsTraffic.exe -target:$RemoteAddress -consoleverbosity:1 -statusfilename:RecvStatus.csv -connectionfilename:RecvConnections.csv -pattern:pull -timeLimit:$Duration -Buffer:1048576 -connections:$ConcurrentConnections  -transfer:0xffffffffffff -MsgWaitAll:on -Verify:connection -PrePostRecvs:3 -CpuSetGroupId:0
+.\ctsTraffic.exe -target:$RemoteAddress -statusfilename:RecvStatus.csv -connectionfilename:RecvConnections.csv -pattern:pull $CommonOptions
 
 if ($CpuProfile) {
     Write-Output "Stopping CPU profiling"
