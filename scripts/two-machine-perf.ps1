@@ -23,12 +23,17 @@ param (
     [string]$Duration = "60000",
 
     [Parameter(Mandatory = $false)]
-    [bool]$CpuProfile = $false
+    [bool]$CpuProfile = $false,
+
+    [Parameter(Mandatory = $false)]
+    [int]$ConcurrentConnections = 32
 )
 
 #Set-StrictMode -Version 'Latest'
 $PSDefaultParameterValues['*:ErrorAction'] = 'Stop'
 #$ProgressPreference = 'SilentlyContinue'
+
+Write-Output "Running test with Config: $Config, Arch: $Arch, PeerName: $PeerName, RemotePSConfiguration: $RemotePSConfiguration, RemoteDir: $RemoteDir, Duration: $Duration, CpuProfile: $CpuProfile, ConcurrentConnections: $ConcurrentConnections"
 
 # Set up the connection to the peer over remote powershell.
 Write-Output "Connecting to $PeerName..."
@@ -39,6 +44,28 @@ $Session = New-PSSession -ComputerName $PeerName -Credential $Creds -Configurati
 if ($null -eq $Session) {
     Write-Error "Failed to create remote session"
 }
+
+$SamplingInterval = $Duration / 12 # Default to 5 samples per second when running for 60 seconds
+Write-Output Sampling interval: $SamplingInterval
+
+$CommonOptions = @()
+$CommonOptions += "-consoleverbosity:1"
+$CommonOptions += "-timeLimit:$Duration"
+$CommonOptions += "-Buffer:1048576"
+$CommonOptions += "-transfer:0xffffffffffff"
+$CommonOptions += "-MsgWaitAll:on"
+$CommonOptions += "-Verify:connection"
+$CommonOptions += "-PrePostRecvs:3"
+$CommonOptions += "-CpuSetGroupId:0"
+$CommonOptions += "-io:iocp"
+$CommonOptions += "-StatusUpdate:$SamplingInterval"
+
+$ClientOptions = @()
+$ClientOptions += $CommonOptions
+$ClientOptions += "-connections:$ConcurrentConnections"
+
+Write-Output "Client options: $ClientOptions"
+Write-Output "Common options: $CommonOptions"
 
 # Find all the local and remote IP and MAC addresses.
 $RemoteAddress = [System.Net.Dns]::GetHostAddresses($Session.ComputerName)[0].IPAddressToString
@@ -51,18 +78,19 @@ Write-Output "Running the tests on the remote machine"
 Write-Output "Starting the remote ctsTraffic.exe for Send tests"
 
 $Job = Invoke-Command -Session $Session -ScriptBlock {
-    param($RemoteDir, $Duration)
+    param($RemoteDir, $CommonOptions)
     $CtsTraffic = "$RemoteDir\cts-traffic\ctsTraffic.exe"
-    &$CtsTraffic -listen:* -consoleverbosity:1 -timeLimit:$Duration -Buffer:1048576 -transfer:0xffffffffffff -MsgWaitAll:on  -Verify:connection -PrePostRecvs:3 -io:rioiocp
-} -ArgumentList $RemoteDir, $Duration -AsJob
+    &$CtsTraffic -listen:* $CommonOptions
+} -ArgumentList $RemoteDir, $CommonOptions -AsJob
 
 if ($CpuProfile) {
+    wpr.exe -cancel
     Write-Output "Starting CPU profiling"
     wpr.exe -start CPU -filemode
 }
 
 Write-Output "Starting the local ctsTraffic.exe for Send tests"
-.\ctsTraffic.exe -target:$RemoteAddress -consoleverbosity:1 -statusfilename:SendStatus.csv -connectionfilename:SendConnections.csv -timeLimit:$Duration -Buffer:1048576 -connections:32 -transfer:0xffffffffffff -MsgWaitAll:on  -Verify:connection -PrePostRecvs:3 -io:rioiocp
+.\ctsTraffic.exe -target:$RemoteAddress -statusfilename:SendStatus.csv -connectionfilename:SendConnections.csv $ClientOptions
 
 if ($CpuProfile) {
     Write-Output "Stopping CPU profiling"
@@ -77,10 +105,10 @@ Write-Output "Running the tests on the remote machine"
 Write-Output "Starting the remote ctsTraffic.exe for Recv tests"
 
 $Job = Invoke-Command -Session $Session -ScriptBlock {
-    param($RemoteDir, $Duration)
+    param($RemoteDir, $CommonOptions)
     $CtsTraffic = "$RemoteDir\cts-traffic\ctsTraffic.exe"
-    &$CtsTraffic -listen:* -consoleverbosity:1 -timeLimit:$Duration -pattern:pull -Buffer:1048576 -transfer:0xffffffffffff -MsgWaitAll:on  -Verify:connection -PrePostRecvs:3 -io:rioiocp
-} -ArgumentList $RemoteDir, $Duration -AsJob
+    &$CtsTraffic -listen:* -pattern:pull $CommonOptions
+} -ArgumentList $RemoteDir, $CommonOptions -AsJob
 
 if ($CpuProfile) {
     Write-Output "Starting CPU profiling"
@@ -88,7 +116,7 @@ if ($CpuProfile) {
 }
 
 Write-Output "Starting the local ctsTraffic.exe for Recv tests"
-.\ctsTraffic.exe -target:$RemoteAddress -consoleverbosity:1 -statusfilename:RecvStatus.csv -connectionfilename:RecvConnections.csv -pattern:pull -timeLimit:$Duration -Buffer:1048576 -connections:32 -transfer:0xffffffffffff -MsgWaitAll:on  -Verify:connection -PrePostRecvs:3 -io:rioiocp
+.\ctsTraffic.exe -target:$RemoteAddress -statusfilename:RecvStatus.csv -connectionfilename:RecvConnections.csv -pattern:pull $ClientOptions
 
 if ($CpuProfile) {
     Write-Output "Stopping CPU profiling"
