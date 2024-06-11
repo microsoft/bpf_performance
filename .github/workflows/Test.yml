@@ -1,7 +1,7 @@
 # Copyright (c) Microsoft Corporation
 # SPDX-License-Identifier: MIT
 
-name: Build
+name: Test
 
 on:
   workflow_call:
