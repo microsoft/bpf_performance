@@ -48,6 +48,17 @@ jobs:
         configuration: [ 'Release', 'Debug' ]
         option: [ none, sanitizer, coverage ]
         platform: [ 'ubuntu-22.04', 'windows-2019' ]
+        exclude:
+          - platform: windows-2019
+            option: sanitizer
+          - platform: windows-2019
+            option: coverage
+          - platform: windows-2022
+            option: sanitizer
+          - platform: windows-2022
+            option: coverage
+          - platform: ubuntu-22.04
+            option: jit
 
     uses: ./.github/workflows/Build.yml
     with:
