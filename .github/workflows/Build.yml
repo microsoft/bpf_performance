@@ -95,11 +95,6 @@ jobs:
         $artifacts += 'ebpf-for-windows - MSI installer (Build-x64_Release)'
         scripts\Fetch-LatestArtifacts.ps1 -ArtifactsToDownload $artifacts -OutputPath ${{github.workspace}}/local_packages -RunId ${{env.RUNID}} -GitHubToken $token
 
-    - name: Install MSVC Redist
-      if: inputs.platform == 'windows-2019' || inputs.platform == 'windows-2022'
-      run: |
-        choco install -y vcredist140
-
     - name: Configure CMake - Windows-2019 or Windows-2022
       if: inputs.platform == 'windows-2019' || inputs.platform == 'windows-2022'
       run: |
