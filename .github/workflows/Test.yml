@@ -56,100 +56,34 @@ jobs:
         sudo LIBDIR=/lib/x86_64-linux-gnu make install
         sudo ldconfig
 
-    - name: Get the latest run ID from Microsoft/ebpf-for-windows main branch - Windows-2019 or Windows-2022
-      if: inputs.platform == 'windows-2019' || inputs.platform == 'windows-2022'
-      env:
-        GH_TOKEN: ${{ github.token }}
+    - name: Get Linux Kernel version
+      if: inputs.platform == 'ubuntu-22.04'
       run: |
-        mkdir ${{github.workspace}}/local_packages
-        $workflow = (gh run list -R microsoft/ebpf-for-windows  -e schedule -w "CI/CD" --json databaseId,headSha -L 1 | ConvertFrom-Json)
-        $runId = $workflow.databaseId
-        $commitSha = $workflow.headSha
-        echo "RUNID=$runId" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
-        echo "COMMIT_SHA=$commitSha" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+        echo "COMMIT_SHA=$(uname -r)" >> $env:GITHUB_ENV
+
+    - name: Download the eBPF for Windows MSI
+      if: inputs.platform == 'windows-2019' || inputs.platform == 'windows-2022'
+      uses: actions/download-artifact@8caf195ad4b1dee92908e23f56eeb0696f1dd42d
+      with:
+        name: "ebpf-for-windows - MSI installer (none_Release)"
+        path: ${{github.workspace}}/local_packages
+
+    - name: Download BPF Performance tests
+      uses: actions/download-artifact@8caf195ad4b1dee92908e23f56eeb0696f1dd42d
+      with:
+        name: "build-${{inputs.Configuration}}-${{inputs.platform}}-${{inputs.option}}"
+        path: ${{github.workspace}}/build/bin
 
     - name: Get Linux Kernel version
       if: inputs.platform == 'ubuntu-22.04'
       run: |
         echo "COMMIT_SHA=$(uname -r)" >> $env:GITHUB_ENV
 
-    - name: Download daily nuget package and MSI installer - Windows-2019 or Windows-2022
-      env:
-        GH_TOKEN: ${{ github.token }}
+    - name: Get eBPF for Windows version
       if: inputs.platform == 'windows-2019' || inputs.platform == 'windows-2022'
       run: |
-        $token = ConvertTo-SecureString -String ${{secrets.github_token}} -AsPlainText -Force
-        $artifacts = @()
-        $artifacts += 'ebpf-for-windows - NuGet package (Build-x64_Release)'
-        $artifacts += 'ebpf-for-windows - MSI installer (Build-x64_Release)'
-        scripts\Fetch-LatestArtifacts.ps1 -ArtifactsToDownload $artifacts -OutputPath ${{github.workspace}}/local_packages -RunId ${{env.RUNID}} -GitHubToken $token
-
-    - name: Configure CMake - Windows-2019 or Windows-2022
-      if: inputs.platform == 'windows-2019' || inputs.platform == 'windows-2022'
-      run: |
-        cmake -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -DBPF_PERF_LOCAL_NUGET_PATH=${{github.workspace}}/local_packages -DBPF_PERF_LOCAL_MSI_PATH=${{github.workspace}}/local_packages
-
-    - name: Configure CMake - Ubuntu-22.04
-      if: inputs.platform == 'ubuntu-22.04'
-      run: |
-        if [ "${{inputs.option}}" = "sanitizer" ]; then
-          export SANITIZER_FLAGS="-fsanitize=address -fsanitize=undefined -fno-sanitize-recover=all"
-        fi
-        if [ "${{inputs.option}}" = "coverage" ]; then
-          export COVERAGE_FLAGS="-DCMAKE_CXX_FLAGS=\"--coverage\" -DCMAKE_C_FLAGS=\"--coverage\""
-        fi
-        cmake \
-          -B ${{github.workspace}}/build \
-          -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} \
-          -DCMAKE_CXX_FLAGS="${SANITIZER_FLAGS}" \
-          -DCMAKE_C_FLAGS="${SANITIZER_FLAGS}" \
-          ${COVERAGE_FLAGS}
-
-    - name: Build
-      # Build your program with the given configuration
-      run: cmake --build ${{github.workspace}}/build --config ${{env.BUILD_TYPE}}
-
-    - name: Upload artifacts
-      uses: actions/upload-artifact@82c141cc518b40d92cc801eee768e7aafc9c2fa2 # v2.3.1
-      with:
-        name: build-${{env.BUILD_TYPE}}-${{inputs.platform}}
-        path: ${{github.workspace}}/build/bin
-
-    - name: Setup xdp directory
-      if: inputs.platform == 'windows-2019' || inputs.platform == 'windows-2022'
-      run: |
-        mkdir -p ${{github.workspace}}\xdp
-
-    - name: Download xdp-for-windows
-      if: inputs.platform == 'windows-2019' || inputs.platform == 'windows-2022'
-      env:
-          GH_TOKEN: ${{ github.token }}
-      working-directory: ${{ github.workspace }}\xdp
-      run: |
-        $ProgressPreference = 'SilentlyContinue'
-        $releases = (gh release -R microsoft/xdp-for-windows list --json name,isPrerelease,createdAt | ConvertFrom-Json)
-        $release = ($releases | Where-Object -Property isPrerelease -eq true | Sort-Object -Property createdAt -Descending)[0]
-        gh release download -R microsoft/xdp-for-windows $release.name
-        dir *.msi
-        dir *.zip
-        Expand-Archive -Path "xdp-devkit-x64-${{env.XDP_VERSION}}.zip" -DestinationPath .
-
-    - name: Install xdp-for-windows
-      if: inputs.platform == 'windows-2019' || inputs.platform == 'windows-2022'
-      working-directory: ${{ github.workspace }}\xdp
-      run: |
-          $installPath = "${{ github.workspace }}\xdp"
-          Write-Output "xdp installPath: $installPath"
-          Write-Output "Installing XDP for Windows"
-          CertUtil.exe -addstore Root bin\CoreNetSignRoot.cer
-          CertUtil.exe -addstore TrustedPublisher bin\CoreNetSignRoot.cer
-          $process = Start-Process msiexec.exe -Wait -ArgumentList "/i xdp-for-windows.1.1.0.msi INSTALLFOLDER=$installPath /qn" -PassThru
-          if ($process.ExitCode -ne 0) { exit $process.ExitCode }
-          Write-Output "XDP for Windows installed"
-          sc.exe query xdp
-          reg.exe add HKLM\SYSTEM\CurrentControlSet\Services\xdp\Parameters /v XdpEbpfEnabled /d 1 /t REG_DWORD /f
-          sc.exe stop xdp
-          sc.exe start xdp
+        $version = (Get-Item "C:\Program Files\ebpf-for-windows\EbpfApi.dll").VersionInfo.FileVersion
+        echo "COMMIT_SHA=$version" >> $env:GITHUB_ENV
 
     - name: Create results directory
       run: |
@@ -171,7 +105,6 @@ jobs:
       run: |
         sudo ./bpf_performance_runner -i tests.yml -r | tee ${{github.workspace}}/results/jit-${{inputs.platform}}-${{env.BUILD_TYPE}}.csv
         exit ${PIPESTATUS[0]}
-
 
     - name: Install prerequisites - Windows-2019 or Windows-2022
       if: inputs.platform == 'windows-2019' || inputs.platform == 'windows-2022'

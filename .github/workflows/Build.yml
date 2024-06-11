@@ -64,11 +64,6 @@ jobs:
         name: "ebpf-for-windows - NuGet package (none_Release)"
         path: ${{github.workspace}}/local_packages
 
-    - name: Get Linux Kernel version
-      if: inputs.platform == 'ubuntu-22.04'
-      run: |
-        echo "COMMIT_SHA=$(uname -r)" >> $env:GITHUB_ENV
-
     - name: Configure CMake - Windows-2019 or Windows-2022
       if: inputs.platform == 'windows-2019' || inputs.platform == 'windows-2022'
       run: |
@@ -95,7 +90,7 @@ jobs:
       run: cmake --build ${{github.workspace}}/build --config ${{env.BUILD_TYPE}}
 
     - name: Upload artifacts
-      uses: actions/upload-artifact@82c141cc518b40d92cc801eee768e7aafc9c2fa2 # v2.3.1
+      uses: actions/upload-artifact@65462800fd760344b1a7b4382951275a0abb4808
       with:
         name: build-${{env.BUILD_TYPE}}-${{inputs.platform}}-${{inputs.option}}
         path: ${{github.workspace}}/build/bin

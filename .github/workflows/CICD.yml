@@ -53,24 +53,37 @@ jobs:
     with:
       platform: ${{ matrix.platform }}
       configuration: ${{ matrix.configuration }}
-      option: none
+      option: ${{ matrix.option }}
 
-  # test_bpf_performance:
-  #   name: Test BPF Performance
-  #   strategy:
-  #     matrix:
-  #       configuration: [ 'Release' ]
-  #       platform: [ 'windows-2019', 'windows-2022', 'ubuntu-22.04' ]
-  #       option: [ none, sanitizer, coverage, jit ]
-  #   uses: ./.github/workflows/Test.yml
-  #   with:
-  #     platform: ${{ matrix.platform }}
-  #     configuration: ${{ matrix.configuration }}
-  #     option: ${{ matrix.option }}
+  test_bpf_performance:
+    needs: build_bpf_performance
+    name: Test BPF Performance
+    strategy:
+      matrix:
+        configuration: [ 'Release' ]
+        platform: [ 'windows-2019', 'windows-2022', 'ubuntu-22.04' ]
+        option: [ none, sanitizer, coverage, jit ]
+        exclude:
+          - platform: windows-2019
+            option: sanitizer
+          - platform: windows-2019
+            option: coverage
+          - platform: windows-2022
+            option: sanitizer
+          - platform: windows-2022
+            option: coverage
+          - platform: ubuntu-22.04
+            option: jit
+
+    uses: ./.github/workflows/Test.yml
+    with:
+      platform: ${{ matrix.platform }}
+      configuration: ${{ matrix.configuration }}
+      option: ${{ matrix.option }}
 
   finish:
     needs:
-      - build_bpf_performance
+      - test_bpf_performance
     runs-on: ubuntu-22.04
     steps:
     - name: Harden Runner
