@@ -64,10 +64,9 @@ jobs:
       if: inputs.platform == 'windows-2019' || inputs.platform == 'windows-2022'
       run: |
         mkdir ${{github.workspace}}/local_packages
-        $token = ConvertTo-SecureString -String ${{secrets.github_token}} -AsPlainText -Force
-        $workflow = ((Invoke-WebRequest -Uri  "https://api.github.com/repos/microsoft/ebpf-for-windows/actions/runs?per_page=1&exclude_pull_requests=true&branch=main&status=completed&event=schedule" -Token $token).Content | ConvertFrom-Json).workflow_runs[0]
-        $runId = $workflow.id
-        $commitSha = $workflow.head_sha
+        $workflow = (gh run list -R microsoft/ebpf-for-windows  -e schedule -w "CI/CD" --json workflowDatabaseId,headSha -L 1 | ConvertFrom-Json)
+        $runId = $workflow.workflowDatabaseId
+        $commitSha = $workflow.headSha
         echo "RUNID=$runId" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
         echo "COMMIT_SHA=$commitSha" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
 
