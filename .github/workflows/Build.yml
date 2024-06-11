@@ -100,6 +100,11 @@ jobs:
       run: |
         cmake -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -DBPF_PERF_LOCAL_NUGET_PATH=${{github.workspace}}/local_packages -DBPF_PERF_LOCAL_MSI_PATH=${{github.workspace}}/local_packages
 
+    - name: Test to see if bpf2c is working
+      if: inputs.platform == 'windows-2019' || inputs.platform == 'windows-2022'
+      run: |
+        build\packages\eBPF-for-Windows\build\native\bin\bpf2c.exe -?
+
     - name: Configure CMake - Ubuntu-22.04
       if: inputs.platform == 'ubuntu-22.04'
       run: |
