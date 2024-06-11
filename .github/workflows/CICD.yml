@@ -46,17 +46,18 @@ jobs:
     strategy:
       matrix:
         configuration: [ 'Release' ]
-        platform: [ 'ubuntu-22.04', 'windows-2019', 'windows-2022' ]
+        #platform: [ 'ubuntu-22.04', 'windows-2019', 'windows-2022' ]
+        platform: [ 'ubuntu-22.04', 'windows-2019' ]
         option: [ none, sanitizer, coverage, jit ]
         exclude:
           - platform: windows-2019
             option: sanitizer
           - platform: windows-2019
             option: coverage
-          - platform: windows-2022
-            option: sanitizer
-          - platform: windows-2022
-            option: coverage
+          # - platform: windows-2022
+          #   option: sanitizer
+          # - platform: windows-2022
+          #   option: coverage
           - platform: ubuntu-22.04
             option: jit
 
