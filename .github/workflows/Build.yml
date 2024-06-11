@@ -61,7 +61,7 @@ jobs:
       if: inputs.platform == 'windows-2019' || inputs.platform == 'windows-2022'
       uses: actions/download-artifact@cbed621e49e4c01b044d60f6c80ea4ed6328b281 # v2.1.1
       with:
-        name: ebpf-for-windows - NuGet package (none_Release)
+        name: "ebpf-for-windows - NuGet package (none_Release)"
         path: ${{github.workspace}}/local_packages
 
     - name: Get Linux Kernel version
