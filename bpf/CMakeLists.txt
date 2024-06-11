@@ -43,7 +43,7 @@ function(process_test_cases worker test_list)
         list(GET elements 0 file_name)
         list(GET elements 1 out_name)
         list(REMOVE_AT elements 0 1)
-        
+
         # Build the option_list from the remaining elements
         set(option_list "")
         foreach(element IN LISTS elements)
