@@ -66,8 +66,8 @@ jobs:
         GH_TOKEN: ${{ github.token }}
       run: |
         mkdir ${{github.workspace}}/local_packages
-        $workflow = (gh run list -R microsoft/ebpf-for-windows  -e schedule -w "CI/CD" --json workflowDatabaseId,headSha -L 1 | ConvertFrom-Json)
-        $runId = $workflow.workflowDatabaseId
+        $workflow = (gh run list -R microsoft/ebpf-for-windows  -e schedule -w "CI/CD" --json databaseId,headSha -L 1 | ConvertFrom-Json)
+        $runId = $workflow.databaseId
         $commitSha = $workflow.headSha
         echo "RUNID=$runId" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
         echo "COMMIT_SHA=$commitSha" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
