@@ -79,12 +79,6 @@ jobs:
       run: |
         echo "COMMIT_SHA=$(uname -r)" >> $env:GITHUB_ENV
 
-    - name: Get eBPF for Windows version
-      if: inputs.platform == 'windows-2019' || inputs.platform == 'windows-2022'
-      run: |
-        $version = (Get-Item "C:\Program Files\ebpf-for-windows\EbpfApi.dll").VersionInfo.FileVersion
-        echo "COMMIT_SHA=$version" >> $env:GITHUB_ENV
-
     - name: Create results directory
       run: |
         mkdir -p ${{github.workspace}}/results
@@ -112,6 +106,12 @@ jobs:
       run: |
         Start-Process msiexec.exe -Wait -ArgumentList '/i ebpf-for-windows.msi /quiet /qn /norestart /log install.log ADDLOCAL=ALL'
         echo "C:\Program Files\ebpf-for-windows" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
+
+    - name: Get eBPF for Windows version
+      if: inputs.platform == 'windows-2019' || inputs.platform == 'windows-2022'
+      run: |
+        $version = (Get-Item "C:\Program Files\ebpf-for-windows\EbpfApi.dll").VersionInfo.FileVersion
+        echo "COMMIT_SHA=$version" >> $env:GITHUB_ENV
 
     - name: Tests - Windows 2019 or Windows 2022 - Native
       if: (inputs.platform == 'windows-2019' || inputs.platform == 'windows-2022') && inputs.option == 'none'
