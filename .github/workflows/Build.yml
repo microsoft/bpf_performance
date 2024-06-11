@@ -62,6 +62,8 @@ jobs:
 
     - name: Get the latest run ID from Microsoft/ebpf-for-windows main branch - Windows-2019 or Windows-2022
       if: inputs.platform == 'windows-2019' || inputs.platform == 'windows-2022'
+      env:
+        GH_TOKEN: ${{ github.token }}
       run: |
         mkdir ${{github.workspace}}/local_packages
         $workflow = (gh run list -R microsoft/ebpf-for-windows  -e schedule -w "CI/CD" --json workflowDatabaseId,headSha -L 1 | ConvertFrom-Json)
