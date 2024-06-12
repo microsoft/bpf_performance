@@ -85,10 +85,6 @@ jobs:
             option: coverage
           - platform: ubuntu-22.04
             option: jit
-          - platform: windows-2022
-            option: jit
-          - platform: windows-2019
-            option: jit
 
     uses: ./.github/workflows/Test.yml
     with:
