@@ -118,6 +118,7 @@ jobs:
       if: inputs.platform == 'ubuntu-22.04' && inputs.option == 'none'
       working-directory: ${{github.workspace}}/build/bin
       run: |
+        chmod a+x ./bpf_performance_runner
         sudo ./bpf_performance_runner -i tests.yml -r | tee ${{github.workspace}}/results/jit-${{inputs.platform}}-${{env.BUILD_TYPE}}.csv
         exit ${PIPESTATUS[0]}
 
