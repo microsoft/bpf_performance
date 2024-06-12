@@ -18,6 +18,7 @@ permissions:
   id-token: write
   contents: read
   packages: write
+  security-events: write # Required by codeql task
 
 concurrency:
   # Cancel any CI/CD workflow currently in progress for the same PR.
@@ -26,12 +27,27 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  build_and_test:
+  build_ebpf_for_windows:
+    name: Build ebpf-for-windows
+    uses: microsoft/ebpf-for-windows/.github/workflows/reusable-build.yml@main
+    with:
+      build_artifact: none
+      build_msi: true
+      build_nuget: true
+      build_options: /t:installer\ebpf-for-windows
+      repository: 'microsoft/ebpf-for-windows'
+      configurations: '["Release"]'
+      ref: main
+      perform_skip_check: false
+
+  build_bpf_performance:
+    needs: build_ebpf_for_windows
+    name: Build BPF Performance tests
     strategy:
       matrix:
         configuration: [ 'Release', 'Debug' ]
-        platform: [ 'ubuntu-22.04', 'windows-2019', 'windows-2022' ]
-        option: [ none, sanitizer, coverage, jit ]
+        option: [ none, sanitizer, coverage ]
+        platform: [ 'ubuntu-22.04', 'windows-2019' ]
         exclude:
           - platform: windows-2019
             option: sanitizer
@@ -50,9 +66,41 @@ jobs:
       configuration: ${{ matrix.configuration }}
       option: ${{ matrix.option }}
 
+  test_bpf_performance:
+    needs: build_bpf_performance
+    name: Test BPF Performance
+    strategy:
+      matrix:
+        configuration: [ 'Release' ]
+        platform: [ 'windows-2019', 'windows-2022', 'ubuntu-22.04' ]
+        option: [ none, jit ]
+        exclude:
+          - platform: windows-2019
+            option: sanitizer
+          - platform: windows-2019
+            option: coverage
+          - platform: windows-2022
+            option: sanitizer
+          - platform: windows-2022
+            option: coverage
+          - platform: ubuntu-22.04
+            option: jit
+          - platform: windows-2022
+            option: jit
+          - platform: windows-2019
+            option: jit
+          - platform: windows-2022
+            option: none
+
+    uses: ./.github/workflows/Test.yml
+    with:
+      platform: ${{ matrix.platform }}
+      configuration: ${{ matrix.configuration }}
+      option: ${{ matrix.option }}
+
   finish:
     needs:
-      - build_and_test
+      - test_bpf_performance
     runs-on: ubuntu-22.04
     steps:
     - name: Harden Runner
@@ -69,7 +117,7 @@ jobs:
   upload_results:
     if: github.event_name == 'schedule' || github.event_name == 'push'
     needs:
-      - build_and_test
+      - build_bpf_performance
     uses: ./.github/workflows/UploadPerfResults.yml
     secrets:
       AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
