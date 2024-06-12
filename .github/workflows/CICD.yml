@@ -89,8 +89,6 @@ jobs:
             option: jit
           - platform: windows-2019
             option: jit
-          - platform: windows-2022
-            option: none
 
     uses: ./.github/workflows/Test.yml
     with:
