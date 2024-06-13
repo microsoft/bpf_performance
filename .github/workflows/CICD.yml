@@ -34,7 +34,7 @@ jobs:
       build_artifact: none
       build_msi: true
       build_nuget: true
-      build_options: /t:installer\ebpf-for-windows
+      build_options: /t:installer\ebpf-for-windows /p:ReleaseJIT='True'
       repository: 'microsoft/ebpf-for-windows'
       configurations: '["Release"]'
       ref: main

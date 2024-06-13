@@ -265,7 +265,7 @@ main(int argc, char** argv)
 
                 obj.reset(bpf_object__open(elf_file.c_str()));
                 if (!obj) {
-                    throw std::runtime_error("Failed to open BPF object " + elf_file + ": " + strerror(errno));
+                    throw std::runtime_error("Failed to open BPF object " + elf_file + ": " + strerror(errno) + "/" + std::to_string(errno));
                 }
 
                 bpf_program* program;
@@ -287,7 +287,7 @@ main(int argc, char** argv)
                 }
 
                 if (bpf_object__load(obj.get()) < 0) {
-                    throw std::runtime_error("Failed to load BPF object " + elf_file + ": " + strerror(errno));
+                    throw std::runtime_error("Failed to load BPF object " + elf_file + ": " + strerror(errno) + "/" + std::to_string(errno));
                 }
 
                 // Insert into bpf_objects
