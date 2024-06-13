@@ -34,7 +34,7 @@ jobs:
       build_artifact: none
       build_msi: true
       build_nuget: true
-      build_options: /t:installer\ebpf-for-windows
+      build_options: /t:installer\ebpf-for-windows /p:ReleaseJIT='True'
       repository: 'microsoft/ebpf-for-windows'
       configurations: '["Release"]'
       ref: main
@@ -85,10 +85,6 @@ jobs:
             option: coverage
           - platform: ubuntu-22.04
             option: jit
-          - platform: windows-2022
-            option: jit
-          - platform: windows-2019
-            option: jit
 
     uses: ./.github/workflows/Test.yml
     with:
@@ -115,7 +111,7 @@ jobs:
   upload_results:
     if: github.event_name == 'schedule' || github.event_name == 'push'
     needs:
-      - build_bpf_performance
+      - test_bpf_performance
     uses: ./.github/workflows/UploadPerfResults.yml
     secrets:
       AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
