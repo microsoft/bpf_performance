@@ -111,7 +111,7 @@ jobs:
   upload_results:
     if: github.event_name == 'schedule' || github.event_name == 'push'
     needs:
-      - build_bpf_performance
+      - test_bpf_performance
     uses: ./.github/workflows/UploadPerfResults.yml
     secrets:
       AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
