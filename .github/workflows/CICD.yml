@@ -27,13 +27,6 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  check_for_clang:
-    runs-on: Windows-latest
-    steps:
-    - name: Check for Clang
-      run: |
-        Get-ChildItem "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Tools"
-
   build_ebpf_for_windows:
     name: Build ebpf-for-windows
     uses: microsoft/ebpf-for-windows/.github/workflows/reusable-build.yml@main
