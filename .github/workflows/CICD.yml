@@ -32,7 +32,7 @@ jobs:
     steps:
     - name: Check for Clang
       run: |
-        Get-ChildItem "C:\Program Files" -Recurse -Filter "clang.exe" -ErrorAction SilentlyContinue
+        Get-ChildItem "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Tools"
 
   build_ebpf_for_windows:
     name: Build ebpf-for-windows
