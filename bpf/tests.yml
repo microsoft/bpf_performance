@@ -377,38 +377,39 @@ tests:
     program_cpu_assignment:
       tail_call: all
 
-  - name: bpf_xdp_adjust_head_zero
-    description: Tests the bpf_xdp_adjust_head helper.
-    elf_file: xdp.o
-    iteration_count: 1000000
-    platform: Linux
-    program_type: xdp
-    pass_data: true
-    expected_result: 1
-    program_cpu_assignment:
-      test_bpf_xdp_adjust_head_0: all
+  # Disabled due to removal of xdp_md from the BPF headers.
+  # - name: bpf_xdp_adjust_head_zero
+  #   description: Tests the bpf_xdp_adjust_head helper.
+  #   elf_file: xdp.o
+  #   iteration_count: 1000000
+  #   platform: Linux
+  #   program_type: xdp
+  #   pass_data: true
+  #   expected_result: 1
+  #   program_cpu_assignment:
+  #     test_bpf_xdp_adjust_head_0: all
 
-  - name: bpf_xdp_adjust_head_positive
-    description: Tests the bpf_xdp_adjust_head helper.
-    elf_file: xdp.o
-    iteration_count: 1000000
-    platform: Linux
-    program_type: xdp
-    pass_data: true
-    expected_result: 1
-    program_cpu_assignment:
-      test_bpf_xdp_adjust_head_plus_100: all
+  # - name: bpf_xdp_adjust_head_positive
+  #   description: Tests the bpf_xdp_adjust_head helper.
+  #   elf_file: xdp.o
+  #   iteration_count: 1000000
+  #   platform: Linux
+  #   program_type: xdp
+  #   pass_data: true
+  #   expected_result: 1
+  #   program_cpu_assignment:
+  #     test_bpf_xdp_adjust_head_plus_100: all
 
-  - name: bpf_xdp_adjust_head_negative
-    description: Tests the bpf_xdp_adjust_head helper.
-    elf_file: xdp.o
-    iteration_count: 1000000
-    platform: Linux
-    program_type: xdp
-    pass_data: true
-    expected_result: 1
-    program_cpu_assignment:
-      test_bpf_xdp_adjust_head_minus_100: all
+  # - name: bpf_xdp_adjust_head_negative
+  #   description: Tests the bpf_xdp_adjust_head helper.
+  #   elf_file: xdp.o
+  #   iteration_count: 1000000
+  #   platform: Linux
+  #   program_type: xdp
+  #   pass_data: true
+  #   expected_result: 1
+  #   program_cpu_assignment:
+  #     test_bpf_xdp_adjust_head_minus_100: all
 
   - name: bpf_tail_callee_max
     description: Tests the max tail call callees.

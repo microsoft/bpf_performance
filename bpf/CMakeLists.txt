@@ -29,7 +29,8 @@ set(test_cases
     "ringbuf,ringbuf_100K_1420b,-DBPF -DRB_SIZE=268435456 -DRECORD_SIZE=1420"
     "rolling_lru,rolling_lru,-DBPF"
     "tail_call,tail_call,-DBPF"
-    "xdp,xdp,-DBPF"
+    # XDP disabled due to removal of XDP support in the eBPF runtime
+    #"xdp,xdp,-DBPF"
     "max_tail_call,max_tail_call,-DBPF"
     )
 
