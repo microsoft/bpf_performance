@@ -17,8 +17,6 @@ on:
 permissions:
   id-token: write
   contents: read
-  packages: write
-  security-events: write # Required by codeql task
 
 concurrency:
   # Cancel any CI/CD workflow currently in progress for the same PR.
