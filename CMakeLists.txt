@@ -22,16 +22,18 @@ if (PLATFORM_WINDOWS)
   else()
     # if BPF_PERF_LOCAL_NUGET_PATH is set, use that as the source for the eBPF-for-Windows package
     if(BPF_PERF_LOCAL_NUGET_PATH)
+      set(EBPF_PACKAGE_NAME "eBPF-for-Windows.x64")
       exec_program(${NUGET} ARGS install "eBPF-for-Windows.x64" -ExcludeVersion -OutputDirectory ${PROJECT_BINARY_DIR}/packages -Source ${BPF_PERF_LOCAL_NUGET_PATH} -NoCache)
     else()
       # Update this once the new version of eBPF-for-Windows is released.
+      set(EBPF_PACKAGE_NAME "eBPF-for-Windows")
       exec_program(${NUGET} ARGS install "eBPF-for-Windows" -Version 0.17.1 -ExcludeVersion -OutputDirectory ${PROJECT_BINARY_DIR}/packages)
     endif()
   endif()
   set(EBPF_LIB "ebpfapi")
-  set(EBPF_INC_PATH "${PROJECT_BINARY_DIR}/packages/eBPF-for-Windows/build/native/include")
-  set(EBPF_LIB_PATH "${PROJECT_BINARY_DIR}/packages/eBPF-for-Windows/build/native/lib")
-  set(EBPF_BIN_PATH "${PROJECT_BINARY_DIR}/packages/eBPF-for-Windows/build/native/bin")
+  set(EBPF_INC_PATH "${PROJECT_BINARY_DIR}/packages/${EBPF_PACKAGE_NAME}/build/native/include")
+  set(EBPF_LIB_PATH "${PROJECT_BINARY_DIR}/packages/${EBPF_PACKAGE_NAME}/build/native/lib")
+  set(EBPF_BIN_PATH "${PROJECT_BINARY_DIR}/packages/${EBPF_PACKAGE_NAME}/build/native/bin")
 
   # Run  export_program_info.exe from the eBPF-for-Windows package
   execute_process(COMMAND "${EBPF_BIN_PATH}/export_program_info.exe" WORKING_DIRECTORY "${EBPF_BIN_PATH}" COMMAND_ERROR_IS_FATAL ANY)
