@@ -136,7 +136,7 @@ jobs:
         ${{env.BUILD_TYPE}}\bpf_performance_runner.exe -i tests.yml -r | Tee-Object -FilePath ${{github.workspace}}/results/native-${inputs.platform}-${{env.BUILD_TYPE}}.csv
 
     - name: Upload results
-      uses: actions/upload-artifact@50769540e7f4bd5e21e526ee35c689e35e0d6874
+      uses: actions/upload-artifact@604373da6381bf24206979c74d06a550515601b9
       with:
         name: results-${{env.BUILD_TYPE}}-${{inputs.platform}}-${{inputs.option}}
         path: |
@@ -144,7 +144,7 @@ jobs:
           ${{github.workspace}}/results/commit_sha.txt
 
     - name: Upload profile
-      uses: actions/upload-artifact@50769540e7f4bd5e21e526ee35c689e35e0d6874
+      uses: actions/upload-artifact@604373da6381bf24206979c74d06a550515601b9
       with:
         name: profile-${{env.BUILD_TYPE}}-${{inputs.platform}}-${{inputs.option}}
         path: |

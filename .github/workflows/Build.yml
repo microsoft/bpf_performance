@@ -90,7 +90,7 @@ jobs:
       run: cmake --build ${{github.workspace}}/build --config ${{env.BUILD_TYPE}}
 
     - name: Upload artifacts
-      uses: actions/upload-artifact@50769540e7f4bd5e21e526ee35c689e35e0d6874
+      uses: actions/upload-artifact@604373da6381bf24206979c74d06a550515601b9
       with:
         name: build-${{env.BUILD_TYPE}}-${{inputs.platform}}-${{inputs.option}}
         path: ${{github.workspace}}/build/bin
