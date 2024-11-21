@@ -12,6 +12,30 @@ The script uses the following parameters:
 - repository: The repository to filter the results by.
 */
 
+\if :{?platform}
+    \set platform :platform
+\else
+    \set platform 'Windows 2019'
+\endif
+
+\if :{?max_sigma}
+    \set max_sigma :max_sigma
+\else
+    \set max_sigma '2'
+\endif
+
+\if :{?look_back}
+    \set look_back :look_back
+\else
+    \set look_back '30 days'
+\endif
+
+\if :{?repository}
+    \set repository :repository
+\else
+    \set repository 'microsoft/ebpf-for-windows'
+\endif
+
 WITH samples AS (
     SELECT metric, value, "timestamp",
            ROW_NUMBER() OVER (PARTITION BY metric ORDER BY "timestamp" DESC) AS row_num
