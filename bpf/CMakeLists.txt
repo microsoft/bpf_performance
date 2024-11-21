@@ -5,6 +5,23 @@ set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/lib)
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/lib)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/bin)
 
+if (PLATFORM_WINDOWS)
+  set(NUGET_PACKAGES
+  "Microsoft.Windows.SDK.CPP"
+  "Microsoft.Windows.SDK.CPP.x64"
+  "Microsoft.Windows.WDK.x64"
+  )
+
+  find_program(NUGET nuget)
+  if(NOT NUGET)
+    message("ERROR: You must first install nuget.exe from https://www.nuget.org/downloads")
+  else()
+    foreach(PACKAGE ${NUGET_PACKAGES})
+      execute_process(COMMAND ${NUGET} install ${PACKAGE} -OutputDirectory ${PROJECT_BINARY_DIR}/packages)
+    endforeach()
+  endif()
+endif()
+
 # Each test consists of a C file, an output file name, and an optional option-list, seperated by commas.
 set(test_cases
     "baseline,baseline,-DBPF"
@@ -107,7 +124,7 @@ function(convert_to_native file_name out_name option_list)
     # Run the powershell script to convert the .o file to a .sys file
     add_custom_command(
         OUTPUT ${bpf_sys_file_path} ${bpf_pdb_file_path}
-        COMMAND powershell -ExecutionPolicy Bypass -File ${EBPF_BIN_PATH}/Convert-BpfToNative.ps1 -FileName ${bpf_obj_file_name} -IncludeDir ${EBPF_INC_PATH} -OutDir ${CMAKE_CURRENT_BINARY_DIR} -BinDir ${EBPF_BIN_PATH} -Configuration $<$<CONFIG:Debug>:Debug>$<$<CONFIG:Release>:Release>
+        COMMAND powershell -ExecutionPolicy Bypass -File ${EBPF_BIN_PATH}/Convert-BpfToNative.ps1 -FileName ${bpf_obj_file_name} -IncludeDir ${EBPF_INC_PATH} -OutDir ${CMAKE_CURRENT_BINARY_DIR} -BinDir ${EBPF_BIN_PATH} -Configuration $<$<CONFIG:Debug>:Debug>$<$<CONFIG:Release>:Release> -Packages ${CMAKE_BINARY_DIR}/packages
         DEPENDS ${bpf_obj_file_path}
         COMMENT "Converting BPF object ${bpf_obj_file_path} to native"
         POST_BUILD
