@@ -48,7 +48,7 @@ jobs:
       matrix:
         configuration: [ 'Release', 'Debug' ]
         option: [ none, sanitizer, coverage ]
-        platform: [ 'ubuntu-22.04', 'windows-2019' ]
+        platform: [ 'ubuntu-22.04', 'windows-2019', 'windows-2022' ]
         exclude:
           - platform: windows-2019
             option: sanitizer
