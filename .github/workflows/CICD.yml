@@ -73,7 +73,7 @@ jobs:
     strategy:
       matrix:
         configuration: [ 'Release' ]
-        platform: [ 'windows-2019', 'windows-2022', 'ubuntu-22.04' ]
+        platform: [ 'windows-2022', 'ubuntu-22.04' ]
         option: [ none, jit ]
         exclude:
           - platform: windows-2019
