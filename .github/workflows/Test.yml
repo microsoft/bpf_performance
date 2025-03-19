@@ -63,21 +63,21 @@ jobs:
 
     - name: Download the eBPF for Windows MSI
       if: inputs.platform == 'windows-2019' || inputs.platform == 'windows-2022'
-      uses: actions/download-artifact@cc203385981b70ca67e1cc392babf9cc229d5806
+      uses: actions/download-artifact@b14cf4c92620c250e1c074ab0a5800e37df86765
       with:
         name: "ebpf-for-windows - MSI installer (none_Release)"
         path: ${{github.workspace}}/local_packages
 
     - name: Download BPF Performance tests - Windows-2019 or Windows-2022
       if: inputs.platform == 'windows-2019' || inputs.platform == 'windows-2022'
-      uses: actions/download-artifact@cc203385981b70ca67e1cc392babf9cc229d5806
+      uses: actions/download-artifact@b14cf4c92620c250e1c074ab0a5800e37df86765
       with:
         name: "build-${{inputs.Configuration}}-${{inputs.platform}}-none"
         path: ${{github.workspace}}/build/bin
 
     - name: Download BPF Performance tests - Ubuntu-22.04
       if: inputs.platform == 'ubuntu-22.04'
-      uses: actions/download-artifact@cc203385981b70ca67e1cc392babf9cc229d5806
+      uses: actions/download-artifact@b14cf4c92620c250e1c074ab0a5800e37df86765
       with:
         name: "build-${{inputs.Configuration}}-${{inputs.platform}}-${{inputs.option}}"
         path: ${{github.workspace}}/build/bin

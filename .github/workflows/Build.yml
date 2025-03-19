@@ -59,7 +59,7 @@ jobs:
 
     - name: Download the ebpf-for-windows build nuget package
       if: inputs.platform == 'windows-2019' || inputs.platform == 'windows-2022'
-      uses: actions/download-artifact@cc203385981b70ca67e1cc392babf9cc229d5806
+      uses: actions/download-artifact@b14cf4c92620c250e1c074ab0a5800e37df86765
       with:
         name: "ebpf-for-windows - NuGet package (none_Release)"
         path: ${{github.workspace}}/local_packages
