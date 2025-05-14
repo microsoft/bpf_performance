@@ -31,7 +31,7 @@ jobs:
 
     steps:
     - name: Harden Runner
-      uses: step-security/harden-runner@c6295a65d1254861815972266d5933fd6e532bdf # v2.11.1
+      uses: step-security/harden-runner@0634a2670c59f64b4a01f0f96f84700a4088b9f0 # v2.12.0
       with:
         egress-policy: audit
 
@@ -63,21 +63,21 @@ jobs:
 
     - name: Download the eBPF for Windows MSI
       if: inputs.platform == 'windows-2019' || inputs.platform == 'windows-2022'
-      uses: actions/download-artifact@95815c38cf2ff2164869cbab79da8d1f422bc89e
+      uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
       with:
         name: "ebpf-for-windows - MSI installer (none_Release)"
         path: ${{github.workspace}}/local_packages
 
     - name: Download BPF Performance tests - Windows-2019 or Windows-2022
       if: inputs.platform == 'windows-2019' || inputs.platform == 'windows-2022'
-      uses: actions/download-artifact@95815c38cf2ff2164869cbab79da8d1f422bc89e
+      uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
       with:
         name: "build-${{inputs.Configuration}}-${{inputs.platform}}-none"
         path: ${{github.workspace}}/build/bin
 
     - name: Download BPF Performance tests - Ubuntu-22.04
       if: inputs.platform == 'ubuntu-22.04'
-      uses: actions/download-artifact@95815c38cf2ff2164869cbab79da8d1f422bc89e
+      uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
       with:
         name: "build-${{inputs.Configuration}}-${{inputs.platform}}-${{inputs.option}}"
         path: ${{github.workspace}}/build/bin
