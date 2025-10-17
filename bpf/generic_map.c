@@ -52,7 +52,8 @@ SEC("sockops/read") int read(void* ctx)
 SEC("sockops/update") int update(void* ctx)
 {
     int key = bpf_get_prandom_u32() % MAX_ENTRIES;
-    return bpf_map_update_elem(&map, &key, &key, BPF_ANY);
+    bpf_map_update_elem(&map, &key, &key, BPF_ANY);
+    return 0;
 }
 
 SEC("sockops/replace") int replace(void* ctx)
