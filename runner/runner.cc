@@ -34,6 +34,9 @@ const std::string runner_platform = "Linux";
 #define time_t_to_utc_tm(TM, TIME) gmtime_r(TIME, TM)
 #define DEFAULT_PROG_TYPE BPF_PROG_TYPE_XDP
 #define DEFAULT_ATTACH_TYPE BPF_XDP
+#define DEFAULT_PASS_DATA true
+#define DEFAULT_PASS_CONTEXT false
+#define DEFAULT_BATCH_SIZE 0
 #else
 const std::string runner_platform = "Windows";
 #define popen _popen
@@ -41,6 +44,9 @@ const std::string runner_platform = "Windows";
 #define time_t_to_utc_tm(TM, TIME) gmtime_s(TM, TIME)
 #define DEFAULT_PROG_TYPE BPF_PROG_TYPE_SOCK_OPS
 #define DEFAULT_ATTACH_TYPE BPF_CGROUP_SOCK_OPS
+#define DEFAULT_PASS_DATA false
+#define DEFAULT_PASS_CONTEXT true
+#define DEFAULT_BATCH_SIZE 64
 #endif
 
 int run_command_and_capture_output(const std::string& command, std::string& command_output)
@@ -204,8 +210,8 @@ main(int argc, char** argv)
             int iteration_count = test["iteration_count"].as<int>();
             std::optional<std::string> program_type;
             int batch_size;
-            bool pass_data = false;
-            bool pass_context = true;
+            bool pass_data = DEFAULT_PASS_DATA;
+            bool pass_context = DEFAULT_PASS_CONTEXT;
             uint32_t expected_result = 0;
 
             // Check if value "platform" is defined and matches the current platform.
@@ -226,7 +232,7 @@ main(int argc, char** argv)
             if (test["batch_size"].IsDefined()) {
                 batch_size = test["batch_size"].as<int>();
             } else {
-                batch_size = 64;
+                batch_size = DEFAULT_BATCH_SIZE;
             }
 
             // Check if pass_data is defined and use it.
