@@ -63,21 +63,21 @@ jobs:
 
     - name: Download the eBPF for Windows MSI
       if: inputs.platform == 'windows-2019' || inputs.platform == 'windows-2022'
-      uses: actions/download-artifact@634f93cb2916e3fdff6788551b99b062d0335ce0
+      uses: actions/download-artifact@018cc2cf5baa6db3ef3c5f8a56943fffe632ef53
       with:
         name: "ebpf-for-windows - MSI installer (none_Release)"
         path: ${{github.workspace}}/local_packages
 
     - name: Download BPF Performance tests - Windows-2019 or Windows-2022
       if: inputs.platform == 'windows-2019' || inputs.platform == 'windows-2022'
-      uses: actions/download-artifact@634f93cb2916e3fdff6788551b99b062d0335ce0
+      uses: actions/download-artifact@018cc2cf5baa6db3ef3c5f8a56943fffe632ef53
       with:
         name: "build-${{inputs.Configuration}}-${{inputs.platform}}-none"
         path: ${{github.workspace}}/build/bin
 
     - name: Download BPF Performance tests - Ubuntu-22.04
       if: inputs.platform == 'ubuntu-22.04'
-      uses: actions/download-artifact@634f93cb2916e3fdff6788551b99b062d0335ce0
+      uses: actions/download-artifact@018cc2cf5baa6db3ef3c5f8a56943fffe632ef53
       with:
         name: "build-${{inputs.Configuration}}-${{inputs.platform}}-${{inputs.option}}"
         path: ${{github.workspace}}/build/bin
@@ -136,7 +136,7 @@ jobs:
         ${{env.BUILD_TYPE}}\bpf_performance_runner.exe -i tests.yml -r | Tee-Object -FilePath ${{github.workspace}}/results/native-${inputs.platform}-${{env.BUILD_TYPE}}.csv
 
     - name: Upload results
-      uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+      uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4
       with:
         name: results-${{env.BUILD_TYPE}}-${{inputs.platform}}-${{inputs.option}}
         path: |
@@ -144,7 +144,7 @@ jobs:
           ${{github.workspace}}/results/commit_sha.txt
 
     - name: Upload profile
-      uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+      uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4
       with:
         name: profile-${{env.BUILD_TYPE}}-${{inputs.platform}}-${{inputs.option}}
         path: |
