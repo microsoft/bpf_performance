@@ -357,7 +357,7 @@ main(int argc, char** argv)
 #if defined(HAS_BPF_TEST_RUN_OPTS_FLAGS) && defined(__linux__)
                 // Set BPF_F_TEST_XDP_LIVE_FRAMES flag for XDP programs on Linux
                 if (actual_prog_type == BPF_PROG_TYPE_XDP) {
-                    opts.flags = BPF_F_TEST_XDP_LIVE_FRAMES;
+                    opts.flags |= BPF_F_TEST_XDP_LIVE_FRAMES;
                 }
 #endif
 
@@ -477,7 +477,7 @@ main(int argc, char** argv)
 #if defined(HAS_BPF_TEST_RUN_OPTS_FLAGS) && defined(__linux__)
                     // Set BPF_F_TEST_XDP_LIVE_FRAMES flag for XDP programs on Linux
                     if (actual_prog_type == BPF_PROG_TYPE_XDP) {
-                        opt.flags = BPF_F_TEST_XDP_LIVE_FRAMES;
+                        opt.flags |= BPF_F_TEST_XDP_LIVE_FRAMES;
                     }
 #endif
 
