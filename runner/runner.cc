@@ -14,6 +14,14 @@
 #include <vector>
 #include <yaml-cpp/yaml.h>
 
+#if defined(__linux__)
+#include <linux/bpf.h>
+// Define BPF_F_TEST_XDP_LIVE_FRAMES if not already defined
+#ifndef BPF_F_TEST_XDP_LIVE_FRAMES
+#define BPF_F_TEST_XDP_LIVE_FRAMES (1U << 1)
+#endif
+#endif
+
 // Define unique_ptr to call bpf_object__close on destruction
 struct bpf_object_deleter
 {
@@ -209,6 +217,7 @@ main(int argc, char** argv)
             std::string elf_file = test["elf_file"].as<std::string>();
             int iteration_count = test["iteration_count"].as<int>();
             std::optional<std::string> program_type;
+            bpf_prog_type actual_prog_type = DEFAULT_PROG_TYPE;
             int batch_size;
             bool pass_data = DEFAULT_PASS_DATA;
             bool pass_context = DEFAULT_PASS_CONTEXT;
@@ -289,6 +298,7 @@ main(int argc, char** argv)
                         prog_type = DEFAULT_PROG_TYPE;
                         attach_type = DEFAULT_ATTACH_TYPE;
                     }
+                    actual_prog_type = prog_type;
                     (void)bpf_program__set_type(program, prog_type);
                 }
 
@@ -344,6 +354,12 @@ main(int argc, char** argv)
                     opts.ctx_size_in = static_cast<uint32_t>(data_in.size());
                     opts.ctx_size_out = static_cast<uint32_t>(data_out.size());
                 }
+#if defined(HAS_BPF_TEST_RUN_OPTS_FLAGS) && defined(__linux__)
+                // Set BPF_F_TEST_XDP_LIVE_FRAMES flag for XDP programs on Linux
+                if (actual_prog_type == BPF_PROG_TYPE_XDP) {
+                    opts.flags = BPF_F_TEST_XDP_LIVE_FRAMES;
+                }
+#endif
 
                 if (bpf_prog_test_run_opts(bpf_program__fd(map_state_preparation_program), &opts)) {
                     throw std::runtime_error("Failed to run map_state_preparation program " + prep_program_name);
@@ -457,6 +473,12 @@ main(int argc, char** argv)
                     }
 #if defined(HAS_BPF_TEST_RUN_OPTS_BATCH_SIZE)
                     opt.batch_size = batch_size;
+#endif
+#if defined(HAS_BPF_TEST_RUN_OPTS_FLAGS) && defined(__linux__)
+                    // Set BPF_F_TEST_XDP_LIVE_FRAMES flag for XDP programs on Linux
+                    if (actual_prog_type == BPF_PROG_TYPE_XDP) {
+                        opt.flags = BPF_F_TEST_XDP_LIVE_FRAMES;
+                    }
 #endif
 
                     int result = bpf_prog_test_run_opts(program, &opt);
