@@ -36,6 +36,13 @@ struct bpf_object_deleter
 
 typedef std::unique_ptr<struct bpf_object, bpf_object_deleter> bpf_object_ptr;
 
+// Structure to hold BPF object and its program type
+struct bpf_object_info
+{
+    bpf_object_ptr obj;
+    bpf_prog_type prog_type;
+};
+
 // Set string runner_platform to "linux" to indicate that this is a Linux runner.
 #if defined(__linux__)
 const std::string runner_platform = "Linux";
@@ -179,7 +186,7 @@ main(int argc, char** argv)
 
         YAML::Node config = YAML::LoadFile(test_file);
         auto tests = config["tests"];
-        std::map<std::string, bpf_object_ptr> bpf_objects;
+        std::map<std::string, bpf_object_info> bpf_objects;
 
         // Query libbpf for cpu count if not specified on command line.
         int cpu_count = cpu_count_override.value_or(libbpf_num_possible_cpus());
@@ -306,14 +313,20 @@ main(int argc, char** argv)
                     throw std::runtime_error("Failed to load BPF object " + elf_file + ": " + strerror(errno) + "/" + std::to_string(errno));
                 }
 
-                // Insert into bpf_objects
-                bpf_objects.insert({elf_file, std::move(obj)});
+                // Insert into bpf_objects with program type
+                bpf_object_info obj_info;
+                obj_info.obj = std::move(obj);
+                obj_info.prog_type = actual_prog_type;
+                bpf_objects.insert({elf_file, std::move(obj_info)});
+            } else {
+                // Reuse existing object and retrieve its program type
+                actual_prog_type = bpf_objects[elf_file].prog_type;
             }
 
             // Vector of CPU -> program fd.
             std::vector<std::optional<int>> cpu_program_assignments(cpu_count);
 
-            bpf_object_ptr& obj = bpf_objects[elf_file];
+            bpf_object_ptr& obj = bpf_objects[elf_file].obj;
 
             // Check if node map_state_preparation exits.
             auto map_state_preparation = test["map_state_preparation"];
