@@ -27,7 +27,7 @@ if (PLATFORM_WINDOWS)
     else()
       # Update this once the new version of eBPF-for-Windows is released.
       set(EBPF_PACKAGE_NAME "eBPF-for-Windows.x64")
-      exec_program(${NUGET} ARGS install "eBPF-for-Windows.x64" -Version 0.21.1 -ExcludeVersion -OutputDirectory ${PROJECT_BINARY_DIR}/packages)
+      exec_program(${NUGET} ARGS install "eBPF-for-Windows.x64" -Version 1.0.0-rc1 -PreRelease -ExcludeVersion -OutputDirectory ${PROJECT_BINARY_DIR}/packages)
     endif()
   endif()
   set(EBPF_LIB "ebpfapi")
