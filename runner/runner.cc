@@ -319,8 +319,24 @@ main(int argc, char** argv)
                 obj_info.prog_type = actual_prog_type;
                 bpf_objects.insert({elf_file, std::move(obj_info)});
             } else {
-                // Reuse existing object and retrieve its program type
-                actual_prog_type = bpf_objects[elf_file].prog_type;
+                // Reuse existing object but validate that the requested program type matches
+                bpf_prog_type expected_prog_type;
+                if (program_type.has_value()) {
+                    bpf_attach_type attach_type;
+                    if (libbpf_prog_type_by_name(program_type->c_str(), &expected_prog_type, &attach_type) < 0) {
+                        throw std::runtime_error("Failed to get program type " + *program_type);
+                    }
+                } else {
+                    expected_prog_type = DEFAULT_PROG_TYPE;
+                }
+
+                bpf_prog_type existing_prog_type = bpf_objects[elf_file].prog_type;
+                if (existing_prog_type != expected_prog_type) {
+                    throw std::runtime_error("Program type mismatch for BPF object " + elf_file + 
+                        ": expected type does not match the type used when object was first loaded");
+                }
+
+                actual_prog_type = existing_prog_type;
             }
 
             // Vector of CPU -> program fd.
