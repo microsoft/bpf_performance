@@ -1,0 +1,18 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
+  <metadata>
+    <id>eBPF-for-Windows.x64</id>
+    <version>1.1.0</version>
+    <title>eBPF for Windows SDK</title>
+    <authors>eBPF for Windows Contributors</authors>
+    <owners>eBPF for Windows Contributors</owners>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <license type="expression">MIT</license>
+    <licenseUrl>https://licenses.nuget.org/MIT</licenseUrl>
+    <readme>README.md</readme>
+    <projectUrl>https://github.com/Microsoft/ebpf-for-windows</projectUrl>
+    <description>eBPF for Windows SDK</description>
+    <tags>native ebpf</tags>
+    <repository type="git" url="https://github.com/microsoft/ebpf-for-windows.git" commit="61ed63812dedaf4abe0d6951fbcd23a415336753" />
+  </metadata>
+</package>

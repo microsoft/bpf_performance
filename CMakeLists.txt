@@ -16,24 +16,11 @@ include("cmake/version.cmake")
 
 
 if (PLATFORM_WINDOWS)
-  find_program(NUGET nuget)
-  if(NOT NUGET)
-    message("ERROR: You must first install nuget.exe from https://www.nuget.org/downloads")
-  else()
-    # if BPF_PERF_LOCAL_NUGET_PATH is set, use that as the source for the eBPF-for-Windows package
-    if(BPF_PERF_LOCAL_NUGET_PATH)
-      set(EBPF_PACKAGE_NAME "eBPF-for-Windows.x64")
-      exec_program(${NUGET} ARGS install "eBPF-for-Windows.x64" -ExcludeVersion -OutputDirectory ${PROJECT_BINARY_DIR}/packages -Source ${BPF_PERF_LOCAL_NUGET_PATH} -NoCache)
-    else()
-      # Update this once the new version of eBPF-for-Windows is released.
-      set(EBPF_PACKAGE_NAME "eBPF-for-Windows.x64")
-      exec_program(${NUGET} ARGS install "eBPF-for-Windows.x64" -Version 1.0.0-rc1 -PreRelease -ExcludeVersion -OutputDirectory ${PROJECT_BINARY_DIR}/packages)
-    endif()
-  endif()
+  set(EBPF_PACKAGE_PATH "${CMAKE_SOURCE_DIR}/ebpf/nuget/eBPF-for-Windows.x64.1.1.0")
   set(EBPF_LIB "ebpfapi")
-  set(EBPF_INC_PATH "${PROJECT_BINARY_DIR}/packages/${EBPF_PACKAGE_NAME}/build/native/include")
-  set(EBPF_LIB_PATH "${PROJECT_BINARY_DIR}/packages/${EBPF_PACKAGE_NAME}/build/native/lib")
-  set(EBPF_BIN_PATH "${PROJECT_BINARY_DIR}/packages/${EBPF_PACKAGE_NAME}/build/native/bin")
+  set(EBPF_INC_PATH "${EBPF_PACKAGE_PATH}/build/native/include")
+  set(EBPF_LIB_PATH "${EBPF_PACKAGE_PATH}/build/native/lib")
+  set(EBPF_BIN_PATH "${EBPF_PACKAGE_PATH}/build/native/bin")
 
   # Run  export_program_info.exe from the eBPF-for-Windows package
   execute_process(COMMAND "${EBPF_BIN_PATH}/export_program_info.exe" WORKING_DIRECTORY "${EBPF_BIN_PATH}" COMMAND_ERROR_IS_FATAL ANY)

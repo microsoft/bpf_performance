@@ -2,7 +2,6 @@
 # SPDX-License-Identifier: MIT
 
 option(BPF_PERF_INSTALL_GIT_HOOKS "Set to true to install git hooks" ON)
-option(BPF_PERF_LOCAL_NUGET_PATH "Use a local NuGet package to install dependencies")
 option(BPF_XDP_TEST_ENABLED "Set to true to enable XDP tests")
 
 # Note that the compile_commands.json file is only exporter when
