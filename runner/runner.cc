@@ -14,6 +14,14 @@
 #include <vector>
 #include <yaml-cpp/yaml.h>
 
+#if defined(__linux__)
+#include <linux/bpf.h>
+// Define BPF_F_TEST_XDP_LIVE_FRAMES if not already defined
+#ifndef BPF_F_TEST_XDP_LIVE_FRAMES
+#define BPF_F_TEST_XDP_LIVE_FRAMES (1U << 1)
+#endif
+#endif
+
 // Define unique_ptr to call bpf_object__close on destruction
 struct bpf_object_deleter
 {
@@ -27,6 +35,13 @@ struct bpf_object_deleter
 };
 
 typedef std::unique_ptr<struct bpf_object, bpf_object_deleter> bpf_object_ptr;
+
+// Structure to hold BPF object and its program type
+struct bpf_object_info
+{
+    bpf_object_ptr obj;
+    bpf_prog_type prog_type;
+};
 
 // Set string runner_platform to "linux" to indicate that this is a Linux runner.
 #if defined(__linux__)
@@ -171,7 +186,7 @@ main(int argc, char** argv)
 
         YAML::Node config = YAML::LoadFile(test_file);
         auto tests = config["tests"];
-        std::map<std::string, bpf_object_ptr> bpf_objects;
+        std::map<std::string, bpf_object_info> bpf_objects;
 
         // Query libbpf for cpu count if not specified on command line.
         int cpu_count = cpu_count_override.value_or(libbpf_num_possible_cpus());
@@ -209,6 +224,7 @@ main(int argc, char** argv)
             std::string elf_file = test["elf_file"].as<std::string>();
             int iteration_count = test["iteration_count"].as<int>();
             std::optional<std::string> program_type;
+            bpf_prog_type actual_prog_type = DEFAULT_PROG_TYPE;
             int batch_size;
             bool pass_data = DEFAULT_PASS_DATA;
             bool pass_context = DEFAULT_PASS_CONTEXT;
@@ -289,6 +305,7 @@ main(int argc, char** argv)
                         prog_type = DEFAULT_PROG_TYPE;
                         attach_type = DEFAULT_ATTACH_TYPE;
                     }
+                    actual_prog_type = prog_type;
                     (void)bpf_program__set_type(program, prog_type);
                 }
 
@@ -296,14 +313,36 @@ main(int argc, char** argv)
                     throw std::runtime_error("Failed to load BPF object " + elf_file + ": " + strerror(errno) + "/" + std::to_string(errno));
                 }
 
-                // Insert into bpf_objects
-                bpf_objects.insert({elf_file, std::move(obj)});
+                // Insert into bpf_objects with program type
+                bpf_object_info obj_info;
+                obj_info.obj = std::move(obj);
+                obj_info.prog_type = actual_prog_type;
+                bpf_objects.insert({elf_file, std::move(obj_info)});
+            } else {
+                // Reuse existing object but validate that the requested program type matches
+                bpf_prog_type expected_prog_type;
+                if (program_type.has_value()) {
+                    bpf_attach_type attach_type;
+                    if (libbpf_prog_type_by_name(program_type->c_str(), &expected_prog_type, &attach_type) < 0) {
+                        throw std::runtime_error("Failed to get program type " + *program_type);
+                    }
+                } else {
+                    expected_prog_type = DEFAULT_PROG_TYPE;
+                }
+
+                bpf_prog_type existing_prog_type = bpf_objects[elf_file].prog_type;
+                if (existing_prog_type != expected_prog_type) {
+                    throw std::runtime_error("Program type mismatch for BPF object " + elf_file + 
+                        ": expected type does not match the type used when object was first loaded");
+                }
+
+                actual_prog_type = existing_prog_type;
             }
 
             // Vector of CPU -> program fd.
             std::vector<std::optional<int>> cpu_program_assignments(cpu_count);
 
-            bpf_object_ptr& obj = bpf_objects[elf_file];
+            bpf_object_ptr& obj = bpf_objects[elf_file].obj;
 
             // Check if node map_state_preparation exits.
             auto map_state_preparation = test["map_state_preparation"];
@@ -344,6 +383,12 @@ main(int argc, char** argv)
                     opts.ctx_size_in = static_cast<uint32_t>(data_in.size());
                     opts.ctx_size_out = static_cast<uint32_t>(data_out.size());
                 }
+#if defined(HAS_BPF_TEST_RUN_OPTS_FLAGS) && defined(__linux__)
+                // Set BPF_F_TEST_XDP_LIVE_FRAMES flag for XDP programs on Linux
+                if (actual_prog_type == BPF_PROG_TYPE_XDP) {
+                    opts.flags |= BPF_F_TEST_XDP_LIVE_FRAMES;
+                }
+#endif
 
                 if (bpf_prog_test_run_opts(bpf_program__fd(map_state_preparation_program), &opts)) {
                     throw std::runtime_error("Failed to run map_state_preparation program " + prep_program_name);
@@ -457,6 +502,12 @@ main(int argc, char** argv)
                     }
 #if defined(HAS_BPF_TEST_RUN_OPTS_BATCH_SIZE)
                     opt.batch_size = batch_size;
+#endif
+#if defined(HAS_BPF_TEST_RUN_OPTS_FLAGS) && defined(__linux__)
+                    // Set BPF_F_TEST_XDP_LIVE_FRAMES flag for XDP programs on Linux
+                    if (actual_prog_type == BPF_PROG_TYPE_XDP) {
+                        opt.flags |= BPF_F_TEST_XDP_LIVE_FRAMES;
+                    }
 #endif
 
                     int result = bpf_prog_test_run_opts(program, &opt);
