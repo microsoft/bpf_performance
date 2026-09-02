@@ -30,7 +30,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - name: Harden Runner
-      uses: step-security/harden-runner@05e31511f85b41b11d1cf0ef85d0992719546e2c # v2.21.0
+      uses: step-security/harden-runner@e14015d583714f6e62063499dc959a02595150a1 # v2.21.1
       with:
         egress-policy: audit
 
@@ -47,7 +47,7 @@ jobs:
         python3 scripts/process_results.py --csv-directory ${{github.workspace}}/results --sql-script-file ${{github.workspace}}/results/upload.sql --commit_id "$(cat ${{github.workspace}}/results/commit_sha.txt)" --platform ${{matrix.platform}} --repository ${{github.repository}}
 
     - name: Log into Azure
-      uses: azure/login@f5d393ae46f8fde4be8b75f32e3fc50e654ad0ca # v3.0.1
+      uses: azure/login@7ddb5af1ef8758cf1353cf3b42f940aee27ba21c # v3.0.2
       with:
         client-id: ${{ secrets.AZURE_CLIENT_ID }}
         tenant-id: ${{ secrets.AZURE_TENANT_ID }}
